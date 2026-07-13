@@ -1,0 +1,164 @@
+.nav-3d {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-ui);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  background: linear-gradient(180deg, rgba(5, 10, 18, 0.9) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+.nav-3d > * {
+  pointer-events: auto;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1793D1;
+  filter: drop-shadow(0 0 8px rgba(23, 147, 209, 0.5));
+}
+
+.nav-title {
+  font-family: 'Chakra Petch', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #e8f0f8;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-shadow: 0 0 14px rgba(23, 147, 209, 0.3);
+}
+
+.nav-links {
+  display: flex;
+  gap: 0.3rem;
+  align-items: center;
+}
+
+.nav-link {
+  background: none;
+  border: 1px solid transparent;
+  color: #6b8aad;
+  font-family: 'Chakra Petch', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 0.4rem 0.9rem;
+  border-radius: 4px;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: all 0.25s ease;
+  letter-spacing: 0.08em;
+}
+
+.nav-link:hover {
+  color: #e8f0f8;
+  border-color: rgba(23, 147, 209, 0.2);
+  background: rgba(23, 147, 209, 0.06);
+}
+
+.nav-link.active {
+  color: #00d4ff;
+  border-color: rgba(0, 212, 255, 0.3);
+  background: rgba(0, 212, 255, 0.08);
+  box-shadow: 0 0 12px rgba(23, 147, 209, 0.15);
+}
+
+.nav-sound-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(13, 31, 60, 0.5);
+  border: 1px solid rgba(23, 147, 209, 0.15);
+  color: #6b8aad;
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.nav-sound-btn:hover {
+  color: #00d4ff;
+  border-color: rgba(0, 212, 255, 0.3);
+  background: rgba(0, 212, 255, 0.08);
+}
+
+.nav-sound-btn.muted {
+  color: #6b3a3a;
+  border-color: rgba(100, 50, 50, 0.25);
+  opacity: 0.6;
+}
+
+.nav-theme-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(13, 31, 60, 0.5);
+  border: 1px solid rgba(23, 147, 209, 0.15);
+  color: #6b8aad;
+  font-family: 'Ubuntu Sans Mono', monospace;
+  font-size: 0.7rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.nav-theme-btn:hover {
+  color: #00d4ff;
+  border-color: rgba(0, 212, 255, 0.3);
+  background: rgba(0, 212, 255, 0.08);
+}
+
+.theme-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+@media (max-width: 768px) {
+  .nav-3d {
+    padding: 0.6rem 0.8rem;
+  }
+
+  .nav-title {
+    display: none;
+  }
+
+  .nav-links {
+    gap: 0.15rem;
+  }
+
+  .nav-link {
+    font-size: 0.7rem;
+    padding: 0.5rem 0.6rem;
+    letter-spacing: 0.06em;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+
+  .nav-sound-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .nav-theme-btn {
+    padding: 0.5rem;
+  }
+
+  .theme-label {
+    display: none;
+  }
+}

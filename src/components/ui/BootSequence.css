@@ -1,0 +1,203 @@
+.boot-sequence {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-boot);
+  background: #000;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  overflow: hidden;
+  font-family: 'Ubuntu Sans Mono', 'Courier New', monospace;
+}
+
+/* CRT scanlines */
+.scanlines {
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--z-boot, 20000) + 2);
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.15) 2px,
+    rgba(0, 0, 0, 0.15) 4px
+  );
+}
+
+/* Vignette */
+.vignette {
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--z-boot, 20000) + 3);
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 50%,
+    rgba(0, 0, 0, 0.6) 100%
+  );
+}
+
+/* CRT screen curvature overlay */
+.crt-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--z-boot, 20000) + 4);
+  pointer-events: none;
+  border-radius: 12px;
+  box-shadow:
+    inset 0 0 80px rgba(0, 0, 0, 0.4),
+    inset 0 0 20px rgba(0, 255, 65, 0.02);
+}
+
+/* Terminal container */
+.boot-terminal {
+  width: 100%;
+  max-width: 900px;
+  padding: 2rem 2.5rem;
+  overflow-y: auto;
+  position: relative;
+  z-index: calc(var(--z-boot, 20000) + 1);
+  align-self: center;
+  margin-top: 5vh;
+  max-height: 85vh;
+}
+
+.boot-line {
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: #88ff88;
+  white-space: pre;
+  min-height: 1.6em;
+  text-shadow: 0 0 4px rgba(0, 255, 65, 0.3);
+}
+
+.boot-line.ok {
+  color: #00cc44;
+}
+
+.boot-line.ok::before {
+  content: '';
+}
+
+.boot-line.failed {
+  color: #ff4444;
+  text-shadow: 0 0 4px rgba(255, 68, 68, 0.5);
+}
+
+.boot-line.ascii {
+  color: #1793D1;
+  text-shadow: 0 0 6px rgba(23, 147, 209, 0.5);
+  font-size: 0.72rem;
+  line-height: 1.15;
+  letter-spacing: 0.05em;
+}
+
+/* Blinking cursor */
+.boot-cursor {
+  display: inline-block;
+  color: #88ff88;
+  font-size: 0.82rem;
+  opacity: 0;
+  text-shadow: 0 0 4px rgba(0, 255, 65, 0.5);
+}
+
+.boot-cursor.visible {
+  opacity: 1;
+}
+
+/* Welcome flash */
+.welcome-flash {
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--z-boot, 20000) + 5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.9);
+  animation: welcomeFade 1s ease-out forwards;
+}
+
+.welcome-flash h1 {
+  font-family: 'Chakra Petch', sans-serif;
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: #00d4ff;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  text-shadow:
+    0 0 20px rgba(0, 212, 255, 0.6),
+    0 0 60px rgba(0, 212, 255, 0.25);
+  animation: welcomePulse 0.5s ease-out;
+}
+
+@keyframes welcomeFade {
+  0% { opacity: 1; filter: hue-rotate(0deg); }
+  60% { opacity: 1; filter: hue-rotate(0deg); }
+  80% { opacity: 0.8; filter: hue-rotate(30deg); }
+  100% { opacity: 0; filter: hue-rotate(50deg); }
+}
+
+@keyframes welcomePulse {
+  0% { transform: scale(0.8); opacity: 0; }
+  50% { transform: scale(1.05); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Glitch effect */
+.glitch-active {
+  animation: glitchScreen 0.6s ease-out;
+}
+
+.glitch-active::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--z-boot, 20000) + 6);
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0px,
+    rgba(0, 255, 65, 0.03) 1px,
+    transparent 2px,
+    transparent 4px
+  );
+  animation: glitchScanlines 0.1s steps(2) infinite;
+  pointer-events: none;
+}
+
+@keyframes glitchScreen {
+  0% { filter: brightness(1); }
+  10% { filter: brightness(2) hue-rotate(20deg); transform: translateX(-3px); }
+  20% { filter: brightness(0.8) hue-rotate(-10deg); transform: translateX(2px); }
+  30% { filter: brightness(1.5); transform: translateX(-1px) skewX(1deg); }
+  40% { filter: brightness(0.6); transform: translateX(3px) skewX(-0.5deg); }
+  50% { filter: brightness(1.8) saturate(2); transform: translateX(-2px); }
+  60% { filter: brightness(1); transform: translateX(1px); }
+  100% { filter: brightness(1); transform: none; }
+}
+
+@keyframes glitchScanlines {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 4px; }
+}
+
+/* Scrollbar */
+.boot-terminal::-webkit-scrollbar {
+  width: 0;
+}
+
+@media (max-width: 768px) {
+  .boot-terminal {
+    padding: 1rem 1.2rem;
+  }
+  .boot-line {
+    font-size: 0.65rem;
+  }
+  .boot-line.ascii {
+    font-size: 0.5rem;
+  }
+  .welcome-flash h1 {
+    font-size: 1.5rem;
+    letter-spacing: 0.1em;
+  }
+}

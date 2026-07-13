@@ -1,0 +1,63 @@
+.pacman-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-game);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.92);
+  backdrop-filter: blur(4px);
+}
+
+.pacman-container {
+  position: relative;
+  border: 2px solid rgba(23, 147, 209, 0.25);
+  border-radius: 4px;
+  box-shadow: 0 0 30px rgba(23, 147, 209, 0.15);
+}
+
+.pacman-canvas {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  image-rendering: pixelated;
+}
+
+.pacman-close {
+  position: fixed;
+  top: 1rem;
+  right: 1.5rem;
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #6b8aad;
+  font-size: 1.2rem;
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  z-index: calc(var(--z-game, 5000) + 1);
+}
+
+.pacman-close:hover {
+  color: #00d4ff;
+  border-color: rgba(0, 212, 255, 0.3);
+  background: rgba(0, 212, 255, 0.08);
+}
+
+@media (max-width: 600px) {
+  .pacman-container {
+    border: none;
+    box-shadow: none;
+    width: 100%;
+    max-width: 100vw;
+  }
+
+  .pacman-close {
+    top: 0.5rem;
+    right: 0.5rem;
+  }
+}
