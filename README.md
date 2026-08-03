@@ -10,6 +10,9 @@ A scroll-narrative, single-page experience for Arch Linux — not a brochure, bu
 [![Vite 8](https://img.shields.io/badge/Vite-8-646cff?style=flat-square&logo=vite&logoColor=white)](https://vite.dev)
 [![Three.js](https://img.shields.io/badge/Three.js-r184-1793D1?style=flat-square&logo=threedotjs&logoColor=white)](https://threejs.org)
 [![ESLint](https://img.shields.io/badge/ESLint-clean-4B32C3?style=flat-square&logo=eslint&logoColor=white)](https://eslint.org)
+[![Live demo](https://img.shields.io/badge/Live%20demo-lianbeast.github.io-00ff41?style=flat-square&logo=githubpages&logoColor=white)](https://lianbeast.github.io/Lian-Arch-Linux-Site/)
+
+**▶ [Open the live site](https://lianbeast.github.io/Lian-Arch-Linux-Site/)** — deployed automatically to GitHub Pages on every push to `main`.
 
 </div>
 
