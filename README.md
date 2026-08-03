@@ -14,6 +14,8 @@ A scroll-narrative, single-page experience for Arch Linux — not a brochure, bu
 
 **▶ [Open the live site](https://lianbeast.github.io/Lian-Arch-Linux-Site/)** — deployed automatically to GitHub Pages on every push to `main`.
 
+<img src="./screenshots/site.png" alt="Arch Linux interactive 3D experience — the live site after boot" width="820" />
+
 </div>
 
 ---
