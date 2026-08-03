@@ -14,9 +14,9 @@ A scroll-narrative, single-page experience for Arch Linux — not a brochure, bu
 
 **▶ [Open the live site](https://lianbeast.github.io/Lian-Arch-Linux-Site/)** — deployed automatically to GitHub Pages on every push to `main`.
 
-<img src="./screenshots/site-demo.gif" alt="Animated preview — the Arch Linux interactive 3D experience: boot into the site, then a scroll tour through all six sections" width="700" />
+<img src="./screenshots/site-demo.gif" alt="Animated preview — the Arch Linux interactive 3D experience: the UEFI boot sequence (2× speed), then a real-time scroll tour through all six sections" width="700" />
 
-<sub>🎞 Prefer video? [Download the full tour (MP4, ~20s)](./screenshots/site-demo.mp4)</sub>
+<sub>🎞 Prefer video? [Watch the full experience (MP4, ~38s, real-time including the boot)](./screenshots/site-demo.mp4)</sub>
 
 </div>
 
