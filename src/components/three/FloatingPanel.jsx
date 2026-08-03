@@ -8,6 +8,17 @@ import TerminalFetch from '../ui/TerminalFetch'
 // Glyphs below are verified against JetBrains Mono's cmap — no tofu.
 const CARD_FONT = `${import.meta.env.BASE_URL}fonts/JetBrainsMono-Regular.ttf`
 
+// 2×3 highlight grid — glyphs are JetBrains Mono-verified; descs are kept short enough
+// to fit the 5-unit-wide panel at the compact font sizes used below.
+const featuresData = [
+  { icon: '\u25B6', title: 'Rolling Release', desc: 'Always current. No upgrades.' },
+  { icon: '\u25C6', title: 'Pacman', desc: 'Blazing fast package mgr.' },
+  { icon: '\u25CF', title: 'AUR', desc: '80,000+ community packages.' },
+  { icon: '\u25A0', title: 'Arch Wiki', desc: 'Best Linux documentation.' },
+  { icon: '\u25AA', title: 'Minimal', desc: 'Install only what you need.' },
+  { icon: '\u25B8', title: 'DIY', desc: 'Build your system your way.' },
+]
+
 const installSteps = [
   '$ fdisk /dev/sda',
   '$ mkfs.ext4 /dev/sda2',
@@ -94,11 +105,23 @@ function FeaturesContent({ active }) {
         Why Arch Linux?
       </Text>
       {/* distanceFactor calibrated (empirically, vs. features camera ~6 units away) so the
-          neofetch renders ~400px wide on screen — inside the 5×4 panel instead of overflowing.
+          neofetch fits the upper half of the panel, leaving room for the highlight grid below.
           Note: drei Html transform keeps a near-constant on-screen size at any camera distance. */}
-      <Html position={[0, -0.35, 0.1]} transform distanceFactor={5} style={{ width: '400px', height: '250px', pointerEvents: 'none', overflow: 'visible' }}>
+      <Html position={[0, -0.05, 0.1]} transform distanceFactor={3.5} style={{ width: '400px', height: '250px', pointerEvents: 'none', overflow: 'visible' }}>
         <TerminalFetch active={active} />
       </Html>
+      {featuresData.map((f, i) => {
+        const row = Math.floor(i / 2)
+        const col = i % 2
+        const y = -0.98 - row * 0.33
+        return (
+          <group key={i} position={[col === 0 ? -1.25 : 1.25, y, 0.1]}>
+            <Text position={[-0.75, 0.06, 0]} fontSize={0.16} color="#00d4ff" anchorX="left" font={CARD_FONT}>{f.icon}</Text>
+            <Text position={[-0.45, 0.06, 0]} fontSize={0.14} color="#e8f0f8" anchorX="left" font={CARD_FONT}>{f.title}</Text>
+            <Text position={[-0.45, -0.1, 0]} fontSize={0.095} color="#6b8aad" anchorX="left" font={CARD_FONT}>{f.desc}</Text>
+          </group>
+        )
+      })}
     </group>
   )
 }
