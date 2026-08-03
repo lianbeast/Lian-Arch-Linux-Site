@@ -150,6 +150,13 @@ export default function App() {
     return () => clearTimeout(t)
   }, [booted, loaded])
 
+  // Safety net: never let the loading screen block the UI, whatever happens in the scene
+  useEffect(() => {
+    if (!booted || loaded) return
+    const t = setTimeout(() => setLoaded(true), 8000)
+    return () => clearTimeout(t)
+  }, [booted, loaded])
+
   // Unlock audio on first interaction
   useEffect(() => {
     const unlock = () => {

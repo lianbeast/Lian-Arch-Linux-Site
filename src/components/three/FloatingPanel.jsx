@@ -189,7 +189,7 @@ function GameContent() {
       <Text position={[0, 1.6, 0.1]} fontSize={0.3} color="#00d4ff" anchorX="center">
         {'< game />'}
       </Text>
-      <Text position={[0, 1.0, 0.1]} fontSize={0.45} color="#00d4ff" anchorX="center" font={`${import.meta.env.BASE_URL}fonts/UbuntuSansMono-Regular.ttf`} outlineWidth={0.03} outlineColor="#1793D1">
+      <Text position={[0, 1.0, 0.1]} fontSize={0.45} color="#00d4ff" anchorX="center" font={`${import.meta.env.BASE_URL}fonts/UbuntuMono-Regular.ttf`} outlineWidth={0.03} outlineColor="#1793D1">
         PAC-MAN
       </Text>
       <Text position={[0, 0.2, 0.1]} fontSize={0.14} color="#00d4ff" anchorX="center">

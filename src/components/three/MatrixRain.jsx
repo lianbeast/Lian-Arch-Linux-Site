@@ -1,4 +1,4 @@
-import { useRef, useMemo, useEffect, useLayoutEffect } from 'react'
+import { useRef, useMemo, useEffect } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 
@@ -69,7 +69,14 @@ export default function MatrixRain({ position = [0, 0, -18], opacity = 0.12 }) {
   const speeds = useRef(new Float32Array(COLS).fill(0))
   const frameCount = useRef(0)
 
-  const geometry = useMemo(() => new THREE.PlaneGeometry(0.4, 0.5), [])
+  const geometry = useMemo(() => {
+    const geo = new THREE.PlaneGeometry(0.4, 0.5)
+    // Per-instance attribute must live on the geometry (not the mesh object)
+    const attr = new THREE.InstancedBufferAttribute(GLYPHS, 1)
+    attr.needsUpdate = true
+    geo.setAttribute('aChar', attr)
+    return geo
+  }, [])
   const dummy = useMemo(() => new THREE.Object3D(), [])
 
   const material = useMemo(() => new THREE.ShaderMaterial({
@@ -91,13 +98,6 @@ export default function MatrixRain({ position = [0, 0, -18], opacity = 0.12 }) {
       drops.current[i] = Math.random() * ROWS
       speeds.current[i] = 0.3 + Math.random() * 0.7
     }
-  }, [])
-
-  // Attach the per-instance glyph attribute before the first frame renders
-  useLayoutEffect(() => {
-    const attr = new THREE.InstancedBufferAttribute(GLYPHS, 1)
-    attr.needsUpdate = true
-    meshRef.current?.setAttribute('aChar', attr)
   }, [])
 
   useFrame(() => {

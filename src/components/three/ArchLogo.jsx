@@ -3,7 +3,7 @@ import { useFrame } from '@react-three/fiber'
 import { Text } from '@react-three/drei'
 import * as THREE from 'three'
 
-const DISPLAY_FONT = `${import.meta.env.BASE_URL}fonts/UbuntuSansMono-Regular.ttf`
+const DISPLAY_FONT = `${import.meta.env.BASE_URL}fonts/UbuntuMono-Regular.ttf`
 
 export default function ArchLogo({ position }) {
   const groupRef = useRef()
