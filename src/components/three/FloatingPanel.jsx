@@ -4,14 +4,9 @@ import { Text, RoundedBox, Html } from '@react-three/drei'
 import * as THREE from 'three'
 import TerminalFetch from '../ui/TerminalFetch'
 
-const featuresData = [
-  { icon: '\u21BB', title: 'Rolling Release', desc: 'Always current. No version upgrades.' },
-  { icon: '\u2B22', title: 'Pacman', desc: 'Fast, powerful package manager.' },
-  { icon: '\u2611', title: 'AUR', desc: 'Community repository of 80K+ packages.' },
-  { icon: '\u2610', title: 'Arch Wiki', desc: 'Best Linux documentation resource.' },
-  { icon: '\u2702', title: 'Minimal', desc: 'Only what you choose to install.' },
-  { icon: '\u2692', title: 'DIY', desc: 'Build your system your way.' },
-]
+// All card text uses the self-hosted theme font (troika needs a real TTF).
+// Glyphs below are verified against JetBrains Mono's cmap — no tofu.
+const CARD_FONT = `${import.meta.env.BASE_URL}fonts/JetBrainsMono-Regular.ttf`
 
 const installSteps = [
   '$ fdisk /dev/sda',
@@ -38,6 +33,11 @@ const communityLinks = [
   { title: 'GitLab', url: 'gitlab.archlinux.org' },
   { title: 'Reddit', url: 'r/archlinux' },
   { title: 'Mastodon', url: '@archlinux' },
+]
+
+const gameControls = [
+  { cmd: '\u2190 \u2191 \u2192 \u2193', desc: 'move', size: 0.2 },
+  { cmd: 'ESC', desc: 'quit', size: 0.14 },
 ]
 
 function PanelBackground({ width = 5, height = 4, active }) {
@@ -87,26 +87,18 @@ function PanelBorder({ width = 5, height = 4, active }) {
 function FeaturesContent({ active }) {
   return (
     <group>
-      <Text position={[0, 1.6, 0.1]} fontSize={0.3} color="#1793D1" anchorX="center">
+      <Text position={[0, 1.6, 0.1]} fontSize={0.3} color="#1793D1" anchorX="center" font={CARD_FONT}>
         {'< features />'}
       </Text>
-      <Html position={[-2.3, 0.65, 0.1]} transform style={{ width: '430px', height: '280px', pointerEvents: 'none', overflow: 'visible' }}>
-        <TerminalFetch active={active} />
-      </Html>
-      <Text position={[0, -0.3, 0.1]} fontSize={0.22} color="#6b8aad" anchorX="center">
+      <Text position={[0, 1.2, 0.1]} fontSize={0.22} color="#6b8aad" anchorX="center" font={CARD_FONT}>
         Why Arch Linux?
       </Text>
-      {featuresData.map((f, i) => {
-        const row = Math.floor(i / 2)
-        const col = i % 2
-        return (
-          <group key={i} position={[col === 0 ? -1.2 : 1.2, -0.7 - row * 0.7, 0.1]}>
-            <Text position={[-0.9, 0.1, 0]} fontSize={0.2} color="#00d4ff" anchorX="left">{f.icon}</Text>
-            <Text position={[-0.55, 0.1, 0]} fontSize={0.15} color="#e8f0f8" anchorX="left">{f.title}</Text>
-            <Text position={[-0.55, -0.12, 0]} fontSize={0.1} color="#6b8aad" anchorX="left">{f.desc}</Text>
-          </group>
-        )
-      })}
+      {/* distanceFactor calibrated (empirically, vs. features camera ~6 units away) so the
+          neofetch renders ~400px wide on screen — inside the 5×4 panel instead of overflowing.
+          Note: drei Html transform keeps a near-constant on-screen size at any camera distance. */}
+      <Html position={[0, -0.35, 0.1]} transform distanceFactor={5} style={{ width: '400px', height: '250px', pointerEvents: 'none', overflow: 'visible' }}>
+        <TerminalFetch active={active} />
+      </Html>
     </group>
   )
 }
@@ -114,18 +106,18 @@ function FeaturesContent({ active }) {
 function InstallContent() {
   return (
     <group>
-      <Text position={[0, 1.6, 0.1]} fontSize={0.3} color="#1793D1" anchorX="center">
+      <Text position={[0, 1.6, 0.1]} fontSize={0.3} color="#1793D1" anchorX="center" font={CARD_FONT}>
         {'< install />'}
       </Text>
-      <Text position={[0, 1.2, 0.1]} fontSize={0.22} color="#6b8aad" anchorX="center">
+      <Text position={[0, 1.2, 0.1]} fontSize={0.22} color="#6b8aad" anchorX="center" font={CARD_FONT}>
         Installation Steps
       </Text>
       {installSteps.map((cmd, i) => (
         <group key={i} position={[0, 0.65 - i * 0.25, 0.1]}>
-          <Text position={[-2, 0, 0]} fontSize={0.13} color="#1793D1" anchorX="left">
+          <Text position={[-2, 0, 0]} fontSize={0.13} color="#1793D1" anchorX="left" font={CARD_FONT}>
             {`${i + 1}.`}
           </Text>
-          <Text position={[-1.6, 0, 0]} fontSize={0.12} color="#00d4ff" anchorX="left">
+          <Text position={[-1.6, 0, 0]} fontSize={0.12} color="#00d4ff" anchorX="left" font={CARD_FONT}>
             {cmd}
           </Text>
         </group>
@@ -137,23 +129,23 @@ function InstallContent() {
 function PacmanContent() {
   return (
     <group>
-      <Text position={[0, 1.6, 0.1]} fontSize={0.3} color="#1793D1" anchorX="center">
+      <Text position={[0, 1.6, 0.1]} fontSize={0.3} color="#1793D1" anchorX="center" font={CARD_FONT}>
         {'< pacman />'}
       </Text>
-      <Text position={[0, 1.2, 0.1]} fontSize={0.22} color="#6b8aad" anchorX="center">
+      <Text position={[0, 1.2, 0.1]} fontSize={0.22} color="#6b8aad" anchorX="center" font={CARD_FONT}>
         Package Management
       </Text>
       {pacmanCmds.map((item, i) => (
         <group key={i} position={[0, 0.6 - i * 0.35, 0.1]}>
-          <Text position={[-2, 0, 0]} fontSize={0.14} color="#00d4ff" anchorX="left">
+          <Text position={[-2, 0, 0]} fontSize={0.14} color="#00d4ff" anchorX="left" font={CARD_FONT}>
             $ {item.cmd}
           </Text>
-          <Text position={[1.8, 0, 0]} fontSize={0.11} color="#6b8aad" anchorX="right">
+          <Text position={[1.8, 0, 0]} fontSize={0.11} color="#6b8aad" anchorX="right" font={CARD_FONT}>
             {item.desc}
           </Text>
         </group>
       ))}
-      <Text position={[0, -1.3, 0.1]} fontSize={0.12} color="#1793D1" anchorX="center">
+      <Text position={[0, -1.3, 0.1]} fontSize={0.12} color="#1793D1" anchorX="center" font={CARD_FONT}>
         AUR: 80,000+ community packages
       </Text>
     </group>
@@ -163,10 +155,10 @@ function PacmanContent() {
 function CommunityContent() {
   return (
     <group>
-      <Text position={[0, 1.6, 0.1]} fontSize={0.3} color="#1793D1" anchorX="center">
+      <Text position={[0, 1.6, 0.1]} fontSize={0.3} color="#1793D1" anchorX="center" font={CARD_FONT}>
         {'< community />'}
       </Text>
-      <Text position={[0, 1.2, 0.1]} fontSize={0.22} color="#6b8aad" anchorX="center">
+      <Text position={[0, 1.2, 0.1]} fontSize={0.22} color="#6b8aad" anchorX="center" font={CARD_FONT}>
         Join the Community
       </Text>
       {communityLinks.map((link, i) => {
@@ -174,8 +166,8 @@ function CommunityContent() {
         const col = i % 2
         return (
           <group key={i} position={[col === 0 ? -1.2 : 1.2, 0.5 - row * 0.65, 0.1]}>
-            <Text position={[0, 0.08, 0]} fontSize={0.16} color="#e8f0f8" anchorX="center">{link.title}</Text>
-            <Text position={[0, -0.12, 0]} fontSize={0.1} color="#00d4ff" anchorX="center">{link.url}</Text>
+            <Text position={[0, 0.08, 0]} fontSize={0.16} color="#e8f0f8" anchorX="center" font={CARD_FONT}>{link.title}</Text>
+            <Text position={[0, -0.12, 0]} fontSize={0.1} color="#00d4ff" anchorX="center" font={CARD_FONT}>{link.url}</Text>
           </group>
         )
       })}
@@ -186,17 +178,26 @@ function CommunityContent() {
 function GameContent() {
   return (
     <group>
-      <Text position={[0, 1.6, 0.1]} fontSize={0.3} color="#00d4ff" anchorX="center">
+      <Text position={[0, 1.6, 0.1]} fontSize={0.3} color="#1793D1" anchorX="center" font={CARD_FONT}>
         {'< game />'}
       </Text>
-      <Text position={[0, 1.0, 0.1]} fontSize={0.45} color="#00d4ff" anchorX="center" font={`${import.meta.env.BASE_URL}fonts/JetBrainsMono-Regular.ttf`} outlineWidth={0.03} outlineColor="#1793D1">
+      <Text position={[0, 1.2, 0.1]} fontSize={0.22} color="#6b8aad" anchorX="center" font={CARD_FONT}>
+        Beat the Ghosts
+      </Text>
+      <Text position={[0, 0.65, 0.1]} fontSize={0.45} color="#00d4ff" anchorX="center" font={CARD_FONT} outlineWidth={0.03} outlineColor="#1793D1">
         PAC-MAN
       </Text>
-      <Text position={[0, 0.2, 0.1]} fontSize={0.14} color="#00d4ff" anchorX="center">
-        ʕ•̼͛͡•ʔ ─=≡Σᕕ(⨱﹏⨱)ᕗ
-        PRESS PLAY
-      </Text>
-      <Text position={[0, -0.8, 0.1]} fontSize={0.1} color="#6b8aad" anchorX="center">
+      {gameControls.map((item, i) => (
+        <group key={i} position={[0, 0.0 - i * 0.5, 0.1]}>
+          <Text position={[-2, 0, 0]} fontSize={item.size} color="#00d4ff" anchorX="left" font={CARD_FONT}>
+            {item.cmd}
+          </Text>
+          <Text position={[1.8, 0, 0]} fontSize={0.12} color="#6b8aad" anchorX="right" font={CARD_FONT}>
+            {item.desc}
+          </Text>
+        </group>
+      ))}
+      <Text position={[0, -1.25, 0.1]} fontSize={0.12} color="#1793D1" anchorX="center" font={CARD_FONT}>
         80,000+ dots to eat
       </Text>
     </group>
