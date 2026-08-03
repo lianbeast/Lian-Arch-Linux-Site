@@ -1,7 +1,0 @@
-{
-  "files": ["index.html"],
-  "commentSyntax": "html",
-  "insertBefore": "<script type=\"module\" src=\"/src/main.jsx\</script>",
-  "exclude": [],
-  "cspChecked": false
-}

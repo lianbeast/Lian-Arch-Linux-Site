@@ -1,4 +1,4 @@
-import { useRef, useMemo, useEffect, useState } from 'react'
+import { useRef, useMemo } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { Text, RoundedBox, Html } from '@react-three/drei'
 import * as THREE from 'three'
@@ -53,8 +53,6 @@ function PanelBackground({ width = 5, height = 4, active }) {
 }
 
 function PanelBorder({ width = 5, height = 4, active }) {
-  const [lineObj, setLineObj] = useState(null)
-
   const geom = useMemo(() => {
     const hw = width / 2 - 0.05
     const hh = height / 2 - 0.05
@@ -75,14 +73,15 @@ function PanelBorder({ width = 5, height = 4, active }) {
     return new THREE.BufferGeometry().setFromPoints(pts)
   }, [width, height])
 
-  useEffect(() => {
-    if (!geom) return
-    const obj = new THREE.Line(geom, new THREE.LineBasicMaterial({ color: active ? '#1793D1' : '#0e2a4a', transparent: true, opacity: active ? 0.9 : 0.4 }))
-    setLineObj(obj)
-    return () => { obj.geometry.dispose(); obj.material.dispose() }
-  }, [geom, active])
-
-  return lineObj ? <primitive object={lineObj} /> : null
+  return (
+    <line geometry={geom}>
+      <lineBasicMaterial
+        color={active ? '#1793D1' : '#0e2a4a'}
+        transparent
+        opacity={active ? 0.9 : 0.4}
+      />
+    </line>
+  )
 }
 
 function FeaturesContent({ active }) {

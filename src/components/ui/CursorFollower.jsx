@@ -53,7 +53,7 @@ function CursorFollower() {
       if (ring) {
         ring.style.transform = `translate(${pos.current.x}px, ${pos.current.y}px) translate(-50%, -50%)`
       }
-      trailEls.current?.forEach((el, i) => {
+      trailEls.forEach((el, i) => {
         if (el) {
           const t = trail.current[i]
           el.style.transform = `translate(${t.x}px, ${t.y}px) translate(-50%, -50%)`

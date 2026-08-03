@@ -48,6 +48,20 @@ const SECTION_LIGHTS = [
 
 const _tempColor = new THREE.Color()
 
+// Precompute dust particle positions per count (cached — avoids Math.random during render)
+const DUST_CACHE = new Map()
+function buildDust(count) {
+  if (DUST_CACHE.has(count)) return DUST_CACHE.get(count)
+  const arr = new Float32Array(count * 3)
+  for (let i = 0; i < count; i++) {
+    arr[i * 3] = (Math.random() - 0.5) * 40
+    arr[i * 3 + 1] = (Math.random() - 0.5) * 30
+    arr[i * 3 + 2] = (Math.random() - 0.5) * 40 - 10
+  }
+  DUST_CACHE.set(count, arr)
+  return arr
+}
+
 export default function Scene({ activeSection, qualityTier = 'high' }) {
   const { camera } = useThree()
   const _lookTarget = useMemo(() => new THREE.Vector3(), [])
@@ -58,15 +72,7 @@ export default function Scene({ activeSection, qualityTier = 'high' }) {
   const ambientRef = useRef(null)
   const pointLight1Ref = useRef(null)
 
-  const dustPositions = useMemo(() => {
-    const arr = new Float32Array(tier.dust * 3)
-    for (let i = 0; i < tier.dust; i++) {
-      arr[i * 3] = (Math.random() - 0.5) * 40
-      arr[i * 3 + 1] = (Math.random() - 0.5) * 30
-      arr[i * 3 + 2] = (Math.random() - 0.5) * 40 - 10
-    }
-    return arr
-  }, [tier.dust])
+  const dustPositions = buildDust(tier.dust)
 
   useFrame((_, delta) => {
     const targetCam = sectionCameras[activeSection]
@@ -117,7 +123,7 @@ export default function Scene({ activeSection, qualityTier = 'high' }) {
       </points>
       )}
 
-      <ArchLogo position={sectionPositions[0]} active={activeSection === 0} />
+      <ArchLogo position={sectionPositions[0]} />
 
       <FloatingPanel position={sectionPositions[1]} active={activeSection === 1} type="features" />
       <FloatingPanel position={sectionPositions[2]} active={activeSection === 2} type="install" />

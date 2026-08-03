@@ -1,27 +1,19 @@
-import { useRef, useMemo, useEffect, useState } from 'react'
+import { useRef, useMemo } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { Text } from '@react-three/drei'
 import * as THREE from 'three'
 
 const DISPLAY_FONT = '/fonts/UbuntuSansMono-Regular.ttf'
 
-export default function ArchLogo({ position, active }) {
+export default function ArchLogo({ position }) {
   const groupRef = useRef()
   const glowRef = useRef()
-  const [lineObj, setLineObj] = useState(null)
 
   const ringGeom = useMemo(() => {
     const curve = new THREE.EllipseCurve(0, 0, 2.2, 2.2, 0, Math.PI * 2, false, 0)
     const pts = curve.getPoints(100).map(p => new THREE.Vector3(p.x, p.y, 0))
     return new THREE.BufferGeometry().setFromPoints(pts)
   }, [])
-
-  useEffect(() => {
-    if (!ringGeom) return
-    const line = new THREE.Line(ringGeom, new THREE.LineBasicMaterial({ color: '#1793D1', transparent: true, opacity: 0.6 }))
-    setLineObj(line)
-    return () => { line.geometry.dispose(); line.material.dispose() }
-  }, [ringGeom])
 
   useFrame((state) => {
     if (!groupRef.current) return
@@ -43,7 +35,9 @@ export default function ArchLogo({ position, active }) {
         <meshBasicMaterial color={blue} transparent opacity={0.15} side={THREE.DoubleSide} depthWrite={false} />
       </mesh>
 
-      {lineObj && <primitive object={lineObj} position={[0, 0.3, 0]} />}
+      <line geometry={ringGeom} position={[0, 0.3, 0]}>
+        <lineBasicMaterial color="#1793D1" transparent opacity={0.6} />
+      </line>
 
       {/*
         ARCH LINUX — split across two lines for drama and visual balance.

@@ -1,10 +1,9 @@
-import { useMemo, useEffect, useState } from 'react'
+import { useRef, useMemo } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 
 export default function GridFloor() {
-  const [lineObj, setLineObj] = useState(null)
-  const [pulseObj, setPulseObj] = useState(null)
+  const pulseRef = useRef()
 
   const geom = useMemo(() => {
     const size = 100
@@ -28,44 +27,21 @@ export default function GridFloor() {
     return new THREE.BufferGeometry().setFromPoints(pts)
   }, [])
 
-  useEffect(() => {
-    if (!geom) return
-    const obj = new THREE.LineSegments(geom, new THREE.LineBasicMaterial({
-      color: '#1793D1',
-      transparent: true,
-      opacity: 0.06,
-      depthWrite: false,
-    }))
-    setLineObj(obj)
-    return () => { obj.geometry.dispose(); obj.material.dispose() }
-  }, [geom])
-
-  useEffect(() => {
-    if (!pulseGeom) return
-    const obj = new THREE.Line(pulseGeom, new THREE.LineBasicMaterial({
-      color: '#00d4ff',
-      transparent: true,
-      opacity: 0.4,
-      blending: THREE.AdditiveBlending,
-      depthWrite: false,
-    }))
-    setPulseObj(obj)
-    return () => { obj.geometry.dispose(); obj.material.dispose() }
-  }, [pulseGeom])
-
   useFrame((state) => {
-    if (pulseObj) {
-      const t = state.clock.elapsedTime
-      const z = ((t * 3) % 40) - 20
-      pulseObj.position.z = z
-      pulseObj.material.opacity = 0.15 + Math.sin(t * 4) * 0.1
-    }
+    if (!pulseRef.current) return
+    const t = state.clock.elapsedTime
+    pulseRef.current.position.z = ((t * 3) % 40) - 20
+    pulseRef.current.material.opacity = 0.15 + Math.sin(t * 4) * 0.1
   })
 
   return (
     <group position={[0, -5, -10]} rotation={[-Math.PI / 2, 0, 0]}>
-      {lineObj && <primitive object={lineObj} />}
-      {pulseObj && <primitive object={pulseObj} />}
+      <lineSegments geometry={geom}>
+        <lineBasicMaterial color="#1793D1" transparent opacity={0.06} depthWrite={false} />
+      </lineSegments>
+      <line ref={pulseRef} geometry={pulseGeom}>
+        <lineBasicMaterial color="#00d4ff" transparent opacity={0.4} blending={THREE.AdditiveBlending} depthWrite={false} />
+      </line>
     </group>
   )
 }

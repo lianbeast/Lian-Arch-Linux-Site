@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import './BootSequence.css'
 
 const BIOS_LINES = [
@@ -57,13 +57,14 @@ const ARCH_ASCII = [
 
 const WELCOME_TEXT = 'Welcome to Arch Linux'
 const BOOT_COMPLETE = '[  COMPLETE  ] System initialized. Loading interface...'
+const PREFERS_REDUCED_MOTION =
+  typeof window !== 'undefined' &&
+  window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 export default function BootSequence({ onComplete }) {
   const [phase, setPhase] = useState('cursor') // cursor -> bios -> kernel -> ascii -> welcome -> glitch -> done
   const [lines, setLines] = useState([])
   const [asciiLines, setAsciiLines] = useState([])
-  const [showWelcome, setShowWelcome] = useState(false)
-  const [glitching, setGlitching] = useState(false)
   const [cursorVisible, setCursorVisible] = useState(true)
   const [completeLine, setCompleteLine] = useState('')
   const containerRef = useRef(null)
@@ -84,6 +85,13 @@ export default function BootSequence({ onComplete }) {
     }
   }, [lines, asciiLines, completeLine])
 
+  // Reduced motion: skip the typing sequence, reveal the interface quickly
+  useEffect(() => {
+    if (!PREFERS_REDUCED_MOTION) return
+    const t = setTimeout(() => onComplete(), 400)
+    return () => clearTimeout(t)
+  }, [onComplete])
+
   // Phase 1: Cursor blink then start BIOS
   useEffect(() => {
     if (phase === 'cursor') {
@@ -94,9 +102,11 @@ export default function BootSequence({ onComplete }) {
 
   // Phase 2: BIOS text typing
   useEffect(() => {
+    if (PREFERS_REDUCED_MOTION) return
     if (phase !== 'bios') return
     lineIndex.current = 0
     charIndex.current = 0
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional reset when entering a new boot phase
     setLines([])
 
     const typeLine = () => {
@@ -125,8 +135,10 @@ export default function BootSequence({ onComplete }) {
 
   // Phase 3: Kernel messages (fast scroll)
   useEffect(() => {
+    if (PREFERS_REDUCED_MOTION) return
     if (phase !== 'kernel') return
     lineIndex.current = 0
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional reset when entering a new boot phase
     setLines([...BIOS_LINES])
 
     const addLine = () => {
@@ -166,8 +178,10 @@ export default function BootSequence({ onComplete }) {
 
   // Phase 4: ASCII art line-by-line
   useEffect(() => {
+    if (PREFERS_REDUCED_MOTION) return
     if (phase !== 'ascii') return
     lineIndex.current = 0
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional reset when entering a new boot phase
     setAsciiLines([])
 
     const addAsciiLine = () => {
@@ -183,18 +197,18 @@ export default function BootSequence({ onComplete }) {
     return () => clearTimeout(timerRef.current)
   }, [phase])
 
-  // Phase 5: Welcome flash
+  // Phase 5: Welcome flash (derived from phase, no extra state)
   useEffect(() => {
+    if (PREFERS_REDUCED_MOTION) return
     if (phase !== 'welcome') return
-    setShowWelcome(true)
     const t = setTimeout(() => setPhase('glitch'), 1000)
     return () => clearTimeout(t)
   }, [phase])
 
   // Phase 6: Glitch + complete message
   useEffect(() => {
+    if (PREFERS_REDUCED_MOTION) return
     if (phase !== 'glitch') return
-    setGlitching(true)
     let ci = 0
     const typeComplete = () => {
       if (ci <= BOOT_COMPLETE.length) {
@@ -209,6 +223,8 @@ export default function BootSequence({ onComplete }) {
     return () => { clearTimeout(t); clearTimeout(timerRef.current) }
   }, [phase, onComplete])
 
+  const showWelcome = phase === 'welcome' || phase === 'glitch'
+  const glitching = phase === 'glitch'
   const totalLines = [...lines, ...asciiLines].filter(l => l !== undefined && l !== null)
   if (completeLine) totalLines.push(completeLine)
 

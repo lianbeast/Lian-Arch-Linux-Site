@@ -12,6 +12,11 @@ dist
 dist-ssr
 *.local
 
+# Agent tooling (not part of the app)
+.claude/
+.superpowers/
+.impeccable/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

@@ -1,3 +1,10 @@
+@font-face {
+  font-family: 'Orbitron';
+  src: url('/fonts/Orbitron.ttf') format('truetype');
+  font-display: swap;
+  font-weight: 400 900;
+}
+
 :root {
   --bg-deep: #050a12;
   /* Semantic z-index scale */
@@ -216,6 +223,22 @@ a:hover {
     rgba(0, 0, 0, 0.03) 3px,
     rgba(0, 0, 0, 0.03) 4px
   );
+}
+
+/* Game lazy-load fallback */
+.game-loading {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-game);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.92);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  animation: blink 1.5s ease-in-out infinite;
 }
 
 /* Reduced motion support */

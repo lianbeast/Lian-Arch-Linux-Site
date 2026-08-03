@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useMemo } from 'react'
+import React, { useState, useCallback, useEffect, useMemo, lazy, Suspense } from 'react'
 import { Canvas } from '@react-three/fiber'
 import Scene from './components/three/Scene'
 import Overlay from './components/ui/Overlay'
@@ -6,12 +6,12 @@ import Navbar from './components/ui/Navbar'
 import SectionIndicator from './components/ui/SectionIndicator'
 import BootSequence from './components/ui/BootSequence'
 import CursorFollower from './components/ui/CursorFollower'
-import PacmanGame from './components/games/PacmanGame'
+const PacmanGame = lazy(() => import('./components/games/PacmanGame'))
 import {
   resumeAudio, initTheme,
   playNavigateUp, playNavigateDown, playSectionEnter,
-  playLoad, playClick, playHover, playBootBeep,
-  startDrone, setDroneProfile, stopDrone,
+  playLoad, playBootBeep,
+  startDrone, setDroneProfile,
 } from './utils/sounds'
 import { SECTIONS as sections } from './utils/constants'
 
@@ -67,7 +67,7 @@ function hasWebGL() {
     const c = document.createElement('canvas')
     const gl = c.getContext('webgl') || c.getContext('experimental-webgl')
     return !!gl
-  } catch (_) { return false }
+  } catch { return false }
 }
 
 // Adaptive DPR: cap at 1.5× on high-DPI desktop, 1.0× on mobile/low-end
@@ -91,6 +91,14 @@ export default function App() {
   const qualityTier = useMemo(() => getQualityTier(), [])
 
   useEffect(() => { initTheme() }, [])
+
+  // Per-section document title
+  useEffect(() => {
+    const name = sections[activeSection]
+    document.title = name === 'home'
+      ? 'Arch Linux — Interactive 3D Experience'
+      : `${name[0].toUpperCase()}${name.slice(1)} — Arch Linux`
+  }, [activeSection])
 
   // Listen for URL hash changes → section navigation
   useEffect(() => {
@@ -136,16 +144,10 @@ export default function App() {
     startDrone('home')
   }, [])
 
-  const handleLoaded = useCallback(() => {
-    setLoaded(true)
-    playLoad()
-  }, [])
-
-  const loadedTimer = useRef(null)
   useEffect(() => {
-    if (booted && !loaded && !loadedTimer.current) {
-      loadedTimer.current = setTimeout(() => { setLoaded(true); playLoad() }, 1500)
-    }
+    if (!booted || loaded) return
+    const t = setTimeout(() => { setLoaded(true); playLoad() }, 1500)
+    return () => clearTimeout(t)
   }, [booted, loaded])
 
   // Unlock audio on first interaction
@@ -234,7 +236,7 @@ export default function App() {
         </div>
         <Navbar activeSection={activeSection} onNavigate={navigateTo} />
         <Overlay activeSection={activeSection} onLaunchGame={handleLaunchGame} />
-        <SectionIndicator sections={sections} activeSection={activeSection} onNavigate={navigateTo} />
+        <SectionIndicator activeSection={activeSection} onNavigate={navigateTo} />
         </>
       )}
       {booted && webglAvailable && !loaded && (
@@ -273,8 +275,12 @@ export default function App() {
           <CursorFollower />
           <Navbar activeSection={activeSection} onNavigate={navigateTo} />
           <Overlay activeSection={activeSection} onLaunchGame={handleLaunchGame} />
-          <SectionIndicator sections={sections} activeSection={activeSection} onNavigate={navigateTo} />
-          {gameMode && <PacmanGame onClose={handleCloseGame} />}
+          <SectionIndicator activeSection={activeSection} onNavigate={navigateTo} />
+          {gameMode && (
+            <Suspense fallback={<div className="game-loading">LOADING GAME…</div>}>
+              <PacmanGame onClose={handleCloseGame} />
+            </Suspense>
+          )}
         </>
       )}
     </div>

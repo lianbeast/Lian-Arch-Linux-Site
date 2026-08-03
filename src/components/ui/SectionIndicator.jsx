@@ -3,7 +3,7 @@ import './SectionIndicator.css'
 
 const sectionLabels = ['Home', 'Features', 'Install', 'Pacman', 'Community', 'Game']
 
-export default function SectionIndicator({ sections, activeSection, onNavigate }) {
+export default function SectionIndicator({ activeSection, onNavigate }) {
   return (
     <div className="section-indicator">
       {sectionLabels.map((label, i) => (

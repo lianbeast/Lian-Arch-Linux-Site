@@ -97,7 +97,7 @@ export function isMuted() {
 
 export function toggleMute() {
   muted = !muted
-  try { localStorage.setItem('arch-sound-muted', muted ? '1' : '0') } catch (e) {}
+  try { localStorage.setItem('arch-sound-muted', muted ? '1' : '0') } catch { /* ignore */ }
   if (muted) stopDrone()
   else startDrone(currentDroneName)
   return muted
@@ -105,7 +105,7 @@ export function toggleMute() {
 
 export function setMuted(val) {
   muted = val
-  try { localStorage.setItem('arch-sound-muted', muted ? '1' : '0') } catch (e) {}
+  try { localStorage.setItem('arch-sound-muted', muted ? '1' : '0') } catch { /* ignore */ }
 }
 
 export function getTheme() {
@@ -114,7 +114,7 @@ export function getTheme() {
 
 export function setTheme(t) {
   currentTheme = t
-  try { localStorage.setItem('arch-sound-theme', t) } catch (e) {}
+  try { localStorage.setItem('arch-sound-theme', t) } catch { /* ignore */ }
 }
 
 export function cycleTheme() {
@@ -127,11 +127,11 @@ export function initTheme() {
   try {
     const saved = localStorage.getItem('arch-sound-theme')
     if (saved && THEMES.includes(saved)) currentTheme = saved
-  } catch (e) {}
+  } catch { /* ignore */ }
   try {
     const mutedSaved = localStorage.getItem('arch-sound-muted')
     if (mutedSaved === '1') muted = true
-  } catch (e) {}
+  } catch { /* ignore */ }
 }
 
 // Guard used internally by all play* exports
@@ -157,7 +157,7 @@ function playTone(freq, duration, type = 'sine', volume = 0.15) {
     gain.connect(c.destination)
     osc.start(c.currentTime)
     osc.stop(c.currentTime + duration)
-  } catch (e) {}
+  } catch { /* ignore */ }
 }
 
 // Noise burst for click/mechanical sounds
@@ -181,7 +181,7 @@ function playNoise(duration, volume = 0.08) {
     filter.connect(gain)
     gain.connect(c.destination)
     src.start(c.currentTime)
-  } catch (e) {}
+  } catch { /* ignore */ }
 }
 
 // Sweep (for boot beep)
@@ -200,7 +200,7 @@ function playSweep(startFreq, endFreq, duration, type = 'sine', volume = 0.15) {
     gain.connect(c.destination)
     osc.start(c.currentTime)
     osc.stop(c.currentTime + duration)
-  } catch (e) {}
+  } catch { /* ignore */ }
 }
 
 // --- Theme: Hacker ---

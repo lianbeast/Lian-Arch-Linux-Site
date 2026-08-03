@@ -1,49 +1,60 @@
-import { useRef, useMemo, useEffect } from 'react'
+import { useRef, useEffect } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
+
+// Precompute star buffers per count (cached — avoids Math.random during render)
+const STAR_CACHE = new Map()
+
+function buildStars(count) {
+  const cached = STAR_CACHE.get(count)
+  if (cached) return cached
+
+  const positions = new Float32Array(count * 3)
+  const colors = new Float32Array(count * 3)
+  const sizes = new Float32Array(count)
+  for (let i = 0; i < count; i++) {
+    const i3 = i * 3
+    const radius = 30 + Math.random() * 70
+    const theta = Math.random() * Math.PI * 2
+    const phi = Math.acos(2 * Math.random() - 1)
+    positions[i3] = radius * Math.sin(phi) * Math.cos(theta)
+    positions[i3 + 1] = radius * Math.sin(phi) * Math.sin(theta)
+    positions[i3 + 2] = radius * Math.cos(phi)
+    const brightness = 0.3 + Math.random() * 0.7
+    const tint = Math.random()
+    if (tint < 0.3) {
+      colors[i3] = 0.09 * brightness; colors[i3 + 1] = 0.58 * brightness; colors[i3 + 2] = 0.82 * brightness
+    } else if (tint < 0.5) {
+      colors[i3] = 0; colors[i3 + 1] = 0.83 * brightness; colors[i3 + 2] = brightness
+    } else {
+      colors[i3] = brightness; colors[i3 + 1] = brightness; colors[i3 + 2] = brightness
+    }
+    sizes[i] = 0.3 + Math.random() * 1.2
+  }
+
+  const stars = { positions, colors, sizes }
+  STAR_CACHE.set(count, stars)
+  return stars
+}
+
+const SHOOTING_STARS = Array.from({ length: 3 }, () => ({
+  active: false,
+  timer: Math.random() * 5,
+  points: [new THREE.Vector3(), new THREE.Vector3()],
+}))
 
 export default function Starfield({ count = 3000 }) {
   const meshRef = useRef()
   const groupRef = useRef()
   const shootingObjs = useRef([])
 
-  const { positions, colors, sizes } = useMemo(() => {
-    const positions = new Float32Array(count * 3)
-    const colors = new Float32Array(count * 3)
-    const sizes = new Float32Array(count)
-    for (let i = 0; i < count; i++) {
-      const i3 = i * 3
-      const radius = 30 + Math.random() * 70
-      const theta = Math.random() * Math.PI * 2
-      const phi = Math.acos(2 * Math.random() - 1)
-      positions[i3] = radius * Math.sin(phi) * Math.cos(theta)
-      positions[i3 + 1] = radius * Math.sin(phi) * Math.sin(theta)
-      positions[i3 + 2] = radius * Math.cos(phi)
-      const brightness = 0.3 + Math.random() * 0.7
-      const tint = Math.random()
-      if (tint < 0.3) {
-        colors[i3] = 0.09 * brightness; colors[i3 + 1] = 0.58 * brightness; colors[i3 + 2] = 0.82 * brightness
-      } else if (tint < 0.5) {
-        colors[i3] = 0; colors[i3 + 1] = 0.83 * brightness; colors[i3 + 2] = brightness
-      } else {
-        colors[i3] = brightness; colors[i3 + 1] = brightness; colors[i3 + 2] = brightness
-      }
-      sizes[i] = 0.3 + Math.random() * 1.2
-    }
-    return { positions, colors, sizes }
-  }, [count])
-
-  const shootingStars = useMemo(() =>
-    Array.from({ length: 3 }, () => ({
-      active: false,
-      timer: Math.random() * 5,
-      points: [new THREE.Vector3(), new THREE.Vector3()],
-    })), [])
+  const { positions, colors, sizes } = buildStars(count)
 
   // Create shooting star line objects once
   useEffect(() => {
-    if (!groupRef.current) return
-    const objs = shootingStars.map(() => {
+    const group = groupRef.current
+    if (!group) return
+    const objs = SHOOTING_STARS.map(() => {
       const geom = new THREE.BufferGeometry().setFromPoints([
         new THREE.Vector3(0, 0, 0), new THREE.Vector3(1, 0, 0)
       ])
@@ -53,13 +64,13 @@ export default function Starfield({ count = 3000 }) {
       })
       return new THREE.Line(geom, mat)
     })
-    objs.forEach(o => groupRef.current.add(o))
+    objs.forEach(o => group.add(o))
     shootingObjs.current = objs
     return () => {
       objs.forEach(o => {
         o.geometry.dispose()
         o.material.dispose()
-        groupRef.current?.remove(o)
+        group.remove(o)
       })
     }
   }, [])
@@ -70,7 +81,7 @@ export default function Starfield({ count = 3000 }) {
       meshRef.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.003) * 0.02
     }
 
-    shootingStars.forEach((star, i) => {
+    SHOOTING_STARS.forEach((star, i) => {
       const obj = shootingObjs.current[i]
       star.timer -= delta
       if (star.timer <= 0 && !star.active) {

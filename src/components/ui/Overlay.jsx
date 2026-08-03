@@ -41,6 +41,8 @@ export default function Overlay({ activeSection, onLaunchGame }) {
 
   return (
     <div className="overlay-3d">
+      {/* Persistent visually-hidden live region: announces section changes reliably */}
+      <span className="sr-only" role="status">{`${SECTION_NAMES[activeSection]} section`}</span>
       <div className="overlay-content" key={activeSection}>
         <span className="overlay-tag">{`[${SECTION_NAMES[activeSection]}]`}</span>
         <h1 className="overlay-title">{content.title}</h1>
