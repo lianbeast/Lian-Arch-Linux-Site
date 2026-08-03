@@ -14,7 +14,9 @@ A scroll-narrative, single-page experience for Arch Linux — not a brochure, bu
 
 **▶ [Open the live site](https://lianbeast.github.io/Lian-Arch-Linux-Site/)** — deployed automatically to GitHub Pages on every push to `main`.
 
-<img src="./screenshots/site.png" alt="Arch Linux interactive 3D experience — the live site after boot" width="820" />
+<img src="./screenshots/site-demo.gif" alt="Animated preview — the Arch Linux interactive 3D experience: boot into the site, then a scroll tour through all six sections" width="700" />
+
+<sub>🎞 Prefer video? [Download the full tour (MP4, ~20s)](./screenshots/site-demo.mp4)</sub>
 
 </div>
 
@@ -27,6 +29,7 @@ A scroll-narrative, single-page experience for Arch Linux — not a brochure, bu
 - **Playable PAC-MAN** — arrow-key gameplay, ghost AI (Blinky / Pinky / Inky / Clyde), power pellets, frightened mode, and a persistent high score
 - **Procedural audio** — every sound is synthesized live with the Web Audio API: an ambient drone that re-tunes per section, UI chirps, and three sound themes (**hacker / retro / minimal**) with a mute toggle (persisted in `localStorage`)
 - **Custom cursor follower** — a trailing dot + ring that echoes the scene's neon palette
+- **Self-hosted fonts** — Michroma (display), Rajdhani (UI), and JetBrains Mono (terminal) bundled locally in `public/fonts/` — zero CDN dependency, zero tofu boxes
 - **Adaptive performance** — quality tiers (`low / medium / high`) picked from your hardware, adaptive device-pixel-ratio caps, and rendering paused while the tab is hidden
 
 ## 🚀 Quick Start

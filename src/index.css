@@ -26,9 +26,9 @@
   --text-heading: #e8f0f8;
   --border: rgba(23, 147, 209, 0.12);
   --border-active: rgba(23, 147, 209, 0.35);
-  --font-body: 'Chakra Petch', 'Ubuntu Sans Mono', sans-serif;
-  --font-mono: 'Ubuntu Sans Mono', monospace;
-  --font-display: 'Chakra Petch', sans-serif;
+  --font-body: 'Rajdhani', 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-display: 'Michroma', 'Rajdhani', sans-serif;
 
   /* Cursor follower theme (used by CursorFollower + a11y) */
   --cursor-dot: #00d4ff;

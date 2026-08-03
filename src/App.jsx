@@ -45,7 +45,7 @@ class ErrorBoundary extends React.Component {
         <div style={{
           position: 'fixed', inset: 0, background: '#000000',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          color: '#00ff00', fontFamily: 'monospace', padding: 20, textAlign: 'center'
+          color: '#00ff00', fontFamily: "'JetBrains Mono', monospace", padding: 20, textAlign: 'center'
         }}>
           <div>
             <p style={{ fontSize: 24, marginBottom: 16 }}>MATRIX ERROR</p>
@@ -229,7 +229,7 @@ export default function App() {
         <div style={{
           position: 'fixed', inset: 0, background: '#050a12', zIndex: 1,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontFamily: "'Ubuntu Sans Mono', monospace", padding: 20,
+          fontFamily: "'JetBrains Mono', monospace", padding: 20,
         }}>
           <div style={{ maxWidth: 500, textAlign: 'center' }}>
             <p style={{ color: '#1793D1', fontSize: 14, marginBottom: 16 }}>

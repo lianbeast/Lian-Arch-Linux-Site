@@ -5,7 +5,7 @@
   border: 1px solid rgba(23, 147, 209, 0.2);
   border-radius: 4px;
   overflow: hidden;
-  font-family: 'Ubuntu Sans Mono', monospace;
+  font-family: 'JetBrains Mono', monospace;
 }
 
 .terminal-fetch-header {

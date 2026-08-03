@@ -7,7 +7,7 @@
   align-items: stretch;
   justify-content: center;
   overflow: hidden;
-  font-family: 'Ubuntu Sans Mono', 'Courier New', monospace;
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
 }
 
 /* CRT scanlines */
@@ -119,9 +119,9 @@
 }
 
 .welcome-flash h1 {
-  font-family: 'Chakra Petch', sans-serif;
+  font-family: 'Michroma', 'Rajdhani', sans-serif;
   font-size: 3.5rem;
-  font-weight: 700;
+  font-weight: 400;
   color: #00d4ff;
   letter-spacing: 0.28em;
   text-transform: uppercase;

@@ -15,7 +15,7 @@
 }
 
 .overlay-tag {
-  font-family: 'Ubuntu Sans Mono', monospace;
+  font-family: 'JetBrains Mono', monospace;
   font-size: 0.7rem;
   color: #1793D1;
   letter-spacing: 0.2em;
@@ -26,9 +26,9 @@
 }
 
 .overlay-title {
-  font-family: 'Chakra Petch', sans-serif;
+  font-family: 'Michroma', 'Rajdhani', sans-serif;
   font-size: 3rem;
-  font-weight: 600;
+  font-weight: 400;
   color: #e8f0f8;
   letter-spacing: 0.02em;
   line-height: 1.05;
@@ -40,7 +40,7 @@
 }
 
 .overlay-subtitle {
-  font-family: 'Chakra Petch', sans-serif;
+  font-family: 'Rajdhani', sans-serif;
   font-size: 0.95rem;
   font-weight: 500;
   color: #00d4ff;
@@ -51,7 +51,7 @@
 }
 
 .overlay-desc {
-  font-family: 'Chakra Petch', sans-serif;
+  font-family: 'Rajdhani', sans-serif;
   font-size: 0.9rem;
   font-weight: 400;
   color: #6b8aad;
@@ -67,7 +67,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-family: 'Ubuntu Sans Mono', monospace;
+  font-family: 'JetBrains Mono', monospace;
   font-size: 0.65rem;
   color: #6b8aad;
   opacity: 0.5;
@@ -85,9 +85,9 @@
   background: rgba(0, 212, 255, 0.1);
   border: 1px solid rgba(0, 212, 255, 0.35);
   color: #00d4ff;
-  font-family: 'Chakra Petch', 'Orbitron', sans-serif;
+  font-family: 'Michroma', 'Rajdhani', sans-serif;
   font-size: 0.85rem;
-  font-weight: 600;
+  font-weight: 400;
   padding: 0.6rem 1.4rem;
   border-radius: 4px;
   cursor: pointer;

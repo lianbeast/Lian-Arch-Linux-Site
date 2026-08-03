@@ -17,7 +17,7 @@ function buildGlyphTexture() {
   ctx.fillStyle = '#000'
   ctx.fillRect(0, 0, canvas.width, canvas.height)
   ctx.fillStyle = '#fff'
-  ctx.font = 'bold 46px monospace'
+  ctx.font = 'bold 46px "JetBrains Mono", "Noto Sans Mono", "Noto Sans JP", monospace'
   ctx.textAlign = 'center'
   ctx.textBaseline = 'middle'
   CHARS.split('').forEach((c, i) => ctx.fillText(c, i * 32 + 16, 32))

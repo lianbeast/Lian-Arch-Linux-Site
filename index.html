@@ -7,16 +7,44 @@
     <meta name="description" content="Arch Linux — A lightweight, flexible distribution for the competent. Interactive 3D experience showcasing Arch Linux features, installation, pacman, and community." />
     <meta name="theme-color" content="#050a12" />
     <title>Arch Linux — Interactive 3D Experience</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=Ubuntu+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+
     <style>
-      /* Local display font (served from public/fonts, relative so it survives subpath hosting) */
+      /* Self-hosted fonts — served from public/fonts, no CDN dependency, no tofu boxes */
       @font-face {
-        font-family: 'Orbitron';
-        src: url('./fonts/Orbitron.ttf') format('truetype');
+        font-family: 'Michroma';
+        src: url('./fonts/Michroma-Regular.woff2') format('woff2');
         font-display: swap;
-        font-weight: 400 900;
+        font-weight: 400;
+      }
+      @font-face {
+        font-family: 'Rajdhani';
+        src: url('./fonts/Rajdhani-Regular.woff2') format('woff2');
+        font-display: swap;
+        font-weight: 400;
+      }
+      @font-face {
+        font-family: 'Rajdhani';
+        src: url('./fonts/Rajdhani-Medium.woff2') format('woff2');
+        font-display: swap;
+        font-weight: 500;
+      }
+      @font-face {
+        font-family: 'Rajdhani';
+        src: url('./fonts/Rajdhani-SemiBold.woff2') format('woff2');
+        font-display: swap;
+        font-weight: 600;
+      }
+      @font-face {
+        font-family: 'Rajdhani';
+        src: url('./fonts/Rajdhani-Bold.woff2') format('woff2');
+        font-display: swap;
+        font-weight: 700;
+      }
+      @font-face {
+        font-family: 'JetBrains Mono';
+        src: url('./fonts/JetBrainsMono-Variable.woff2') format('woff2');
+        font-display: swap;
+        font-weight: 100 800;
       }
       /* Visually-hidden but screen-reader accessible */
       .sr-only {
@@ -39,7 +67,7 @@
         color: #000;
         padding: 0.6rem 1rem;
         border-radius: 6px;
-        font: 700 0.95rem/1 'Chakra Petch', system-ui, sans-serif;
+        font: 700 0.95rem/1 'Rajdhani', system-ui, sans-serif;
         text-decoration: none;
         z-index: var(--z-skip-link, 9000);
         box-shadow: 0 0 20px rgba(0, 212, 255, 0.45);
