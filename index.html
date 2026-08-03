@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="%BASE_URL%favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Arch Linux — A lightweight, flexible distribution for the competent. Interactive 3D experience showcasing Arch Linux features, installation, pacman, and community." />
     <meta name="theme-color" content="#050a12" />
@@ -11,6 +11,13 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=Ubuntu+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
+      /* Local display font (served from public/fonts, relative so it survives subpath hosting) */
+      @font-face {
+        font-family: 'Orbitron';
+        src: url('./fonts/Orbitron.ttf') format('truetype');
+        font-display: swap;
+        font-weight: 400 900;
+      }
       /* Visually-hidden but screen-reader accessible */
       .sr-only {
         position: absolute;

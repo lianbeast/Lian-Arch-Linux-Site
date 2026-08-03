@@ -1,10 +1,3 @@
-@font-face {
-  font-family: 'Orbitron';
-  src: url('/fonts/Orbitron.ttf') format('truetype');
-  font-display: swap;
-  font-weight: 400 900;
-}
-
 :root {
   --bg-deep: #050a12;
   /* Semantic z-index scale */
