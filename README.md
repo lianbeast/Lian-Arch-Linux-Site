@@ -26,6 +26,7 @@ A scroll-narrative, single-page experience for Arch Linux — not a brochure, bu
 
 - **Boot sequence** — BIOS → kernel log → ASCII art → welcome flash → glitch, with a **Skip** button and full `prefers-reduced-motion` support
 - **3D scroll narrative** — six scenes (`home`, `features`, `install`, `pacman`, `community`, `game`) with camera choreography, starfield + shooting stars, character-driven matrix rain, glowing orbs, data streams, and a pulse grid floor
+- **Responsive mobile nav** — hamburger menu at ≤480px with staggered link cascade, reversed exit stagger, synced glow breathing, scanline CRT overlay with drift animation, and a tactile scale bounce on morph-to-X
 - **Playable PAC-MAN** — arrow-key gameplay, ghost AI (Blinky / Pinky / Inky / Clyde), power pellets, frightened mode, and a persistent high score
 - **Procedural audio** — every sound is synthesized live with the Web Audio API: an ambient drone that re-tunes per section, UI chirps, and three sound themes (**hacker / retro / minimal**) with a mute toggle (persisted in `localStorage`)
 - **Custom cursor follower** — a trailing dot + ring that echoes the scene's neon palette
