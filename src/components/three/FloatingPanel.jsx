@@ -20,13 +20,13 @@ const featuresData = [
 ]
 
 const installSteps = [
-  '$ fdisk /dev/sda',
-  '$ mkfs.ext4 /dev/sda2',
-  '$ pacstrap /mnt base linux',
-  '$ genfstab -U /mnt',
-  '$ arch-chroot /mnt',
-  '$ bootctl install',
-  '$ reboot',
+  { num: 1, cmd: 'fdisk /dev/sda', desc: 'partition disk' },
+  { num: 2, cmd: 'mkfs.ext4 /dev/sda2', desc: 'format root' },
+  { num: 3, cmd: 'pacstrap /mnt base linux', desc: 'install base' },
+  { num: 4, cmd: 'genfstab -U /mnt', desc: 'write fstab' },
+  { num: 5, cmd: 'arch-chroot /mnt', desc: 'enter system' },
+  { num: 6, cmd: 'bootctl install', desc: 'install bootloader' },
+  { num: 7, cmd: 'reboot', desc: 'boot into Arch' },
 ]
 
 const pacmanCmds = [
@@ -34,21 +34,26 @@ const pacmanCmds = [
   { cmd: 'pacman -Syu', desc: 'Upgrade' },
   { cmd: 'pacman -R pkg', desc: 'Remove' },
   { cmd: 'pacman -Ss key', desc: 'Search' },
+  { cmd: 'pacman -Qi pkg', desc: 'Inspect' },
+  { cmd: 'pacman -Qqe', desc: 'Export list' },
   { cmd: 'yay -S aur-pkg', desc: 'AUR install' },
 ]
 
 const communityLinks = [
   { title: 'Arch Wiki', url: 'wiki.archlinux.org' },
   { title: 'Forum', url: 'bbs.archlinux.org' },
+  { title: 'Reddit', url: 'r/archlinux' },
+  { title: 'Discord', url: 'discord.gg/archlinux' },
   { title: 'IRC #archlinux', url: 'libera.chat' },
   { title: 'GitLab', url: 'gitlab.archlinux.org' },
-  { title: 'Reddit', url: 'r/archlinux' },
   { title: 'Mastodon', url: '@archlinux' },
+  { title: 'YouTube', url: 'youtube.com/@ArchLinux' },
 ]
 
 const gameControls = [
   { cmd: '\u2190 \u2191 \u2192 \u2193', desc: 'move', size: 0.2 },
   { cmd: 'ESC', desc: 'quit', size: 0.14 },
+  { cmd: 'ENTER', desc: 'restart', size: 0.14 },
 ]
 
 function PanelBackground({ width = 5, height = 4, active }) {
@@ -135,16 +140,22 @@ function InstallContent() {
       <Text position={[0, 1.2, 0.1]} fontSize={0.22} color="#6b8aad" anchorX="center" font={CARD_FONT}>
         Installation Steps
       </Text>
-      {installSteps.map((cmd, i) => (
-        <group key={i} position={[0, 0.65 - i * 0.25, 0.1]}>
-          <Text position={[-2, 0, 0]} fontSize={0.13} color="#1793D1" anchorX="left" font={CARD_FONT}>
-            {`${i + 1}.`}
+      {installSteps.map((step, i) => (
+        <group key={i} position={[0, 0.72 - i * 0.26, 0.1]}>
+          <Text position={[-2.15, 0, 0]} fontSize={0.13} color="#1793D1" anchorX="left" font={CARD_FONT}>
+            {`${step.num}.`}
           </Text>
-          <Text position={[-1.6, 0, 0]} fontSize={0.12} color="#00d4ff" anchorX="left" font={CARD_FONT}>
-            {cmd}
+          <Text position={[-1.7, 0, 0]} fontSize={0.12} color="#00d4ff" anchorX="left" font={CARD_FONT}>
+            {`$ ${step.cmd}`}
+          </Text>
+          <Text position={[1.8, 0, 0]} fontSize={0.11} color="#6b8aad" anchorX="right" font={CARD_FONT}>
+            {step.desc}
           </Text>
         </group>
       ))}
+      <Text position={[0, -1.55, 0.1]} fontSize={0.12} color="#1793D1" anchorX="center" font={CARD_FONT}>
+        You build it. You own it.
+      </Text>
     </group>
   )
 }
@@ -159,7 +170,7 @@ function PacmanContent() {
         Package Management
       </Text>
       {pacmanCmds.map((item, i) => (
-        <group key={i} position={[0, 0.6 - i * 0.35, 0.1]}>
+        <group key={i} position={[0, 0.65 - i * 0.32, 0.1]}>
           <Text position={[-2, 0, 0]} fontSize={0.14} color="#00d4ff" anchorX="left" font={CARD_FONT}>
             $ {item.cmd}
           </Text>
@@ -168,7 +179,7 @@ function PacmanContent() {
           </Text>
         </group>
       ))}
-      <Text position={[0, -1.3, 0.1]} fontSize={0.12} color="#1793D1" anchorX="center" font={CARD_FONT}>
+      <Text position={[0, -1.6, 0.1]} fontSize={0.12} color="#1793D1" anchorX="center" font={CARD_FONT}>
         AUR: 80,000+ community packages
       </Text>
     </group>
@@ -188,7 +199,7 @@ function CommunityContent() {
         const row = Math.floor(i / 2)
         const col = i % 2
         return (
-          <group key={i} position={[col === 0 ? -1.2 : 1.2, 0.5 - row * 0.65, 0.1]}>
+          <group key={i} position={[col === 0 ? -1.2 : 1.2, 0.6 - row * 0.7, 0.1]}>
             <Text position={[0, 0.08, 0]} fontSize={0.16} color="#e8f0f8" anchorX="center" font={CARD_FONT}>{link.title}</Text>
             <Text position={[0, -0.12, 0]} fontSize={0.1} color="#00d4ff" anchorX="center" font={CARD_FONT}>{link.url}</Text>
           </group>
@@ -215,12 +226,12 @@ function GameContent() {
           <Text position={[-2, 0, 0]} fontSize={item.size} color="#00d4ff" anchorX="left" font={CARD_FONT}>
             {item.cmd}
           </Text>
-          <Text position={[1.8, 0, 0]} fontSize={0.12} color="#6b8aad" anchorX="right" font={CARD_FONT}>
+          <Text position={[1.8, 0, 0]} fontSize={0.11} color="#6b8aad" anchorX="right" font={CARD_FONT}>
             {item.desc}
           </Text>
         </group>
       ))}
-      <Text position={[0, -1.25, 0.1]} fontSize={0.12} color="#1793D1" anchorX="center" font={CARD_FONT}>
+      <Text position={[0, -1.45, 0.1]} fontSize={0.12} color="#1793D1" anchorX="center" font={CARD_FONT}>
         80,000+ dots to eat
       </Text>
     </group>
