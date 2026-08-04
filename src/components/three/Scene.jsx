@@ -28,6 +28,11 @@ const sectionCameras = [
   new THREE.Vector3(0, 0, 5),
 ]
 
+// Cameras sit at different distances from their panels (features/install at 6, the rest at 7), so
+// the 5×4 cards would project at different on-screen sizes. Scale each card by distance/6 to unify
+// projection at the nearest camera's size — same world fonts now render at the same pixel size.
+const CARD_PROJ = sectionCameras.map((cam, i) => cam.distanceTo(sectionPositions[i]) / 6)
+
 const _prefersReduced = typeof window !== 'undefined' &&
   window.matchMedia('(prefers-reduced-motion: reduce)').matches
 const BASE_DUST = _prefersReduced ? 50 : 200
@@ -125,11 +130,11 @@ export default function Scene({ activeSection, qualityTier = 'high' }) {
 
       <ArchLogo position={sectionPositions[0]} />
 
-      <FloatingPanel position={sectionPositions[1]} active={activeSection === 1} type="features" />
-      <FloatingPanel position={sectionPositions[2]} active={activeSection === 2} type="install" />
-      <FloatingPanel position={sectionPositions[3]} active={activeSection === 3} type="pacman" />
-      <FloatingPanel position={sectionPositions[4]} active={activeSection === 4} type="community" />
-      <FloatingPanel position={sectionPositions[5]} active={activeSection === 5} type="game" />
+      <FloatingPanel position={sectionPositions[1]} active={activeSection === 1} type="features" scale={CARD_PROJ[1]} />
+      <FloatingPanel position={sectionPositions[2]} active={activeSection === 2} type="install" scale={CARD_PROJ[2]} />
+      <FloatingPanel position={sectionPositions[3]} active={activeSection === 3} type="pacman" scale={CARD_PROJ[3]} />
+      <FloatingPanel position={sectionPositions[4]} active={activeSection === 4} type="community" scale={CARD_PROJ[4]} />
+      <FloatingPanel position={sectionPositions[5]} active={activeSection === 5} type="game" scale={CARD_PROJ[5]} />
     </>
   )
 

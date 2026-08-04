@@ -8,6 +8,9 @@ import TerminalFetch from '../ui/TerminalFetch'
 // Glyphs below are verified against JetBrains Mono's cmap — no tofu.
 const CARD_FONT = `${import.meta.env.BASE_URL}fonts/JetBrainsMono-Regular.ttf`
 
+// Inactive cards recede (text fades) so background panels read as depth, not clutter.
+const DIM = (active) => (active ? 1 : 0.3)
+
 // 2×3 highlight grid — glyphs are JetBrains Mono-verified; descs are kept short enough
 // to fit the 5-unit-wide panel at the compact font sizes used below.
 const featuresData = [
@@ -101,98 +104,105 @@ function PanelBorder({ width = 5, height = 4, active }) {
 }
 
 function FeaturesContent({ active }) {
+  const dim = DIM(active)
   return (
     <group>
-      <Text position={[0, 1.6, 0.1]} fontSize={0.3} color="#1793D1" anchorX="center" font={CARD_FONT}>
+      <Text position={[0, 1.6, 0.1]} fontSize={0.3} color="#1793D1" anchorX="center" font={CARD_FONT} fillOpacity={dim}>
         {'< features />'}
       </Text>
-      <Text position={[0, 1.2, 0.1]} fontSize={0.22} color="#6b8aad" anchorX="center" font={CARD_FONT}>
+      <Text position={[0, 1.2, 0.1]} fontSize={0.22} color="#6b8aad" anchorX="center" font={CARD_FONT} fillOpacity={dim}>
         Why Arch Linux?
       </Text>
       {/* distanceFactor calibrated (empirically, vs. features camera ~6 units away) so the
           neofetch fits the upper half of the panel, leaving room for the highlight grid below.
           Note: drei Html transform keeps a near-constant on-screen size at any camera distance. */}
-      <Html position={[0, -0.05, 0.1]} transform distanceFactor={3.5} style={{ width: '400px', height: '250px', pointerEvents: 'none', overflow: 'visible' }}>
+      <Html position={[0, -0.18, 0.1]} transform distanceFactor={3.5} style={{ width: '400px', height: '250px', pointerEvents: 'none', overflow: 'visible' }}>
         <TerminalFetch active={active} />
       </Html>
       {featuresData.map((f, i) => {
         const row = Math.floor(i / 2)
         const col = i % 2
-        const y = -0.98 - row * 0.33
+        const y = -0.92 - row * 0.31
         return (
           <group key={i} position={[col === 0 ? -1.25 : 1.25, y, 0.1]}>
-            <Text position={[-0.75, 0.06, 0]} fontSize={0.16} color="#00d4ff" anchorX="left" font={CARD_FONT}>{f.icon}</Text>
-            <Text position={[-0.45, 0.06, 0]} fontSize={0.14} color="#e8f0f8" anchorX="left" font={CARD_FONT}>{f.title}</Text>
-            <Text position={[-0.45, -0.1, 0]} fontSize={0.095} color="#6b8aad" anchorX="left" font={CARD_FONT}>{f.desc}</Text>
+            <Text position={[-0.75, 0.06, 0]} fontSize={0.16} color="#00d4ff" anchorX="left" font={CARD_FONT} fillOpacity={dim}>{f.icon}</Text>
+            <Text position={[-0.45, 0.06, 0]} fontSize={0.14} color="#e8f0f8" anchorX="left" font={CARD_FONT} fillOpacity={dim}>{f.title}</Text>
+            <Text position={[-0.45, -0.1, 0]} fontSize={0.095} color="#6b8aad" anchorX="left" font={CARD_FONT} fillOpacity={dim}>{f.desc}</Text>
           </group>
         )
       })}
+      <Text position={[0, -1.8, 0.1]} fontSize={0.12} color="#1793D1" anchorX="center" font={CARD_FONT} fillOpacity={dim}>
+        Rolling since 2002
+      </Text>
     </group>
   )
 }
 
-function InstallContent() {
+function InstallContent({ active }) {
+  const dim = DIM(active)
   return (
     <group>
-      <Text position={[0, 1.6, 0.1]} fontSize={0.3} color="#1793D1" anchorX="center" font={CARD_FONT}>
+      <Text position={[0, 1.6, 0.1]} fontSize={0.3} color="#1793D1" anchorX="center" font={CARD_FONT} fillOpacity={dim}>
         {'< install />'}
       </Text>
-      <Text position={[0, 1.2, 0.1]} fontSize={0.22} color="#6b8aad" anchorX="center" font={CARD_FONT}>
+      <Text position={[0, 1.2, 0.1]} fontSize={0.22} color="#6b8aad" anchorX="center" font={CARD_FONT} fillOpacity={dim}>
         Installation Steps
       </Text>
       {installSteps.map((step, i) => (
-        <group key={i} position={[0, 0.72 - i * 0.26, 0.1]}>
-          <Text position={[-2.15, 0, 0]} fontSize={0.13} color="#1793D1" anchorX="left" font={CARD_FONT}>
+        <group key={i} position={[0, 0.72 - i * 0.33, 0.1]}>
+          <Text position={[-2.15, 0, 0]} fontSize={0.13} color="#1793D1" anchorX="left" font={CARD_FONT} fillOpacity={dim}>
             {`${step.num}.`}
           </Text>
-          <Text position={[-1.7, 0, 0]} fontSize={0.12} color="#00d4ff" anchorX="left" font={CARD_FONT}>
+          <Text position={[-1.7, 0, 0]} fontSize={0.12} color="#00d4ff" anchorX="left" font={CARD_FONT} fillOpacity={dim}>
             {`$ ${step.cmd}`}
           </Text>
-          <Text position={[1.8, 0, 0]} fontSize={0.11} color="#6b8aad" anchorX="right" font={CARD_FONT}>
+          <Text position={[1.8, 0, 0]} fontSize={0.11} color="#6b8aad" anchorX="right" font={CARD_FONT} fillOpacity={dim}>
             {step.desc}
           </Text>
         </group>
       ))}
-      <Text position={[0, -1.55, 0.1]} fontSize={0.12} color="#1793D1" anchorX="center" font={CARD_FONT}>
+      <Text position={[0, -1.55, 0.1]} fontSize={0.12} color="#1793D1" anchorX="center" font={CARD_FONT} fillOpacity={dim}>
         You build it. You own it.
       </Text>
     </group>
   )
 }
 
-function PacmanContent() {
+function PacmanContent({ active }) {
+  const dim = DIM(active)
   return (
     <group>
-      <Text position={[0, 1.6, 0.1]} fontSize={0.3} color="#1793D1" anchorX="center" font={CARD_FONT}>
+      <Text position={[0, 1.6, 0.1]} fontSize={0.3} color="#1793D1" anchorX="center" font={CARD_FONT} fillOpacity={dim}>
         {'< pacman />'}
       </Text>
-      <Text position={[0, 1.2, 0.1]} fontSize={0.22} color="#6b8aad" anchorX="center" font={CARD_FONT}>
+      <Text position={[0, 1.2, 0.1]} fontSize={0.22} color="#6b8aad" anchorX="center" font={CARD_FONT} fillOpacity={dim}>
         Package Management
       </Text>
       {pacmanCmds.map((item, i) => (
         <group key={i} position={[0, 0.65 - i * 0.32, 0.1]}>
-          <Text position={[-2, 0, 0]} fontSize={0.14} color="#00d4ff" anchorX="left" font={CARD_FONT}>
+          <Text position={[-2, 0, 0]} fontSize={0.14} color="#00d4ff" anchorX="left" font={CARD_FONT} fillOpacity={dim}>
             $ {item.cmd}
           </Text>
-          <Text position={[1.8, 0, 0]} fontSize={0.11} color="#6b8aad" anchorX="right" font={CARD_FONT}>
+          <Text position={[1.8, 0, 0]} fontSize={0.11} color="#6b8aad" anchorX="right" font={CARD_FONT} fillOpacity={dim}>
             {item.desc}
           </Text>
         </group>
       ))}
-      <Text position={[0, -1.6, 0.1]} fontSize={0.12} color="#1793D1" anchorX="center" font={CARD_FONT}>
+      <Text position={[0, -1.6, 0.1]} fontSize={0.12} color="#1793D1" anchorX="center" font={CARD_FONT} fillOpacity={dim}>
         AUR: 80,000+ community packages
       </Text>
     </group>
   )
 }
 
-function CommunityContent() {
+function CommunityContent({ active }) {
+  const dim = DIM(active)
   return (
     <group>
-      <Text position={[0, 1.6, 0.1]} fontSize={0.3} color="#1793D1" anchorX="center" font={CARD_FONT}>
+      <Text position={[0, 1.6, 0.1]} fontSize={0.3} color="#1793D1" anchorX="center" font={CARD_FONT} fillOpacity={dim}>
         {'< community />'}
       </Text>
-      <Text position={[0, 1.2, 0.1]} fontSize={0.22} color="#6b8aad" anchorX="center" font={CARD_FONT}>
+      <Text position={[0, 1.2, 0.1]} fontSize={0.22} color="#6b8aad" anchorX="center" font={CARD_FONT} fillOpacity={dim}>
         Join the Community
       </Text>
       {communityLinks.map((link, i) => {
@@ -200,8 +210,8 @@ function CommunityContent() {
         const col = i % 2
         return (
           <group key={i} position={[col === 0 ? -1.2 : 1.2, 0.6 - row * 0.7, 0.1]}>
-            <Text position={[0, 0.08, 0]} fontSize={0.16} color="#e8f0f8" anchorX="center" font={CARD_FONT}>{link.title}</Text>
-            <Text position={[0, -0.12, 0]} fontSize={0.1} color="#00d4ff" anchorX="center" font={CARD_FONT}>{link.url}</Text>
+            <Text position={[0, 0.08, 0]} fontSize={0.16} color="#e8f0f8" anchorX="center" font={CARD_FONT} fillOpacity={dim}>{link.title}</Text>
+            <Text position={[0, -0.12, 0]} fontSize={0.1} color="#00d4ff" anchorX="center" font={CARD_FONT} fillOpacity={dim}>{link.url}</Text>
           </group>
         )
       })}
@@ -209,29 +219,30 @@ function CommunityContent() {
   )
 }
 
-function GameContent() {
+function GameContent({ active }) {
+  const dim = DIM(active)
   return (
     <group>
-      <Text position={[0, 1.6, 0.1]} fontSize={0.3} color="#1793D1" anchorX="center" font={CARD_FONT}>
+      <Text position={[0, 1.6, 0.1]} fontSize={0.3} color="#1793D1" anchorX="center" font={CARD_FONT} fillOpacity={dim}>
         {'< game />'}
       </Text>
-      <Text position={[0, 1.2, 0.1]} fontSize={0.22} color="#6b8aad" anchorX="center" font={CARD_FONT}>
+      <Text position={[0, 1.2, 0.1]} fontSize={0.22} color="#6b8aad" anchorX="center" font={CARD_FONT} fillOpacity={dim}>
         Beat the Ghosts
       </Text>
-      <Text position={[0, 0.65, 0.1]} fontSize={0.45} color="#00d4ff" anchorX="center" font={CARD_FONT} outlineWidth={0.03} outlineColor="#1793D1">
+      <Text position={[0, 0.65, 0.1]} fontSize={0.45} color="#00d4ff" anchorX="center" font={CARD_FONT} outlineWidth={0.03} outlineColor="#1793D1" fillOpacity={dim} strokeOpacity={dim}>
         PAC-MAN
       </Text>
       {gameControls.map((item, i) => (
         <group key={i} position={[0, 0.0 - i * 0.5, 0.1]}>
-          <Text position={[-2, 0, 0]} fontSize={item.size} color="#00d4ff" anchorX="left" font={CARD_FONT}>
+          <Text position={[-2, 0, 0]} fontSize={item.size} color="#00d4ff" anchorX="left" font={CARD_FONT} fillOpacity={dim}>
             {item.cmd}
           </Text>
-          <Text position={[1.8, 0, 0]} fontSize={0.11} color="#6b8aad" anchorX="right" font={CARD_FONT}>
+          <Text position={[1.8, 0, 0]} fontSize={0.11} color="#6b8aad" anchorX="right" font={CARD_FONT} fillOpacity={dim}>
             {item.desc}
           </Text>
         </group>
       ))}
-      <Text position={[0, -1.45, 0.1]} fontSize={0.12} color="#1793D1" anchorX="center" font={CARD_FONT}>
+      <Text position={[0, -1.45, 0.1]} fontSize={0.12} color="#1793D1" anchorX="center" font={CARD_FONT} fillOpacity={dim}>
         80,000+ dots to eat
       </Text>
     </group>
@@ -246,7 +257,7 @@ const contentMap = {
   game: GameContent,
 }
 
-export default function FloatingPanel({ position, active, type }) {
+export default function FloatingPanel({ position, active, type, scale = 1 }) {
   const groupRef = useRef()
   const Content = contentMap[type]
   const _scaleTarget = useMemo(() => new THREE.Vector3(), [])
@@ -256,7 +267,8 @@ export default function FloatingPanel({ position, active, type }) {
     const t = state.clock.elapsedTime
     groupRef.current.position.y = position.y + Math.sin(t * 0.4 + position.x) * 0.08
     groupRef.current.rotation.y = Math.sin(t * 0.2 + position.z) * 0.03
-    const s = active ? 1 : 0.85
+    // `scale` unifies the projected size across cards (cameras sit at different distances)
+    const s = (active ? 1 : 0.85) * scale
     groupRef.current.scale.lerp(_scaleTarget.set(s, s, s), 0.05)
   })
 

@@ -6,7 +6,7 @@
   z-index: var(--z-ui);
   padding: 2rem 3rem;
   pointer-events: none;
-  background: linear-gradient(0deg, rgba(5, 10, 18, 0.85) 0%, transparent 100%);
+  background: linear-gradient(0deg, rgba(5, 10, 18, 0.75) 0%, rgba(5, 10, 18, 0.3) 45%, transparent 75%);
 }
 
 .overlay-content {
