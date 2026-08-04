@@ -34,6 +34,7 @@ export function resumeAudio() {
 }
 
 export function startDrone(name = 'home') {
+  if (muted) return
   const c = getCtx()
   if (c.state === 'suspended') c.resume()
   if (droneActive) return

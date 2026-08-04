@@ -21,7 +21,7 @@ const sectionContent = [
   {
     title: 'Pacman',
     subtitle: 'The package manager that answers to you.',
-    description: '-Syu keeps you on the bleeding edge. -R removes and doesn\'t leave a trace. -Ss finds anything in the official repos. and when the official repos aren\'t enough, yay brings the AUR to your terminal. No app store. No curated walled garden.',
+    description: '-Syu keeps you on the bleeding edge. -R removes and doesn\'t leave a trace. -Ss finds anything in the official repos. And when the official repos aren\'t enough, yay brings the AUR to your terminal. No app store. No curated walled garden.',
   },
   {
     title: 'Community',

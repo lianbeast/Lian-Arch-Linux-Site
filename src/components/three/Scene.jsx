@@ -108,7 +108,7 @@ export default function Scene({ activeSection, qualityTier = 'high' }) {
       <ambientLight ref={ambientRef} intensity={0.2} color="#ffffff" />
       <directionalLight position={[5, 5, 5]} intensity={0.3} color="#ffffff" />
       <pointLight ref={pointLight1Ref} position={[-5, 3, 2]} intensity={0.5} color="#ffffff" distance={20} />
-      <pointLight position={[5, -3, -5]} intensity={0.3} color="#00ff41" distance={25} />
+      <pointLight position={[8, -4, -6]} intensity={0.2} color="#00ff41" distance={15} />
 
       <Starfield count={tier.stars} />
       <GridFloor />

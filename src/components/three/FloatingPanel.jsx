@@ -215,6 +215,9 @@ function CommunityContent({ active }) {
           </group>
         )
       })}
+      <Text position={[0, -1.85, 0.1]} fontSize={0.11} color="#1793D1" anchorX="center" font={CARD_FONT} fillOpacity={dim}>
+        Standards are high. So are you.
+      </Text>
     </group>
   )
 }

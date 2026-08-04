@@ -107,6 +107,7 @@ export default function App() {
       if (idx !== activeSection && !transitioning) {
         setTransitioning(true)
         setActiveSection(idx)
+        setDroneProfile(sections[idx])
         setTimeout(() => setTransitioning(false), 800)
       }
     }

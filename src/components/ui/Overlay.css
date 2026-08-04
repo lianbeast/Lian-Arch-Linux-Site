@@ -35,8 +35,8 @@
   margin-bottom: 0.5rem;
   text-transform: uppercase;
   text-shadow:
-    0 0 20px rgba(23, 147, 209, 0.35),
-    0 0 50px rgba(0, 212, 255, 0.15);
+    0 0 20px rgba(23, 147, 209, 0.3),
+    0 0 35px rgba(0, 212, 255, 0.12);
 }
 
 .overlay-subtitle {
@@ -47,7 +47,7 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
   margin-bottom: 0.8rem;
-  text-shadow: 0 0 12px rgba(0, 212, 255, 0.35);
+  text-shadow: 0 0 10px rgba(0, 212, 255, 0.25);
 }
 
 .overlay-desc {
@@ -95,14 +95,14 @@
   text-transform: uppercase;
   letter-spacing: 0.12em;
   transition: all 0.25s ease;
-  box-shadow: 0 0 15px rgba(0, 212, 255, 0.15);
-  animation: pulse-glow 2s ease-in-out infinite;
+  box-shadow: 0 0 12px rgba(0, 212, 255, 0.15);
+  animation: pulse-glow 2.5s ease-in-out infinite;
 }
 
 .overlay-play-btn:hover {
   background: rgba(0, 212, 255, 0.2);
   border-color: rgba(0, 212, 255, 0.6);
-  box-shadow: 0 0 25px rgba(0, 212, 255, 0.3);
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.25);
   color: #fff;
   transform: translateY(-1px);
 }
