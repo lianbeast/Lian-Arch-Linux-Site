@@ -1,1 +1,1 @@
-export const SECTIONS = ['home', 'features', 'install', 'pacman', 'community', 'game']
+export const SECTIONS = ['home', 'about', 'history', 'features', 'terminal', 'architectures', 'download', 'usecases', 'community']
