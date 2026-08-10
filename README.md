@@ -4,7 +4,7 @@
 
 **You. The machine. Nothing between.**
 
-A single-page scroll landing page for Arch Linux. Dark Debi­an-style document surface, a particle backdrop, a live scroll-progress bar, section reveal-on-scroll, sticky nav with active-section tracking, and an in-page interactive terminal that answers like `neofetch`. One argument per section — nothing more.
+A single-page scroll landing page for Arch Linux. Dark Debi­an-style document surface, a particle backdrop, a live scroll-progress bar, section reveal-on-scroll, sticky nav with active-section tracking, and an in-page interactive terminal that answers real pacman commands. One argument per section — nothing more.
 
 [![React 19](https://img.shields.io/badge/React-19-00d4ff?style=flat-square&logo=react&logoColor=white)](https://react.dev)
 [![Vite 8](https://img.shields.io/badge/Vite-8-646cff?style=flat-square&logo=vite&logoColor=white)](https://vite.dev)
@@ -24,7 +24,7 @@ A single-page scroll landing page for Arch Linux. Dark Debi­an-style document s
 - **Sticky nav + active tracking** — an `IntersectionObserver` highlights the section you're reading; click to smooth-scroll
 - **Scroll-progress bar** — a thin top bar fills as you go down the page
 - **Reveal-on-scroll** — `IntersectionObserver` fades sections in once they enter the viewport (skipped under `prefers-reduced-motion` via CSS)
-- **Interactive terminal** — an in-page shell that responds to `neofetch`, `clear`, and friends; input is parsed locally, nothing leaves the browser
+- **Interactive terminal** — an in-page shell that answers `pacman -Syu`, `pacman -Q`, `yay -Ss`, `cat /etc/os-release`, `uname -a`, and `clear`; input is parsed locally, nothing leaves the browser
 - **Self-hosted fonts** — Michroma (display), Rajdhani (UI), and JetBrains Mono (terminal) bundled in `public/fonts/` — zero CDN, no tofu
 
 ## 🚀 Quick Start
