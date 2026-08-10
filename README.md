@@ -1,22 +1,17 @@
 <div align="center">
 
-# 🖥️ Arch Linux — Interactive 3D Experience
+# 🖥️ Arch Linux — Scroll Landing Page
 
 **You. The machine. Nothing between.**
 
-A scroll-narrative, single-page experience for Arch Linux — not a brochure, but a place to boot into. A pseudo-UEFI boot sequence. A living 3D scene. Procedural audio. A playable PAC-MAN. It's the site *as* the product: atmosphere around an argument.
+A single-page scroll landing page for Arch Linux. Dark Debi­an-style document surface, a particle backdrop, a live scroll-progress bar, section reveal-on-scroll, sticky nav with active-section tracking, and an in-page interactive terminal that answers like `neofetch`. One argument per section — nothing more.
 
 [![React 19](https://img.shields.io/badge/React-19-00d4ff?style=flat-square&logo=react&logoColor=white)](https://react.dev)
 [![Vite 8](https://img.shields.io/badge/Vite-8-646cff?style=flat-square&logo=vite&logoColor=white)](https://vite.dev)
-[![Three.js](https://img.shields.io/badge/Three.js-r184-1793D1?style=flat-square&logo=threedotjs&logoColor=white)](https://threejs.org)
 [![ESLint](https://img.shields.io/badge/ESLint-clean-4B32C3?style=flat-square&logo=eslint&logoColor=white)](https://eslint.org)
 [![Live demo](https://img.shields.io/badge/Live%20demo-lianbeast.github.io-00ff41?style=flat-square&logo=githubpages&logoColor=white)](https://lianbeast.github.io/Lian-Arch-Linux-Site/)
 
 **▶ [Open the live site](https://lianbeast.github.io/Lian-Arch-Linux-Site/)** — deployed automatically to GitHub Pages on every push to `main`.
-
-<img src="./screenshots/site-demo.gif" alt="Animated preview — the Arch Linux interactive 3D experience: the UEFI boot sequence (2× speed), then a real-time scroll tour through all six sections" width="700" />
-
-<sub>🎞 Prefer video? [Watch the full experience (MP4, ~38s, real-time including the boot)](./screenshots/site-demo.mp4)</sub>
 
 </div>
 
@@ -24,14 +19,13 @@ A scroll-narrative, single-page experience for Arch Linux — not a brochure, bu
 
 ## ✨ Features
 
-- **Boot sequence** — BIOS → kernel log → ASCII art → welcome flash → glitch, with a **Skip** button and full `prefers-reduced-motion` support
-- **3D scroll narrative** — six scenes (`home`, `features`, `install`, `pacman`, `community`, `game`) with camera choreography, starfield + shooting stars, character-driven matrix rain, glowing orbs, data streams, and a pulse grid floor
-- **Responsive mobile nav** — hamburger menu at ≤480px with staggered link cascade, reversed exit stagger, synced glow breathing, scanline CRT overlay with drift animation, and a tactile scale bounce on morph-to-X
-- **Playable PAC-MAN** — arrow-key gameplay, ghost AI (Blinky / Pinky / Inky / Clyde), power pellets, frightened mode, and a persistent high score
-- **Procedural audio** — every sound is synthesized live with the Web Audio API: an ambient drone that re-tunes per section, UI chirps, and three sound themes (**hacker / retro / minimal**) with a mute toggle (persisted in `localStorage`)
-- **Custom cursor follower** — a trailing dot + ring that echoes the scene's neon palette
-- **Self-hosted fonts** — Michroma (display), Rajdhani (UI), and JetBrains Mono (terminal) bundled locally in `public/fonts/` — zero CDN dependency, zero tofu boxes
-- **Adaptive performance** — quality tiers (`low / medium / high`) picked from your hardware, adaptive device-pixel-ratio caps, and rendering paused while the tab is hidden
+- **Scroll landing** — nine sections (`home`, `about`, `history`, `features`, `terminal`, `architectures`, `download`, `usecases`, `community`) plus a footer, one claim each
+- **Particle backdrop** — lightweight 2D-canvas cyan dust (30 particles, DPR-capped, pauses when the tab is hidden)
+- **Sticky nav + active tracking** — an `IntersectionObserver` highlights the section you're reading; click to smooth-scroll
+- **Scroll-progress bar** — a thin top bar fills as you go down the page
+- **Reveal-on-scroll** — `IntersectionObserver` fades sections in once they enter the viewport (skipped under `prefers-reduced-motion` via CSS)
+- **Interactive terminal** — an in-page shell that responds to `neofetch`, `clear`, and friends; input is parsed locally, nothing leaves the browser
+- **Self-hosted fonts** — Michroma (display), Rajdhani (UI), and JetBrains Mono (terminal) bundled in `public/fonts/` — zero CDN, no tofu
 
 ## 🚀 Quick Start
 
@@ -50,30 +44,18 @@ npm run build     # → dist/
 npm run preview   # serve the production build locally
 ```
 
-## 🎮 Controls
-
-| Input | Action |
-|-------|--------|
-| Scroll / `ArrowDown` / `Space` / `PageDown` | Next section |
-| `ArrowUp` / `PageUp` | Previous section |
-| `1`–`6` | Jump directly to a section |
-| `Escape` | Return to Home — or close the game |
-| Arrow keys (in game) | Move PAC-MAN |
-
 ## 📁 Project Structure
 
 ```
 src/
-├── App.jsx                 # Root: boot, hash navigation, quality tiers, error boundary
+├── App.jsx                 # Root: nav, scroll progress, active section, reveal observer
 ├── main.jsx                # Entry point
 ├── index.css               # Global styles + design tokens
 ├── components/
-│   ├── three/              # 3D scene: ArchLogo, Starfield, MatrixRain, GridFloor, …
-│   ├── ui/                 # 2D overlay: Navbar, Overlay, BootSequence, CursorFollower, …
-│   └── games/              # PacmanGame (canvas 2D, lazy-loaded)
+│   ├── sections/           # Each landing section (Hero, About, Terminal, …)
+│   └── ui/                # BgCanvas (particle backdrop), Icons (inline SVGs)
 └── utils/
-    ├── sounds.js           # Procedural audio engine + 3 themes
-    └── constants.js        # Section definitions
+    └── constants.js        # Section list
 ```
 
 ## 🧱 Stack
@@ -82,19 +64,10 @@ src/
 |-------|------|
 | UI | React 19 |
 | Build | Vite 8 (Rolldown) |
-| 3D | Three.js via `@react-three/fiber` + `drei` + `@react-three/postprocessing` |
-| Audio | Web Audio API (procedural — zero audio assets) |
+| Backdrop | Canvas 2D (no 3D, no WebGL) |
 | Lint | ESLint 10 (flat config, `react-hooks`) |
 
-## ♿ Accessibility
+## ⚡ Notes
 
-- Skip-to-content link, semantic landmarks, and a screen-reader-visible `<h1>`
-- `prefers-reduced-motion` disables animations and skips the boot typing sequence
-- Section changes are announced through a persistent live region; `document.title` tracks the active section
-- Full keyboard navigation, and the game modal moves focus in and restores it on close
-
-## ⚡ Performance
-
-- Code-split bundles — app code (~46 kB) is separated from the 3D vendor chunk, which gets cached independently
-- The PAC-MAN game is lazy-loaded and only fetched when you reach the game section
-- Per-tier particle counts and adaptive DPR keep low-end hardware smooth
+- `index.html` uses `%BASE_URL%` for fonts and favicon so the GitHub Pages subpath deploy resolves correctly
+- Reduced motion: the particle backdrop short-circuits when `prefers-reduced-motion: reduce` matches

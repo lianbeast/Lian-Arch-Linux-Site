@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { SECTIONS } from './utils/constants'
 import { ArchLinuxIcon } from './components/ui/Icons'
 import Hero from './components/sections/Hero'
@@ -34,8 +34,6 @@ function useReveal() {
 
 function useActiveSection() {
   const [activeSection, setActiveSection] = useState(0)
-  const sectionRefs = useRef(SECTIONS.map(() => React.createRef()))
-
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {

@@ -54,7 +54,6 @@ export default function Terminal() {
   const run = (cmd) => {
     const trimmed = cmd.trim()
     if (!trimmed) return
-    const entry = [`$ ${trimmed}`]
     if (trimmed === 'clear') {
       setLines([])
       setInput('')
