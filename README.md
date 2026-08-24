@@ -19,11 +19,11 @@ A single-page scroll landing page for Arch Linux. Dark Debi­an-style document s
 
 ## 🎬 Demo
 
-<video controls loop muted playsinline src="demo.mp4" width="100%"></video>
-
-### Terminal close-up (GIF)
-
-![Interactive Arch terminal typing pacman -Syu](demo.gif)
+<div align="center">
+  <video controls loop muted playsinline src="demo.mp4" width="640"></video>
+  <br>
+  <img src="demo.gif" width="500" alt="Arch terminal typing pacman -Syu, uname -a, yay -Ss, clear">
+</div>
 
 > Click the terminal window, type a command, and press `Enter` — or smash the quick-command chips below it.
 
