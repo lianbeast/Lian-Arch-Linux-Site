@@ -117,6 +117,7 @@ body {
 
 .nav-link:hover { color: var(--text-heading); background: rgba(23, 147, 209, 0.08); }
 .nav-link.active { color: var(--cyan); background: rgba(0, 212, 255, 0.08); }
+.nav-link:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
 
 /* Flat rebuild: no hamburger menu — nav links wrap on small screens */
 @media (max-width: 768px) {
@@ -221,6 +222,8 @@ main {
 @media (prefers-reduced-motion: reduce) {
   .reveal { opacity: 1; transform: none; transition: none; }
   html { scroll-behavior: auto; }
+  .terminal-cursor { animation: none; }
+  .marquee-track { animation: none; }
 }
 
 /* ===== Hero ===== */
@@ -600,6 +603,7 @@ main {
   caret-color: var(--green-terminal);
 }
 .terminal-input:focus { outline: 0; }
+.terminal-input:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
 .terminal-cursor {
   display: inline-block;
   width: 8px;
@@ -630,6 +634,7 @@ main {
 }
 
 .terminal-chip:hover { background: rgba(0, 212, 255, 0.12); border-color: var(--cyan); }
+.terminal-chip:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
 
 /* ===== Architectures grid ===== */
 .arch-grid {

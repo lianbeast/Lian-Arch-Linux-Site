@@ -1,11 +1,21 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 const PARTICLE_COUNT = 30
-const reducedMotion = typeof window !== 'undefined' &&
-  window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+const LOW_POWER_PARTICLE_COUNT = 15
 
-function createParticles(width, height) {
-  return Array.from({ length: PARTICLE_COUNT }, () => ({
+function getReducedMotion() {
+  return typeof window !== 'undefined' &&
+    window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+}
+
+function getLowPower() {
+  return typeof navigator !== 'undefined' &&
+    navigator.deviceMemory !== undefined &&
+    navigator.deviceMemory <= 4
+}
+
+function createParticles(width, height, count) {
+  return Array.from({ length: count }, () => ({
     x: Math.random() * width,
     y: Math.random() * height,
     vx: (Math.random() - 0.5) * 0.3,
@@ -17,10 +27,21 @@ function createParticles(width, height) {
 export default function BgCanvas() {
   const canvasRef = useRef(null)
   const rafRef = useRef(0)
+  const [reducedMotion, setReducedMotion] = useState(getReducedMotion())
+  const [lowPower, setLowPower] = useState(getLowPower())
+  const particleCount = lowPower ? LOW_POWER_PARTICLE_COUNT : PARTICLE_COUNT
 
   useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const handler = (e) => setReducedMotion(e.matches)
+    mq.addEventListener('change', handler)
+    return () => mq.removeEventListener('change', handler)
+  }, [])
+
+  useEffect(() => {
+    if (reducedMotion) return
     const canvas = canvasRef.current
-    if (!canvas || reducedMotion) return
+    if (!canvas) return
     const ctx = canvas.getContext('2d')
     const dpr = Math.min(window.devicePixelRatio || 1, 2)
 
@@ -34,7 +55,7 @@ export default function BgCanvas() {
     resize()
     window.addEventListener('resize', resize)
 
-    let particles = createParticles(canvas.width, canvas.height)
+    let particles = createParticles(canvas.width, canvas.height, particleCount)
 
     const tick = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height)
@@ -53,7 +74,7 @@ export default function BgCanvas() {
 
     const start = () => {
       if (!rafRef.current) {
-        particles = createParticles(canvas.width, canvas.height)
+        particles = createParticles(canvas.width, canvas.height, particleCount)
         tick()
       }
     }
@@ -62,16 +83,19 @@ export default function BgCanvas() {
       rafRef.current = 0
     }
 
-    start()
-    document.addEventListener('visibilitychange', () => {
+    const onVisibility = () => {
       document.hidden ? stop() : start()
-    })
+    }
+
+    start()
+    document.addEventListener('visibilitychange', onVisibility)
 
     return () => {
       stop()
       window.removeEventListener('resize', resize)
+      document.removeEventListener('visibilitychange', onVisibility)
     }
-  }, [])
+  }, [reducedMotion, particleCount])
 
   return <canvas ref={canvasRef} className="bg-canvas" aria-hidden="true" />
 }
