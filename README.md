@@ -17,6 +17,16 @@ A single-page scroll landing page for Arch Linux. Dark Debi­an-style document s
 
 ---
 
+## 🎬 Demo
+
+<video controls loop muted playsinline src="demo.mp4" width="100%"></video>
+
+### Terminal close-up (GIF)
+
+![Interactive Arch terminal typing pacman -Syu](demo.gif)
+
+> Click the terminal window, type a command, and press `Enter` — or smash the quick-command chips below it.
+
 ## ✨ Features
 
 - **Scroll landing** — nine sections (`home`, `about`, `history`, `features`, `terminal`, `architectures`, `download`, `usecases`, `community`) plus a footer, one claim each
