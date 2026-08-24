@@ -29,14 +29,8 @@ export default function Hero() {
       </div>
       <a
         href="#about"
-        className="reveal"
+        className="hero-scroll-hint reveal"
         aria-label="Scroll to about"
-        style={{
-          marginTop: '2rem',
-          display: 'inline-flex',
-          color: 'var(--text-secondary)',
-          textDecoration: 'none',
-        }}
       >
         <ArrowDownIcon size={20} color="currentColor" />
       </a>

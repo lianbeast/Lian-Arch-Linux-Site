@@ -29,7 +29,6 @@ export default function About() {
   return (
     <section id="about" className="section" aria-label="About Arch Linux">
       <div className="section-header reveal">
-        <p className="section-tag">// 01 — What is Arch</p>
         <h2 className="section-title">A distro that gets out of your way</h2>
         <p className="section-lead">
           Arch is not a product. It is a base. You decide what goes on top.

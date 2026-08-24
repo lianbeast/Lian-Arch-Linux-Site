@@ -11,7 +11,6 @@ export default function Architectures() {
   return (
     <section id="architectures" className="section" aria-label="Supported architectures">
       <div className="section-header reveal">
-        <p className="section-tag">// 05 — Supported on</p>
         <h2 className="section-title">Build it for what you run</h2>
         <p className="section-lead">
           Official tiers plus community ports. If it boots Linux, Arch likely runs there.

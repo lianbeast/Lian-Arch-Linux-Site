@@ -31,7 +31,6 @@ export default function Features() {
   return (
     <section id="features" className="section" aria-label="Features">
       <div className="section-header reveal">
-        <p className="section-tag">// 03 — Features</p>
         <h2 className="section-title">Everything you need. Nothing you didn't ask for</h2>
         <p className="section-lead">
           Four load-bearing pieces, designed to compose into any system you can describe.

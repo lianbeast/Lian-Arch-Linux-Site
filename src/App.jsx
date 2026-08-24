@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from 'react'
-import { SECTIONS } from './utils/constants'
+import { useState, useEffect } from 'react'
+import { SECTIONS, NAV_LINKS } from './utils/constants'
 import { ArchLinuxIcon } from './components/ui/Icons'
 import Hero from './components/sections/Hero'
 import About from './components/sections/About'
@@ -54,13 +54,7 @@ function useActiveSection() {
     return () => observer.disconnect()
   }, [])
 
-  const scrollToSection = useCallback((index) => {
-    const id = SECTIONS[index]
-    const el = document.getElementById(id)
-    if (el) el.scrollIntoView({ behavior: 'smooth' })
-  }, [])
-
-  return { activeSection, scrollToSection }
+  return { activeSection }
 }
 
 function useScrollProgress() {
@@ -80,7 +74,7 @@ function useScrollProgress() {
   return progress
 }
 
-function Navbar({ activeSection, onNavigate }) {
+function Navbar({ activeSection }) {
   return (
     <nav className="nav" role="navigation" aria-label="Main navigation">
       <div className="nav-inner">
@@ -91,18 +85,25 @@ function Navbar({ activeSection, onNavigate }) {
           Arch Linux
         </a>
         <ul className="nav-links" role="menubar">
-          {SECTIONS.map((section, i) => (
-            <li key={section} role="none">
-              <button
-                role="menuitem"
-                className={`nav-link ${activeSection === i ? 'active' : ''}`}
-                onClick={() => onNavigate(i)}
-                aria-current={activeSection === i ? 'page' : undefined}
-              >
-                {section.charAt(0).toUpperCase() + section.slice(1)}
-              </button>
-            </li>
-          ))}
+          {NAV_LINKS.map((link) => {
+            const activeSectionId = SECTIONS[activeSection]
+            const isActive = activeSectionId === link.id
+            return (
+              <li key={link.id} role="none">
+                <button
+                  role="menuitem"
+                  className={`nav-link ${isActive ? 'active' : ''}`}
+                  onClick={() => {
+                    const el = document.getElementById(link.id)
+                    if (el) el.scrollIntoView({ behavior: 'smooth' })
+                  }}
+                  aria-current={isActive ? 'page' : undefined}
+                >
+                  {link.label}
+                </button>
+              </li>
+            )
+          })}
         </ul>
       </div>
     </nav>
@@ -118,7 +119,7 @@ function ScrollProgress({ progress }) {
 }
 
 export default function App() {
-  const { activeSection, scrollToSection } = useActiveSection()
+  const { activeSection } = useActiveSection()
   const progress = useScrollProgress()
 
   useReveal()
@@ -127,7 +128,7 @@ export default function App() {
     <>
       <BgCanvas />
       <ScrollProgress progress={progress} />
-      <Navbar activeSection={activeSection} onNavigate={scrollToSection} />
+      <Navbar activeSection={activeSection} />
       <main>
         <Hero />
         <About />

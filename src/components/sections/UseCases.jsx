@@ -11,7 +11,6 @@ export default function UseCases() {
   return (
     <section id="usecases" className="section" aria-label="Use cases">
       <div className="section-header reveal">
-        <p className="section-tag">// 07 — Use it your way</p>
         <h2 className="section-title">Every machine, every workload</h2>
         <p className="section-lead">
           From a 256 MB netbook to a 64-core server — Arch adapts.

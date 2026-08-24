@@ -29,7 +29,6 @@ export default function Download() {
   return (
     <section id="download" className="section" aria-label="Download">
       <div className="section-header reveal">
-        <p className="section-tag">// 06 — Get it</p>
         <h2 className="section-title">Choose your flavor</h2>
         <p className="section-lead">
           Official images, netboot, and container bases. Verify with PGP.
