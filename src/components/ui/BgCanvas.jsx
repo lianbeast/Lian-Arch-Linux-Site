@@ -28,7 +28,7 @@ export default function BgCanvas() {
   const canvasRef = useRef(null)
   const rafRef = useRef(0)
   const [reducedMotion, setReducedMotion] = useState(getReducedMotion())
-  const [lowPower, setLowPower] = useState(getLowPower())
+  const [lowPower] = useState(getLowPower())
   const particleCount = lowPower ? LOW_POWER_PARTICLE_COUNT : PARTICLE_COUNT
 
   useEffect(() => {
