@@ -13,7 +13,7 @@ export default function UseCases() {
       <div className="section-header reveal">
         <h2 className="section-title">Every machine, every workload</h2>
         <p className="section-lead">
-          From a 256 MB netbook to a 64-core server — Arch adapts.
+          From a 256 MB netbook to a 64-core server. Arch adapts.
         </p>
       </div>
       <div className="usecase-grid">

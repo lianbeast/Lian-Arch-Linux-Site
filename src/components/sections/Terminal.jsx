@@ -72,7 +72,7 @@ export default function Terminal() {
         <h2 className="section-title">The terminal is the front door</h2>
         <p className="section-lead">
           Click the window, type a command, or pick a chip. Real output is not the
-          point — the feel is.
+          point. The feel is.
         </p>
       </div>
       <div

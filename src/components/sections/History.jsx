@@ -2,7 +2,7 @@ const events = [
   {
     year: '2002',
     title: 'Arch is born',
-    text: 'Judd Vinet releases Arch 0.1 — a clean build system, pacman, and the start of the wiki.',
+    text: 'Judd Vinet releases Arch 0.1 - a clean build system, pacman, and the start of the wiki.',
   },
   {
     year: '2007',
@@ -35,7 +35,7 @@ export default function History() {
   return (
     <section id="history" className="section" aria-label="History">
       <div className="section-header reveal">
-        <p className="section-tag">// 02 — History</p>
+        <p className="section-tag">// History</p>
         <h2 className="section-title">Twenty-something years of deliberate choices</h2>
         <p className="section-lead">
           No marketing pivots. No acquisitions. Arch has always been built by the
