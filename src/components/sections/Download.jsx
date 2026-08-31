@@ -1,3 +1,5 @@
+import { ArrowRightIcon } from '../ui/Icons.jsx'
+
 const isos = [
   {
     label: 'Latest ISO',
@@ -29,12 +31,13 @@ export default function Download() {
   return (
     <section id="download" className="section" aria-label="Download">
       <div className="section-header reveal">
+        <p className="section-tag">Download</p>
         <h2 className="section-title">Choose your flavor</h2>
         <p className="section-lead">
           Official images, netboot, and container bases. Verify with PGP.
         </p>
       </div>
-      <div className="version-grid reveal" aria-label="Download options">
+      <div className="version-grid reveal-stagger" aria-label="Download options">
         {isos.map((iso) => (
           <button
             key={iso.label}
@@ -43,10 +46,9 @@ export default function Download() {
             role="button"
             aria-pressed={iso.active}
             onClick={(e) => {
-              // Toggle active state (simplified for demo)
-              const btn = e.currentTarget;
-              const active = btn.classList.toggle('active');
-              btn.setAttribute('aria-pressed', active);
+              const btn = e.currentTarget
+              const active = btn.classList.toggle('active')
+              btn.setAttribute('aria-pressed', active)
             }}
           >
             <div className="version-header">
@@ -54,6 +56,18 @@ export default function Download() {
               <span className="version-tag">{iso.version}</span>
             </div>
             <p className="version-text">{iso.text}</p>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '0.5rem' }}>
+              <a
+                href="https://archlinux.org/download/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-primary"
+                style={{ padding: '0.6rem 1.25rem', fontSize: '0.75rem' }}
+              >
+                Download
+                <ArrowRightIcon size={14} color="currentColor" />
+              </a>
+            </div>
           </button>
         ))}
       </div>

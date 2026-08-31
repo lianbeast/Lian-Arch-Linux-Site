@@ -104,7 +104,7 @@ function Navbar({ activeSection }) {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  // Animate pill to active link - using transform scaleX for performance
+  // Animate pill to active link
   useEffect(() => {
     if (reducedMotion || !navRef.current || !pillRef.current) return
     const activeLink = navRef.current.querySelector('.nav-link.active')
@@ -159,7 +159,7 @@ function Navbar({ activeSection }) {
       <div className="nav-inner">
         <a href="#home" className="nav-brand" aria-label="Arch Linux Home">
           <span className="nav-brand-icon">
-            <ArchLinuxIcon size={20} color="var(--cyan)" />
+            <ArchLinuxIcon size={20} color="var(--primary)" />
           </span>
           Arch Linux
         </a>

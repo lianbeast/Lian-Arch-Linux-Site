@@ -69,70 +69,74 @@ export default function Terminal() {
   return (
     <section id="terminal" className="section" aria-label="Interactive terminal">
       <div className="section-header reveal">
+        <p className="section-tag">Interactive</p>
         <h2 className="section-title">The terminal is the front door</h2>
         <p className="section-lead">
           Click the window, type a command, or pick a chip. Real output is not the
           point. The feel is.
         </p>
       </div>
-      <div
-        className="terminal reveal"
-        role="region"
-        aria-label="Arch Linux terminal"
-        onClick={focusInput}
-      >
-        <div className="terminal-header">
-          <span className="terminal-dot red" aria-hidden="true" />
-          <span className="terminal-dot yellow" aria-hidden="true" />
-          <span className="terminal-dot green" aria-hidden="true" />
-          <span className="terminal-title">root@archbox:~</span>
-        </div>
-        <div className="terminal-body" ref={bodyRef}>
-          {lines.map((l, i) => {
-            if (l.kind === 'cmd') {
+      <div className="terminal-wrapper reveal">
+        <div
+          className="terminal"
+          role="region"
+          aria-label="Arch Linux terminal"
+          onClick={focusInput}
+        >
+          <div className="terminal-header">
+            <span className="terminal-dot red" aria-hidden="true" />
+            <span className="terminal-dot yellow" aria-hidden="true" />
+            <span className="terminal-dot green" aria-hidden="true" />
+            <span className="terminal-title">root@archbox:~</span>
+          </div>
+          <div className="terminal-body" ref={bodyRef}>
+            {lines.map((l, i) => {
+              if (l.kind === 'cmd') {
+                return (
+                  <div key={i} className="terminal-line">
+                    <span className="terminal-prompt">$</span>
+                    <span className="terminal-out">{l.text}</span>
+                  </div>
+                )
+              }
               return (
-                <div key={i} className="terminal-line">
-                  <span className="terminal-prompt">$</span>
-                  <span className="terminal-out">{l.text}</span>
+                <div key={i} className={`terminal-line terminal-${l.kind}`}>
+                  {l.text}
                 </div>
               )
-            }
-            return (
-              <div key={i} className={`terminal-line terminal-${l.kind}`}>
-                {l.text}
-              </div>
-            )
-          })}
-          <div className="terminal-line">
-            <span className="terminal-prompt">$</span>
-            <input
-              ref={inputRef}
-              className="terminal-input"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') run(input)
-              }}
-              spellCheck="false"
-              autoComplete="off"
-              aria-label="Terminal input"
-            />
+            })}
+            <div className="terminal-line">
+              <span className="terminal-prompt">$</span>
+              <input
+                ref={inputRef}
+                className="terminal-input"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') run(input)
+                }}
+                spellCheck="false"
+                autoComplete="off"
+                aria-label="Terminal input"
+              />
+              <span className="terminal-cursor" aria-hidden="true" />
+            </div>
           </div>
-        </div>
-        <div className="terminal-chips" role="toolbar" aria-label="Quick commands">
-          {chips.map((c) => (
-            <button
-              key={c}
-              type="button"
-              className="terminal-chip"
-              onClick={(e) => {
-                e.stopPropagation()
-                run(c)
-              }}
-            >
-              {c}
-            </button>
-          ))}
+          <div className="terminal-chips" role="toolbar" aria-label="Quick commands">
+            {chips.map((c) => (
+              <button
+                key={c}
+                type="button"
+                className="terminal-chip"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  run(c)
+                }}
+              >
+                {c}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
     </section>

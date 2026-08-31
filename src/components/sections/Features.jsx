@@ -2,25 +2,25 @@ import { PackageIcon, TerminalIcon, CpuIcon, BookIcon } from '../ui/Icons.jsx'
 
 const features = [
   {
-    icon: <TerminalIcon size={32} color="currentColor" />,
+    icon: <TerminalIcon size={28} color="currentColor" />,
     title: 'Pacman',
     tag: 'Native',
     desc: 'Fast, surgical, dependency-aware. -Syu keeps the system current; -R leaves nothing behind; -Ss finds anything in the repos.',
   },
   {
-    icon: <PackageIcon size={32} color="currentColor" />,
+    icon: <PackageIcon size={28} color="currentColor" />,
     title: 'AUR',
     tag: 'Community',
     desc: '80,000+ community-built packages. If it runs on Linux, someone in the Arch world has packaged it for you.',
   },
   {
-    icon: <CpuIcon size={32} color="currentColor" />,
+    icon: <CpuIcon size={28} color="currentColor" />,
     title: 'Rolling Release',
     tag: 'Continuous',
     desc: 'One install, one stream. No version migrations. No "upgrade every three years". You install Arch once.',
   },
   {
-    icon: <BookIcon size={32} color="currentColor" />,
+    icon: <BookIcon size={28} color="currentColor" />,
     title: 'Minimal Base',
     tag: 'Composable',
     desc: 'A clean install is essentially nothing. You choose your display server, your init, your shell, your tools. Every choice stays yours.',
@@ -31,14 +31,17 @@ export default function Features() {
   return (
     <section id="features" className="section" aria-label="Features">
       <div className="section-header reveal">
-        <h2 className="section-title">Everything you need. Nothing you didn't ask for</h2>
+        <p className="section-tag">Features</p>
+        <h2 className="section-title">
+          Everything you need. Nothing you didn't ask for
+        </h2>
         <p className="section-lead">
           Four load-bearing pieces, designed to compose into any system you can describe.
         </p>
       </div>
-      <div className="features">
+      <div className="features reveal-stagger">
         {features.map((f) => (
-          <article key={f.title} className="feature-row reveal">
+          <article key={f.title} className="feature-row">
             <span className="feature-icon" aria-hidden="true">
               {f.icon}
             </span>

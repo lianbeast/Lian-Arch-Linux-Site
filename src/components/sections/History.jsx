@@ -2,7 +2,7 @@ const events = [
   {
     year: '2002',
     title: 'Arch is born',
-    text: 'Judd Vinet releases Arch 0.1 - a clean build system, pacman, and the start of the wiki.',
+    text: 'Judd Vinet releases Arch 0.1 — a clean build system, pacman, and the start of the wiki.',
   },
   {
     year: '2007',
@@ -35,16 +35,18 @@ export default function History() {
   return (
     <section id="history" className="section" aria-label="History">
       <div className="section-header reveal">
-        <p className="section-tag">// History</p>
-        <h2 className="section-title">Twenty-something years of deliberate choices</h2>
+        <p className="section-tag">History</p>
+        <h2 className="section-title">
+          Twenty-something years of deliberate choices
+        </h2>
         <p className="section-lead">
-          No marketing pivots. No acquisitions. Arch has always been built by the
-          people who use it.
+          No marketing pivots. No acquisitions. Arch has always been built by
+          the people who use it.
         </p>
       </div>
-      <ol className="timeline">
+      <ol className="timeline reveal-stagger" aria-label="Arch Linux history">
         {events.map((e) => (
-          <li key={e.year} className="timeline-item reveal">
+          <li key={e.year} className="timeline-item">
             <span className="timeline-year">{e.year}</span>
             <h3 className="timeline-title">{e.title}</h3>
             <p className="timeline-text">{e.text}</p>

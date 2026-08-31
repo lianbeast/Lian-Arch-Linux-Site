@@ -5,7 +5,7 @@ export default function Footer() {
     <footer className="footer" role="contentinfo">
       <div className="footer-inner">
         <div className="footer-brand">
-          <ArchLinuxIcon size={20} color="var(--cyan)" aria-hidden="true" />
+          <ArchLinuxIcon size={20} color="var(--primary-light)" aria-hidden="true" />
           <span>Arch Linux</span>
         </div>
         <p className="footer-copy">
