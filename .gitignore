@@ -1,5 +1,17 @@
-# Logs
-logs
+# ── Dependencies ─────────────────────────────────────────────
+node_modules/
+.pnpm-store/
+
+# ── Build output ──────────────────────────────────────────────
+dist/
+dist-ssr/
+build/
+out/
+.vite/
+*.local
+
+# ── Logs ──────────────────────────────────────────────────────
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -7,23 +19,41 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# ── Environment / secrets ────────────────────────────────────
+.env
+.env.*
+!.env.example
 
-# Agent tooling (not part of the app)
+# ── Caches ────────────────────────────────────────────────────
+.cache/
+.temp/
+.tmp/
+
+# ── Agent tooling (not part of the app) ──────────────────────
 .claude/
 .superpowers/
 .impeccable/
+.utim_tmp/
+.utim/
 
-# Editor directories and files
+# ── Python (stray tooling files) ─────────────────────────────
+.python-version
+__pycache__/
+*.pyc
+.venv/
+
+# ── Editor directories and files ─────────────────────────────
 .vscode/*
 !.vscode/extensions.json
-.idea
+.idea/
 .DS_Store
+Thumbs.db
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+# ── OS / misc junk ───────────────────────────────────────────
+desktop.ini
+*.bak

@@ -34,6 +34,8 @@
   --font-display: 'Space Grotesk', 'Inter', system-ui, sans-serif;
   --font-body: 'Inter', 'Segoe UI', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-tech: 'Rajdhani', 'Space Grotesk', system-ui, sans-serif;
+  --font-future: 'Michroma', 'JetBrains Mono', monospace;
 
   /* Type scale — modular, harmonious */
   --fs-xs: 0.75rem;
@@ -505,10 +507,10 @@ main { position: relative; z-index: var(--z-content); }
   display: inline-flex;
   align-items: center;
   gap: 0.625rem;
-  font-family: var(--font-mono);
-  font-size: var(--fs-xs);
+  font-family: var(--font-future);
+  font-size: 0.7rem;
   color: var(--primary-light);
-  letter-spacing: 0.2em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   margin-bottom: var(--space-md);
 }
@@ -929,9 +931,10 @@ main { position: relative; z-index: var(--z-content); }
 
 .stat-value {
   display: block;
-  font-family: var(--font-display);
+  font-family: var(--font-tech);
   font-size: clamp(1.75rem, 3vw, 2.5rem);
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: 0.02em;
   color: var(--text-heading);
   margin-bottom: 0.5rem;
 }
@@ -984,11 +987,11 @@ main { position: relative; z-index: var(--z-content); }
 }
 
 .timeline-year {
-  font-family: var(--font-display);
-  font-size: var(--fs-sm);
-  font-weight: 600;
+  font-family: var(--font-tech);
+  font-size: var(--fs-md);
+  font-weight: 700;
   color: var(--primary-light);
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   margin-bottom: 0.4rem;
 }
 
