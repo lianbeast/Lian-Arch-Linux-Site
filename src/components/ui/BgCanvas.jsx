@@ -28,7 +28,7 @@ export default function BgCanvas() {
   const rafRef = useRef(0)
   const particlesRef = useRef([])
   const [reducedMotion, setReducedMotion] = useState(getReducedMotion())
-  const [lowPower, setLowPower] = useState(getLowPower())
+  const [lowPower] = useState(getLowPower())
   const [dpr, setDpr] = useState(1)
 
   useEffect(() => {
@@ -42,7 +42,6 @@ export default function BgCanvas() {
     if (reducedMotion) return
     const canvas = canvasRef.current
     if (!canvas) return
-    const ctx = canvas.getContext('2d')
     const devicePixelRatio = Math.min(window.devicePixelRatio || 1, 2)
     setDpr(devicePixelRatio)
 
@@ -81,7 +80,7 @@ export default function BgCanvas() {
         p.y = Math.max(0, Math.min(h, p.y))
       }
 
-      ctx.strokeStyle = 'rgba(99, 102, 241, 0.08)'
+      ctx.strokeStyle = 'rgba(23, 147, 209, 0.08)'
       ctx.lineWidth = 0.5
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
@@ -93,7 +92,7 @@ export default function BgCanvas() {
             ctx.beginPath()
             ctx.moveTo(particles[i].x, particles[i].y)
             ctx.lineTo(particles[j].x, particles[j].y)
-            ctx.strokeStyle = `rgba(99, 102, 241, ${opacity})`
+            ctx.strokeStyle = `rgba(23, 147, 209, ${opacity})`
             ctx.stroke()
           }
         }
@@ -102,8 +101,8 @@ export default function BgCanvas() {
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i]
         const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * devicePixelRatio)
-        gradient.addColorStop(0, `rgba(99, 102, 241, ${p.opacity})`)
-        gradient.addColorStop(1, 'rgba(99, 102, 241, 0)')
+        gradient.addColorStop(0, `rgba(23, 147, 209, ${p.opacity})`)
+        gradient.addColorStop(1, 'rgba(23, 147, 209, 0)')
         ctx.fillStyle = gradient
         ctx.beginPath()
         ctx.arc(p.x, p.y, p.r * devicePixelRatio, 0, Math.PI * 2)

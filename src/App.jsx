@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useLayoutEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { SECTIONS, NAV_LINKS } from './utils/constants'
 import { ArchLinuxIcon } from './components/ui/Icons'
 import Hero from './components/sections/Hero'
@@ -74,13 +74,12 @@ function useScrollProgress() {
   return progress
 }
 
+const REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
 function Navbar({ activeSection }) {
   const [mobileOpen, setMobileOpen] = useState(false)
   const navRef = useRef(null)
   const pillRef = useRef(null)
-  const reducedMotion = useRef(
-    window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  ).current
 
   // Scroll-aware navbar hide/show
   const [hidden, setHidden] = useState(false)
@@ -106,7 +105,7 @@ function Navbar({ activeSection }) {
 
   // Animate pill to active link
   useEffect(() => {
-    if (reducedMotion || !navRef.current || !pillRef.current) return
+    if (REDUCED_MOTION || !navRef.current || !pillRef.current) return
     const activeLink = navRef.current.querySelector('.nav-link.active')
     if (!activeLink) { pillRef.current.style.opacity = '0'; pillRef.current.style.transform = 'translateX(0) scaleX(0)'; return }
     const container = navRef.current.getBoundingClientRect()
@@ -115,11 +114,11 @@ function Navbar({ activeSection }) {
     const translate = link.left - container.left
     pillRef.current.style.transform = `translateX(${translate}px) scaleX(${scale})`
     pillRef.current.style.opacity = '1'
-  }, [activeSection, reducedMotion])
+  }, [activeSection])
 
   // Magnetic hover effect (desktop only)
   useEffect(() => {
-    if (reducedMotion || window.innerWidth < 768) return
+    if (REDUCED_MOTION || window.innerWidth < 768) return
     const links = navRef.current?.querySelectorAll('.nav-link')
     if (!links) return
     const cleanups = []
@@ -136,7 +135,7 @@ function Navbar({ activeSection }) {
       cleanups.push(() => { link.removeEventListener('mousemove', onMove); link.removeEventListener('mouseleave', onLeave) })
     })
     return () => cleanups.forEach(fn => fn())
-  }, [reducedMotion])
+  })
 
   // Close mobile menu on resize to desktop
   useEffect(() => {
@@ -156,6 +155,7 @@ function Navbar({ activeSection }) {
 
   return (
     <nav className={`nav${hidden ? ' nav--hidden' : ''}`} role="navigation" aria-label="Main navigation">
+      <div className="nav-glow-line" aria-hidden="true" />
       <div className="nav-inner">
         <a href="#home" className="nav-brand" aria-label="Arch Linux Home">
           <span className="nav-brand-icon">
@@ -175,12 +175,12 @@ function Navbar({ activeSection }) {
           <span className="hamburger-line" />
         </button>
         <ul ref={navRef} id="nav-menu" className={`nav-links${mobileOpen ? ' open' : ''}`} role="menubar">
-          {!reducedMotion && <span ref={pillRef} className="nav-active-pill" />}
-          {NAV_LINKS.map((link) => {
+          {!REDUCED_MOTION && <span ref={pillRef} className="nav-active-pill" />}
+          {NAV_LINKS.map((link, i) => {
             const activeSectionId = SECTIONS[activeSection]
             const isActive = activeSectionId === link.id
             return (
-              <li key={link.id} role="none">
+              <li key={link.id} role="none" style={{ '--i': i }}>
                 <button
                   role="menuitem"
                   className={`nav-link ${isActive ? 'active' : ''}`}
@@ -196,7 +196,30 @@ function Navbar({ activeSection }) {
               </li>
             )
           })}
+          <li role="none" className="nav-cta-mobile-item">
+            <button
+              role="menuitem"
+              className="nav-cta-mobile btn btn-primary"
+              onClick={() => {
+                const el = document.getElementById('download')
+                if (el) el.scrollIntoView({ behavior: 'smooth' })
+                setMobileOpen(false)
+              }}
+            >
+              Download
+            </button>
+          </li>
         </ul>
+        <button
+          className="nav-cta btn btn-primary"
+          onClick={() => {
+            const el = document.getElementById('download')
+            if (el) el.scrollIntoView({ behavior: 'smooth' })
+            setMobileOpen(false)
+          }}
+        >
+          Download
+        </button>
       </div>
     </nav>
   )
