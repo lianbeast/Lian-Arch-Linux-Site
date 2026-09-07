@@ -8,6 +8,7 @@ import Features from './components/sections/Features'
 import Terminal from './components/sections/Terminal'
 import Architectures from './components/sections/Architectures'
 import Download from './components/sections/Download'
+import PackageSearch from './components/sections/PackageSearch'
 import UseCases from './components/sections/UseCases'
 import Community from './components/sections/Community'
 import Footer from './components/sections/Footer'
@@ -253,6 +254,7 @@ export default function App() {
         <Terminal />
         <Architectures />
         <Download />
+        <PackageSearch />
         <UseCases />
         <Community />
       </main>
