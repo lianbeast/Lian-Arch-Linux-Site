@@ -40,3 +40,7 @@ Max three families visible per viewport region.
 - Primary button: solid primary, white text, sheen sweep on hover.
 - Secondary button: transparent, hairline, hover border-active.
 - Focus-visible always: 2px accent outline, 3px offset.
+- Full kit with live examples: `ui-kit-site/index.html`; production rules in `ui-kit-site/kit.css`.
+
+## Hero variants
+Six interchangeable heroes exist in production (`src/components/sections/`): BootHero (default, boot log), TopoHero (contours), SpecHero (PKGBUILD), RaceHero (mirror race), TilingHero (tiling WM), GardenHero (growing tree). New mockups should either respect BootHero's register or consciously pick one variant's metaphor and commit to it.

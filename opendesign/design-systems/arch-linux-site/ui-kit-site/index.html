@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Arch Linux Site: UI Kit</title>
+<link rel="stylesheet" href="../tokens/colors_and_type.css">
+<link rel="stylesheet" href="kit.css">
+<style>
+  body { background: var(--bg-deep); color: var(--text-primary); font-family: var(--font-body); margin: 0; }
+  .kit-main { max-width: var(--max-width); margin: 0 auto; padding: var(--space-2xl) var(--space-xl) var(--space-4xl); }
+  .kit-part { margin: var(--space-3xl) 0; }
+  .kit-note { font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--text-muted); margin-bottom: var(--space-lg); }
+  .chip-row { display: flex; flex-wrap: wrap; gap: var(--space-md); align-items: center; }
+  .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: var(--space-sm); }
+  .swatch { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: var(--space-sm); font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--text-secondary); }
+  .swatch i { display: block; height: 44px; border-radius: 4px; margin-bottom: 6px; }
+</style>
+</head>
+<body>
+<div class="scroll-progress"><div id="kitfill" class="scroll-progress-fill"></div></div>
+<div id="kitpac" class="pacman-readout" hidden></div>
+
+<main class="kit-main">
+
+  <header class="section-header">
+    <p class="section-tag">UI KIT · arch-linux-site</p>
+    <h1 class="section-title" style="font-size: var(--fs-hero);">The system, live.</h1>
+    <p class="section-lead">Every component below is the production rule, unmodified. Hover, focus, toggle: this is what ships.</p>
+  </header>
+
+  <section class="kit-part" aria-label="Color tokens">
+    <p class="kit-note">// color tokens: copy values, never re-derive</p>
+    <div class="swatches">
+      <div class="swatch"><i style="background: var(--bg-void)"></i>--bg-void #050508</div>
+      <div class="swatch"><i style="background: var(--bg-deep)"></i>--bg-deep #0a0a0f</div>
+      <div class="swatch"><i style="background: var(--bg-surface)"></i>--bg-surface</div>
+      <div class="swatch"><i style="background: var(--bg-card); border: 1px solid var(--border)"></i>--bg-card 60%</div>
+      <div class="swatch"><i style="background: var(--primary)"></i>--primary #1793D1</div>
+      <div class="swatch"><i style="background: var(--primary-light)"></i>--primary-light</div>
+      <div class="swatch"><i style="background: var(--accent)"></i>--accent #22d3ee</div>
+      <div class="swatch"><i style="background: var(--text-primary)"></i>--text-primary</div>
+      <div class="swatch"><i style="background: var(--text-muted)"></i>--text-muted</div>
+      <div class="swatch"><i style="background: var(--border-active)"></i>--border-active</div>
+    </div>
+  </section>
+
+  <section class="kit-part" aria-label="Buttons">
+    <p class="kit-note">// .btn-primary (sheen sweep on hover) · .btn-secondary · focus-visible: 2px accent outline</p>
+    <div class="chip-row">
+      <a class="btn btn-primary" href="#">Download</a>
+      <a class="btn btn-secondary" href="#">Read the wiki</a>
+      <span class="kit-note" style="margin:0">tab through them: focus never hides</span>
+    </div>
+  </section>
+
+  <section class="kit-part" aria-label="Cards">
+    <p class="kit-note">// .card: glass bg, ::before top-edge line brightens on hover, translateY(-4px)</p>
+    <div class="grid-3">
+      <article class="card">
+        <span class="card-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2L2 7l10 5 10-5L12 2zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <h3 class="card-title">Rolling release</h3>
+        <p class="card-text">One command, always current. No versions to wait for, none to fear.</p>
+      </article>
+      <article class="card">
+        <span class="card-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></span>
+        <h3 class="card-title">The AUR</h3>
+        <p class="card-text">80,000+ build recipes in plain text. Read before you run.</p>
+      </article>
+      <article class="card">
+        <span class="card-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg></span>
+        <h3 class="card-title">Minimal base</h3>
+        <p class="card-text">Boots to a shell. Everything after is your decision.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="kit-part" aria-label="Terminal">
+    <p class="kit-note">// .terminal: #08090d body, accent prompt, steps(1) blink; reduced-motion stops the cursor</p>
+    <div class="terminal-wrapper">
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot red"></span>
+          <span class="terminal-dot yellow"></span>
+          <span class="terminal-dot green"></span>
+          <span class="terminal-title">you@arch ~</span>
+        </div>
+        <div class="terminal-body">
+          <div class="terminal-line"><span style="color:var(--accent)">[you@arch ~]$</span> pacman -Syu</div>
+          <div class="terminal-line">:: Synchronizing package databases…</div>
+          <div class="terminal-line">core                132.4 KiB   1.23 MiB/s 00:00 [######################] 100%</div>
+          <div class="terminal-line">extra              1917.2 KiB   8.41 MiB/s 00:00 [######################] 100%</div>
+          <div class="terminal-line">:: Starting full system upgrade…</div>
+          <div class="terminal-line" style="color:var(--text-muted)">resolving dependencies…</div>
+          <div class="terminal-line" style="color:var(--text-muted)">looking for conflicting packages…</div>
+          <div class="terminal-line"><span style="color:#a5f3c4">Packages (2) linux-6.12.1-1 linux-firmware-20241111-1</span></div>
+          <div class="terminal-input-row">
+            <span class="terminal-prompt">[you@arch ~]$</span>
+            <span class="terminal-cursor" aria-hidden="true"></span>
+          </div>
+        </div>
+        <div class="terminal-chips">
+          <button class="terminal-chip">pacman -Syu</button>
+          <button class="terminal-chip">neofetch</button>
+          <button class="terminal-chip">uname -r</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="kit-part" aria-label="FAQ">
+    <p class="kit-note">// native details/summary: zero-JS accordion, marker removed, chevron rotates</p>
+    <div class="faq-list">
+      <details class="faq-item" open>
+        <summary class="faq-question">Is Arch hard to install? <span class="faq-chevron" aria-hidden="true">▾</span></summary>
+        <p class="faq-answer">There are two paths. archinstall gives you a guided installer. The manual path is harder, but it is a feature.</p>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-question">Will it break? <span class="faq-chevron" aria-hidden="true">▾</span></summary>
+        <p class="faq-answer">A rolling distro updated regularly is stable. Breakage comes from partial upgrades and ignoring pacman's output.</p>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-question">What is the AUR? <span class="faq-chevron" aria-hidden="true">▾</span></summary>
+        <p class="faq-answer">A community repository of build recipes. Every package is a PKGBUILD, plain text you can read before you run it.</p>
+      </details>
+    </div>
+  </section>
+
+  <section class="kit-part" aria-label="Install command">
+    <p class="kit-note">// .install-cmd: mono code left, pill copy right, overflow-x safe</p>
+    <div class="install-cmd">
+      <code>sudo pacman -S archlinux-keyring &amp;&amp; sudo pacman -Syu</code>
+      <button class="cmd-copy">copy</button>
+    </div>
+  </section>
+
+  <section class="kit-part" aria-label="Hero variants">
+    <p class="kit-note">// 6 production hero variants; BootHero is default. Components: src/components/sections/*Hero.jsx</p>
+    <div class="grid-2">
+      <article class="card">
+        <h3 class="card-title">01 BootHero <span class="kit-note" style="margin:0">default</span></h3>
+        <p class="card-text">The hero IS the boot log. Green OK lines, timestamped, caret blinking after the tagline.</p>
+      </article>
+      <article class="card">
+        <h3 class="card-title">02 TopoHero</h3>
+        <p class="card-text">Topographic contour map: elevation lines radiating from the summit.</p>
+      </article>
+      <article class="card">
+        <h3 class="card-title">03 SpecHero</h3>
+        <p class="card-text">PKGBUILD spec sheet: the distro documented as its own package.</p>
+      </article>
+      <article class="card">
+        <h3 class="card-title">04 RaceHero</h3>
+        <p class="card-text">Mirrorlist latency race: bars fill in ranking order, localhost wins.</p>
+      </article>
+      <article class="card">
+        <h3 class="card-title">05 TilingHero</h3>
+        <p class="card-text">Tiling WM: statusbar, master/ssh/htop tiles, Alt+j/k focus. Feature windows = workspace 2.</p>
+      </article>
+      <article class="card">
+        <h3 class="card-title">06 GardenHero</h3>
+        <p class="card-text">Prompt garden: terminal seed grows an SVG tree; features are rooted cuttings.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="kit-part" aria-label="Scroll progress">
+    <p class="kit-note">// scroll: progress bar fills (primary→accent), pacman readout counts the page "downloading"</p>
+    <p class="section-lead" style="text-align:left">Scroll. Watch the top bar and the mono readout, top-left. That readout is the site's signature flourish: pacman downloading its own page as you read it.</p>
+  </section>
+
+</main>
+
+<script>
+  // Scroll progress + pacman readout (production behavior, App.jsx ScrollProgress)
+  const fill = document.getElementById('kitfill')
+  const pac = document.getElementById('kitpac')
+  const onScroll = () => {
+    const h = document.documentElement.scrollHeight - innerHeight
+    const p = h > 0 ? (scrollY / h) * 100 : 0
+    fill.style.transform = `scaleX(${p / 100})`
+    const blocks = Math.round(p / 5)
+    pac.hidden = !(p > 1 && p < 99)
+    pac.textContent = `arch-linux-site ${String(Math.round(p)).padStart(2, ' ')}% [${'#'.repeat(blocks)}${'·'.repeat(20 - blocks)}]`
+  }
+  addEventListener('scroll', onScroll, { passive: true })
+  onScroll()
+</script>
+</body>
+</html>

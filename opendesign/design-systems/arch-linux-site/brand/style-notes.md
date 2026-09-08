@@ -53,5 +53,19 @@ Inline SVGs only (`src/components/ui/Icons.jsx`), stroke-based, currentColor. No
 ## Imagery
 No photography. The only imagery is generated: Three.js wireframe mountain, ASCII art, terminal output. Screenshots would age; the wireframe aesthetic doesn't.
 
+## Hero variants (all 6 production-ready)
+One site, six interchangeable hero sections. BootHero is the default; the rest are one-line swaps in App.jsx.
+
+| # | Component | Metaphor | Signature move |
+|---|---|---|---|
+| 01 | BootHero *(default)* | boot log | green [ OK ] lines, `bootline` stagger, blinking caret |
+| 02 | TopoHero | topographic survey | contour rings, elevation labels |
+| 03 | SpecHero | PKGBUILD | distro documented as its own package |
+| 04 | RaceHero | mirrorlist ranking | latency bars fill in order, localhost wins |
+| 05 | TilingHero | tiling WM | statusbar, master/ssh/htop tiles, Alt+j/k focus nav |
+| 06 | GardenHero | prompt garden | SVG tree grows via stroke-dashoffset, features as rooted cuttings |
+
+Shared constraints across variants: CSS-only animation (JS only for state), explicit `prefers-reduced-motion` kill per variant, tokens from the same `:root`. Swap: import in App.jsx, replace `<BootHero />` render.
+
 ## Radii
 6/10/16/24px. Cards 16, buttons 10, chips/inputs 6–10. Nothing pill-shaped except the nav active indicator.
