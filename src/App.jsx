@@ -33,7 +33,7 @@ function useReveal() {
       { threshold: 0.12, rootMargin: '0px 0px -10% 0px' }
     )
 
-    document.querySelectorAll('.reveal').forEach((el) => observer.observe(el))
+    document.querySelectorAll('.reveal, .reveal-stagger').forEach((el) => observer.observe(el))
     return () => observer.disconnect()
   }, [])
 }
