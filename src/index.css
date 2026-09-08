@@ -616,6 +616,8 @@ main { position: relative; z-index: var(--z-content); }
   html { scroll-behavior: auto; }
   .boot-anim { animation: none; }
   .boot-caret { animation: none; }
+  .contours { animation: none; }
+  .live-ping { animation: none; }
   .terminal-cursor { animation: none; }
   .marquee-track { animation: none; }
   .hero-glow-single { animation: none; }
@@ -814,6 +816,106 @@ main { position: relative; z-index: var(--z-content); }
   .headline-block { padding: 4vh 0; }
   .log-line { white-space: normal; }
   .log-ts { display: none; }
+}
+
+/* ===== TOPO HERO (mockup 02: hero as survey sheet) ===== */
+.topo-hero {
+  --contour: rgba(23, 147, 209, 0.22);
+  --contour-hot: rgba(34, 211, 238, 0.55);
+  overflow: hidden;
+}
+
+.contours {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: .8;
+  pointer-events: none;
+  animation: contours-drift 24s linear infinite;
+}
+@keyframes contours-drift {
+  from { transform: translateY(0); }
+  to { transform: translateY(-60px); }
+}
+
+.topo-sheet {
+  position: relative;
+  z-index: 2;
+  max-width: 1080px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: var(--space-3xl);
+  align-items: center;
+}
+
+.sheet-main .hero-title { text-align: left; }
+
+.coord-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: rgba(5, 5, 8, 0.72);
+  backdrop-filter: blur(8px);
+  padding: var(--space-lg);
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+}
+.coord-card .label {
+  color: var(--text-muted);
+  font-size: var(--fs-xs);
+  letter-spacing: .12em;
+}
+.coord-card .val { color: var(--text-heading); }
+.coord-card .val.hot { color: var(--accent); }
+.coord-row {
+  display: flex;
+  justify-content: space-between;
+  padding: .4rem 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.coord-row:last-child { border-bottom: 0; }
+
+.live-ping {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #7ec699;
+  box-shadow: 0 0 10px rgba(126, 198, 153, .6);
+  margin-right: .5ch;
+  animation: ping 2s ease-out infinite;
+}
+@keyframes ping {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(.6); opacity: .5; }
+}
+
+/* survey corner registration marks */
+.topo-hero::after {
+  content: '';
+  position: absolute;
+  inset: 1.2rem;
+  border: 1px solid var(--border-subtle);
+  pointer-events: none;
+  mask-image: linear-gradient(to bottom, black 30%, transparent 60%);
+}
+.reg-mark {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  z-index: 1;
+}
+.reg-mark.tl { top: 1.4rem; left: 1.6rem; }
+.reg-mark.tr { top: 1.4rem; right: 1.6rem; }
+
+@media (max-width: 768px) {
+  .topo-sheet { grid-template-columns: 1fr; gap: var(--space-xl); }
+  .coord-card { max-width: 420px; }
+  .topo-hero::after { display: none; }
 }
 
 /* ===== BUTTONS ===== */
