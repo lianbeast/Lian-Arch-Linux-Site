@@ -2,11 +2,9 @@ import { useState, useEffect, useRef } from 'react'
 import { SECTIONS, NAV_LINKS } from './utils/constants'
 import { ArchLinuxIcon } from './components/ui/Icons'
 import BootHero from './components/sections/BootHero'
-import TopoHero from './components/sections/TopoHero' // mockup 02 variant — swap in place of BootHero to try
-import SpecHero from './components/sections/SpecHero' // mockup 03 variant — swap in place of BootHero to try
-import RaceHero from './components/sections/RaceHero' // mockup 04 variant — swap in place of BootHero to try
-import TilingHero from './components/sections/TilingHero' // mockup 05 variant — swap in place of BootHero to try
-import GardenHero from './components/sections/GardenHero' // mockup 06 variant — swap in place of BootHero to try
+// Hero variants — to try one, import it and swap the render below:
+//   02 TopoHero  03 SpecHero  04 RaceHero  05 TilingHero  06 GardenHero
+//   (src/components/sections/<Name>.jsx)
 import About from './components/sections/About'
 import History from './components/sections/History'
 import Features from './components/sections/Features'
