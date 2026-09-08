@@ -1,4 +1,36 @@
+import { useState } from 'react'
 import { ArrowRightIcon } from '../ui/Icons.jsx'
+
+const INSTALL_CMDS = [
+  {
+    id: 'dd',
+    label: 'Write ISO to USB (replace sdX with your drive):',
+    cmd: 'sudo dd bs=4M if=archlinux-2026.08.01-x86_64.iso of=/dev/sdX status=progress oflag=sync',
+  },
+  {
+    id: 'verify',
+    label: 'Verify the download before you trust it:',
+    cmd: 'sha256sum -c archlinux-2026.08.01-x86_64.iso.sha256',
+  },
+]
+
+function CopyButton({ cmd }) {
+  const [copied, setCopied] = useState(false)
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(cmd)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1500)
+    } catch {
+      // clipboard blocked (http, permissions) — user can still select manually
+    }
+  }
+  return (
+    <button type="button" className="cmd-copy" onClick={copy} aria-label="Copy command">
+      {copied ? 'Copied!' : 'Copy'}
+    </button>
+  )
+}
 
 const isos = [
   {
@@ -70,6 +102,21 @@ export default function Download() {
             </div>
           </button>
         ))}
+      </div>
+      <div className="install-cmds reveal">
+        <h3 className="install-cmds-title">Put it on a USB stick</h3>
+        {INSTALL_CMDS.map((c) => (
+          <div key={c.id} className="install-cmd-row">
+            <p className="install-cmd-label">{c.label}</p>
+            <div className="install-cmd">
+              <code>{c.cmd}</code>
+              <CopyButton cmd={c.cmd} />
+            </div>
+          </div>
+        ))}
+        <p className="install-cmd-note">
+          Or skip the terminal entirely: <a href="https://wiki.archlinux.org/title/USB_flash_installation_medium" target="_blank" rel="noopener noreferrer">the wiki lists GUI tools too</a>.
+        </p>
       </div>
     </section>
   )

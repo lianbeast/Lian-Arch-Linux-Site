@@ -1,4 +1,4 @@
-export const SECTIONS = ['home', 'about', 'history', 'features', 'terminal', 'architectures', 'download', 'packages', 'usecases', 'community']
+export const SECTIONS = ['home', 'about', 'history', 'features', 'terminal', 'architectures', 'download', 'packages', 'faq', 'usecases', 'community']
 
 export const NAV_LINKS = [
   { id: 'home', label: 'Home' },

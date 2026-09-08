@@ -9,6 +9,7 @@ import Terminal from './components/sections/Terminal'
 import Architectures from './components/sections/Architectures'
 import Download from './components/sections/Download'
 import PackageSearch from './components/sections/PackageSearch'
+import Faq from './components/sections/Faq'
 import UseCases from './components/sections/UseCases'
 import Community from './components/sections/Community'
 import Footer from './components/sections/Footer'
@@ -255,6 +256,7 @@ export default function App() {
         <Architectures />
         <Download />
         <PackageSearch />
+        <Faq />
         <UseCases />
         <Community />
       </main>
