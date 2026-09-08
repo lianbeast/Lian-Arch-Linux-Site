@@ -3,6 +3,7 @@ import { SECTIONS, NAV_LINKS } from './utils/constants'
 import { ArchLinuxIcon } from './components/ui/Icons'
 import BootHero from './components/sections/BootHero'
 import TopoHero from './components/sections/TopoHero' // mockup 02 variant — swap in place of BootHero to try
+import SpecHero from './components/sections/SpecHero' // mockup 03 variant — swap in place of BootHero to try
 import About from './components/sections/About'
 import History from './components/sections/History'
 import Features from './components/sections/Features'
