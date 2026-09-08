@@ -6,6 +6,7 @@ import TopoHero from './components/sections/TopoHero' // mockup 02 variant — s
 import SpecHero from './components/sections/SpecHero' // mockup 03 variant — swap in place of BootHero to try
 import RaceHero from './components/sections/RaceHero' // mockup 04 variant — swap in place of BootHero to try
 import TilingHero from './components/sections/TilingHero' // mockup 05 variant — swap in place of BootHero to try
+import GardenHero from './components/sections/GardenHero' // mockup 06 variant — swap in place of BootHero to try
 import About from './components/sections/About'
 import History from './components/sections/History'
 import Features from './components/sections/Features'
