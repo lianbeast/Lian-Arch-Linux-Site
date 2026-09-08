@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { SECTIONS, NAV_LINKS } from './utils/constants'
 import { ArchLinuxIcon } from './components/ui/Icons'
-import Hero from './components/sections/Hero'
+import BootHero from './components/sections/BootHero'
 import About from './components/sections/About'
 import History from './components/sections/History'
 import Features from './components/sections/Features'
@@ -229,9 +229,13 @@ function Navbar({ activeSection }) {
 }
 
 function ScrollProgress({ progress }) {
+  const blocks = Math.round(progress / 5)
   return (
     <div className="scroll-progress" aria-hidden="true">
       <div className="scroll-progress-fill" style={{ transform: `scaleX(${progress / 100})` }} />
+      <div className="pacman-readout" style={{ opacity: progress > 1 && progress < 99 ? 1 : 0 }}>
+        arch-linux-site {String(Math.round(progress)).padStart(2, ' ')}% [{'#'.repeat(blocks)}{'·'.repeat(20 - blocks)}]
+      </div>
     </div>
   )
 }
@@ -248,7 +252,7 @@ export default function App() {
       <ScrollProgress progress={progress} />
       <Navbar activeSection={activeSection} />
       <main id="main-content">
-        <Hero />
+        <BootHero />
         <About />
         <History />
         <Features />

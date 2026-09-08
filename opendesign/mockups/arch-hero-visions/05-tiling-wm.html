@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>05 — Tiling WM</title>
+<link rel="stylesheet" href="../../design-systems/arch-linux-site/tokens/colors_and_type.css">
+<style>
+  /* ============ 05 TILING WM ============
+     Concept: the page IS a window manager. The hero is a workspace split
+     into tiles; a status bar runs across the top; keyboard hints ($mod+j/k)
+     navigate. Sections live in "workspaces" you switch via the bar. The
+     chrome isn't around the content — the chrome is the argument. */
+  :root {
+    --gap: 10px;
+    --tile-border: rgba(148, 163, 184, 0.14);
+    --bar-h: 34px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg-void);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    line-height: 1.65;
+    overflow-x: hidden;
+  }
+  ::selection { background: var(--primary-glow-strong); color: #fff; }
+
+  /* ============ STATUS BAR ============ */
+  .statusbar {
+    position: fixed; top: 0; left: 0; right: 0; height: var(--bar-h);
+    background: rgba(5,5,8,0.92); backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--tile-border);
+    display: flex; align-items: center; gap: var(--space-md);
+    padding: 0 var(--space-md);
+    font-family: var(--font-mono); font-size: var(--fs-xs);
+    z-index: var(--z-nav);
+  }
+  .ws-tabs { display: flex; gap: 6px; }
+  .ws-tab {
+    padding: 2px 10px; border-radius: var(--radius-sm);
+    background: var(--bg-surface); color: var(--text-secondary);
+    cursor: pointer; border: 1px solid transparent;
+    transition: all var(--duration-fast) var(--ease-out);
+    user-select: none;
+  }
+  .ws-tab:hover { color: var(--text-heading); border-color: var(--border-active); }
+  .ws-tab.active { background: var(--primary-glow); color: var(--text-heading); border-color: var(--border-active); }
+  .ws-tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .bar-title { color: var(--text-muted); }
+  .bar-right { margin-left: auto; display: flex; gap: var(--space-md); color: var(--text-secondary); }
+  .bar-right .accent { color: var(--accent); }
+
+  /* ============ WORKSPACE ============ */
+  .workspace {
+    padding-top: calc(var(--bar-h) + var(--gap));
+    min-height: 100vh;
+    display: grid;
+    gap: var(--gap);
+    padding-left: var(--gap); padding-right: var(--gap); padding-bottom: var(--gap);
+  }
+
+  /* tile primitive */
+  .tile {
+    border: 1px solid var(--tile-border);
+    background: var(--bg-deep);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    position: relative;
+    display: flex; flex-direction: column;
+  }
+  .tile-titlebar {
+    font-family: var(--font-mono); font-size: var(--fs-xs);
+    color: var(--text-muted);
+    padding: 4px 10px;
+    border-bottom: 1px solid var(--tile-border);
+    display: flex; justify-content: space-between; align-items: center;
+    background: var(--bg-surface);
+  }
+  .tile-titlebar .mode { color: var(--accent); }
+
+  /* ---- hero tiles: master + stack, i3-style ---- */
+  .ws-hero {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    grid-template-rows: minmax(420px, 62vh) minmax(180px, 1fr);
+  }
+  .tile-master { grid-column: 1; grid-row: 1 / -1; }
+  .tile-ssh { grid-column: 2; grid-row: 1; }
+  .tile-htop { grid-column: 2; grid-row: 2; }
+
+  .master-body {
+    flex: 1; display: flex; flex-direction: column; justify-content: center;
+    padding: clamp(1.5rem, 4vw, 4rem);
+    position: relative;
+  }
+  .master-body h1 {
+    font-family: var(--font-display); font-weight: 700;
+    font-size: var(--fs-hero); line-height: 1.02; letter-spacing: -0.03em;
+    color: var(--text-heading); margin: 0 0 1.2rem;
+  }
+  .master-body h1 .mod { color: var(--primary); }
+  .master-body p { max-width: 46ch; color: var(--text-secondary); font-size: var(--fs-md); margin: 0 0 2rem; }
+  .master-ctas { display: flex; gap: var(--space-md); flex-wrap: wrap; }
+  .keyhint {
+    font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--text-muted);
+    margin-top: var(--space-lg);
+  }
+  .keyhint kbd {
+    background: var(--bg-elevated); border: 1px solid var(--tile-border);
+    border-radius: 4px; padding: 1px 6px; color: var(--primary-light);
+  }
+
+  .btn {
+    font-family: var(--font-mono); font-size: var(--fs-sm);
+    padding: 0.85rem 1.6rem; border-radius: var(--radius-sm);
+    text-decoration: none; cursor: pointer;
+    border: 1px solid var(--border); background: transparent; color: var(--text-primary);
+    transition: all var(--duration-normal) var(--ease-out);
+  }
+  .btn:hover { border-color: var(--border-active); box-shadow: 0 0 24px var(--primary-glow); color: var(--text-heading); }
+  .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .btn-primary { background: var(--primary); border-color: var(--primary); color: #04121c; font-weight: 700; }
+  .btn-primary:hover { box-shadow: 0 0 32px var(--primary-glow-strong); color: #04121c; }
+
+  /* ssh tile: fake live session */
+  .ssh-body {
+    flex: 1; padding: var(--space-md); font-family: var(--font-mono);
+    font-size: var(--fs-xs); color: var(--text-secondary); line-height: 1.9;
+    display: flex; flex-direction: column; justify-content: flex-end;
+  }
+  .ssh-body .prompt { color: var(--primary-light); }
+  .ssh-body .ok { color: var(--good, #7ec699); }
+  .ssh-line { opacity: 0; animation: ssh-in .35s var(--ease-out) forwards; }
+  @keyframes ssh-in { to { opacity: 1; } }
+
+  /* htop tile */
+  .htop-body {
+    flex: 1; padding: var(--space-md); font-family: var(--font-mono);
+    font-size: var(--fs-xs); color: var(--text-secondary);
+    display: flex; flex-direction: column; gap: 8px; justify-content: center;
+  }
+  .meter { display: grid; grid-template-columns: 6ch 1fr 4ch; align-items: center; gap: var(--space-sm); }
+  .meter .lbl { color: var(--text-muted); }
+  .meter .pct { text-align: right; color: var(--primary-light); }
+  .meter-track { height: 10px; background: rgba(148,163,184,.08); border-radius: 2px; overflow: hidden; }
+  .meter-fill {
+    height: 100%; width: var(--w);
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    transform: scaleX(0); transform-origin: left;
+    animation: meter-grow 1s var(--ease-out) forwards;
+  }
+  @keyframes meter-grow { to { transform: scaleX(1); } }
+
+  /* ============ WORKSPACE 2: features as windows ============ */
+  .ws-features {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    padding: var(--space-section) var(--gap) var(--gap);
+    grid-auto-rows: minmax(300px, auto);
+  }
+  .ws-features-label {
+    grid-column: 1 / -1;
+    font-family: var(--font-tech); text-transform: uppercase; letter-spacing: .3em;
+    color: var(--primary-light); font-size: var(--fs-sm); font-weight: 600;
+    padding: 0 var(--space-sm) var(--space-sm);
+  }
+  .win-body { flex: 1; padding: var(--space-lg); display: flex; flex-direction: column; gap: .6rem; }
+  .win-body h3 { font-family: var(--font-display); font-size: var(--fs-lg); color: var(--text-heading); margin: 0; }
+  .win-body p { color: var(--text-secondary); font-size: var(--fs-sm); margin: 0; }
+  .win-body .win-cmd { font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--accent); margin-top: auto; border-top: 1px solid var(--border-subtle); padding-top: .6rem; }
+
+  .tile.focused { border-color: var(--border-active); box-shadow: 0 0 0 1px var(--border-active), 0 0 28px rgba(23,147,209,.12); }
+
+  @media (max-width: 860px) {
+    .ws-hero { grid-template-columns: 1fr; grid-template-rows: minmax(420px, 60vh) minmax(150px, auto) minmax(150px, auto); }
+    .tile-master { grid-column: 1; grid-row: 1; }
+    .tile-ssh { grid-row: 2; }
+    .tile-htop { grid-row: 3; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .ssh-line { opacity: 1; }
+    .meter-fill { transform: scaleX(1); }
+  }
+</style>
+</head>
+<body>
+
+<nav class="statusbar" aria-label="Window manager status bar">
+  <span class="bar-title">i3 · arch</span>
+  <div class="ws-tabs" role="tablist" aria-label="Workspaces">
+    <button class="ws-tab active" role="tab" aria-selected="true">1: main</button>
+    <a class="ws-tab" href="#features" role="tab" aria-selected="false">2: why</a>
+  </div>
+  <span class="bar-right">
+    <span>eth0 <span class="accent">▲</span></span>
+    <span>mem 2.1G/32G</span>
+    <span class="accent">2026-09-08 00:00</span>
+  </span>
+</nav>
+
+<div class="workspace ws-hero" id="home">
+  <section class="tile tile-master" aria-label="Arch Linux introduction">
+    <div class="tile-titlebar"><span>~ : zsh — 132×37</span><span class="mode">[$mod+1]</span></div>
+    <div class="master-body">
+      <h1>Arch <span class="mod">Linux</span></h1>
+      <p>The window manager stays out of the way. So does everything else. A rolling-release distribution where you place every tile, run every service, and nothing occupies memory you didn't allocate.</p>
+      <div class="master-ctas">
+        <a class="btn btn-primary" href="#features">Open workspace 2</a>
+        <a class="btn" href="https://wiki.archlinux.org/" target="_blank" rel="noopener">Read the wiki</a>
+      </div>
+      <p class="keyhint">hint: like this page, the whole system is <kbd>$mod</kbd> + your choice. Nothing grabs focus you didn't give it.</p>
+    </div>
+  </section>
+
+  <section class="tile tile-ssh" aria-label="Live session">
+    <div class="tile-titlebar"><span>ssh: root@your-box</span><span class="mode">term</span></div>
+    <div class="ssh-body">
+      <div class="ssh-line" style="animation-delay:.3s"><span class="prompt">[root@your-box ~]#</span> uptime</div>
+      <div class="ssh-line" style="animation-delay:.9s"> 00:00:01 up 41 days, load average: 0.24, 0.31, 0.19</div>
+      <div class="ssh-line" style="animation-delay:1.6s"><span class="prompt">[root@your-box ~]#</span> pacman -Syu</div>
+      <div class="ssh-line" style="animation-delay:2.2s"><span class="ok">:: Synchronizing package databases…</span></div>
+      <div class="ssh-line" style="animation-delay:2.9s"><span class="ok">:: Starting full system upgrade… nothing to do (you were current already)</span></div>
+    </div>
+  </section>
+
+  <section class="tile tile-htop" aria-label="System meters">
+    <div class="tile-titlebar"><span>htop</span><span class="mode">[F10 quit]</span></div>
+    <div class="htop-body">
+      <div class="meter"><span class="lbl">CPU</span><span class="meter-track"><span class="meter-fill" style="--w:12%"></span></span><span class="pct">12%</span></div>
+      <div class="meter"><span class="lbl">MEM</span><span class="meter-track"><span class="meter-fill" style="--w:6%"></span></span><span class="pct">6%</span></div>
+      <div class="meter"><span class="lbl">SRV</span><span class="meter-track"><span class="meter-fill" style="--w:4%"></span></span><span class="pct">4</span></div>
+    </div>
+  </section>
+</div>
+
+<div class="workspace ws-features" id="features">
+  <span class="ws-features-label">Workspace 2 — reasons</span>
+  <article class="tile">
+    <div class="tile-titlebar"><span>rolling-release.txt</span><span class="mode">vim</span></div>
+    <div class="win-body">
+      <h3>Rolling release</h3>
+      <p>One command, always current. Your pkgver is today's date, every day.</p>
+      <span class="win-cmd">$ pacman -Syu</span>
+    </div>
+  </article>
+  <article class="tile">
+    <div class="tile-titlebar"><span>minimal-base.txt</span><span class="mode">vim</span></div>
+    <div class="win-body">
+      <h3>Minimal base</h3>
+      <p>The install boots to a shell. What it becomes is entirely your configuration.</p>
+      <span class="win-cmd">$ pacstrap /mnt base linux</span>
+    </div>
+  </article>
+  <article class="tile">
+    <div class="tile-titlebar"><span>aur.txt</span><span class="mode">vim</span></div>
+    <div class="win-body">
+      <h3>AUR, 80,000+</h3>
+      <p>Community build recipes in plain text. Read first, build second, trust always earned.</p>
+      <span class="win-cmd">$ makepkg -si</span>
+    </div>
+  </article>
+  <article class="tile">
+    <div class="tile-titlebar"><span>wiki.txt</span><span class="mode">firefox</span></div>
+    <div class="win-body">
+      <h3>The wiki</h3>
+      <p>Documentation precise enough that other distros link to it. The manual IS the distro.</p>
+      <span class="win-cmd">$ xdg-open https://wiki.archlinux.org</span>
+    </div>
+  </article>
+</div>
+
+<script>
+  // $mod+j / $mod+k move focus between tiles — WM as interaction model
+  const tiles = [...document.querySelectorAll('.tile')];
+  let idx = 0;
+  const focus = (i) => {
+    tiles.forEach(t => t.classList.remove('focused'));
+    tiles[i]?.classList.add('focused');
+    tiles[i]?.setAttribute('tabindex', '-1');
+    tiles[i]?.focus({ preventScroll: true });
+  };
+  addEventListener('keydown', (e) => {
+    if (!e.altKey) return;
+    if (e.key === 'j') { idx = Math.min(idx + 1, tiles.length - 1); focus(idx); e.preventDefault(); }
+    if (e.key === 'k') { idx = Math.max(idx - 1, 0); focus(idx); e.preventDefault(); }
+  });
+  tiles.forEach((t, i) => t.addEventListener('click', () => { idx = i; focus(i); }));
+  focus(0);
+</script>
+</body>
+</html>

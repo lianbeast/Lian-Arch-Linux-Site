@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>02 — Topographic Survey</title>
+<link rel="stylesheet" href="../../design-systems/arch-linux-site/tokens/colors_and_type.css">
+<style>
+  /* ============ 02 TOPOGRAPHIC SURVEY ============
+     Concept: Arch as terrain. Contour lines drawn from real elevation data;
+     the hero is a survey sheet, coordinates and elevation markers do the
+     talking. The A-mountain from the live site, flattened into cartography. */
+  :root {
+    --contour: rgba(23, 147, 209, 0.22);
+    --contour-hot: rgba(34, 211, 238, 0.55);
+    --paper: var(--bg-void);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    line-height: 1.65;
+    overflow-x: hidden;
+  }
+  ::selection { background: var(--primary-glow-strong); color: #fff; }
+
+  /* ============ SURVEY SHEET HERO ============ */
+  .survey {
+    min-height: 100vh;
+    position: relative;
+    display: grid;
+    align-content: center;
+    padding: clamp(1.5rem, 5vw, 5rem);
+    overflow: hidden;
+  }
+  /* contour SVG background: the mountain as map */
+  .contours {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    opacity: .8;
+    animation: contours-drift 24s linear infinite;
+  }
+  @keyframes contours-drift {
+    from { transform: translateY(0); }
+    to   { transform: translateY(-60px); }
+  }
+  /* survey crosshair follows cursor */
+  .crosshair {
+    position: fixed; inset: 0; pointer-events: none; z-index: 5;
+    opacity: 0; transition: opacity var(--duration-normal);
+  }
+  .crosshair::before, .crosshair::after {
+    content: ''; position: absolute; background: var(--contour-hot);
+  }
+  .crosshair::before { left: 0; right: 0; height: 1px; top: 50%; }
+  .crosshair::after { top: 0; bottom: 0; width: 1px; left: 50%; }
+
+  .sheet {
+    position: relative; z-index: 2;
+    max-width: 1200px; margin: 0 auto; width: 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr);
+    gap: var(--space-3xl);
+    align-items: end;
+  }
+  .sheet-main h1 {
+    font-family: var(--font-display); font-weight: 700;
+    font-size: var(--fs-hero); line-height: 1.0; letter-spacing: -0.03em;
+    color: var(--text-heading); margin: 0 0 1.4rem;
+  }
+  .sheet-main h1 .alt { color: var(--primary); }
+  .sheet-main p { max-width: 44ch; color: var(--text-secondary); font-size: var(--fs-md); margin: 0 0 2.4rem; }
+  .sheet-ctas { display: flex; gap: var(--space-md); flex-wrap: wrap; }
+
+  /* coordinate readout column */
+  .coord-card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: rgba(5,5,8,0.72);
+    backdrop-filter: blur(8px);
+    padding: var(--space-lg);
+    font-family: var(--font-mono);
+    font-size: var(--fs-sm);
+  }
+  .coord-card .label { color: var(--text-muted); font-size: var(--fs-xs); letter-spacing: .12em; }
+  .coord-card .val { color: var(--text-heading); }
+  .coord-card .val.hot { color: var(--accent); }
+  .coord-row { display: flex; justify-content: space-between; padding: .4rem 0; border-bottom: 1px solid var(--border-subtle); }
+  .coord-row:last-child { border-bottom: 0; }
+  .live-ping { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--boot-dot, #7ec699); box-shadow: 0 0 10px rgba(126,198,153,.6); animation: ping 2s ease-out infinite; }
+  @keyframes ping { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(.6); opacity: .5; } }
+
+  /* survey corner registration marks */
+  .survey::after {
+    content: '';
+    position: absolute; inset: 1.2rem;
+    border: 1px solid var(--border-subtle);
+    pointer-events: none;
+    mask-image: linear-gradient(to bottom, black 30%, transparent 60%);
+  }
+  .reg-mark { position: absolute; width: 14px; height: 14px; color: var(--text-muted); font-family: var(--font-mono); font-size: 10px; z-index: 1; }
+  .reg-mark.tl { top: 1.6rem; left: 1.6rem; } .reg-mark.tr { top: 1.6rem; right: 1.6rem; }
+
+  .btn {
+    font-family: var(--font-mono); font-size: var(--fs-sm);
+    padding: 0.85rem 1.6rem; border-radius: var(--radius-sm);
+    text-decoration: none; cursor: pointer;
+    border: 1px solid var(--border); background: transparent; color: var(--text-primary);
+    transition: all var(--duration-normal) var(--ease-out);
+    position: relative; overflow: hidden;
+  }
+  .btn:hover { border-color: var(--border-active); box-shadow: 0 0 24px var(--primary-glow); color: var(--text-heading); }
+  .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .btn-primary { background: var(--primary); border-color: var(--primary); color: #04121c; font-weight: 700; }
+  .btn-primary:hover { box-shadow: 0 0 32px var(--primary-glow-strong); color: #04121c; }
+
+  /* ============ LEGEND (features) ============ */
+  .legend { max-width: 1200px; margin: 0 auto; padding: var(--space-section) clamp(1.5rem, 5vw, 3rem); position: relative; }
+  .legend-header { margin-bottom: var(--space-2xl); display: grid; gap: .6rem; }
+  .legend-kicker { font-family: var(--font-tech); text-transform: uppercase; letter-spacing: .3em; color: var(--primary-light); font-size: var(--fs-sm); font-weight: 600; }
+  .legend-header h2 { font-family: var(--font-display); font-size: var(--fs-4xl); color: var(--text-heading); margin: 0; letter-spacing: -0.02em; }
+  .legend-note { font-family: var(--font-mono); color: var(--text-muted); font-size: var(--fs-sm); }
+
+  .legend-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--space-lg); }
+  .elev-card {
+    border: 1px solid var(--border); border-radius: var(--radius-md);
+    background: var(--bg-card);
+    padding: var(--space-xl);
+    position: relative; overflow: hidden;
+    transition: border-color var(--duration-normal) var(--ease-out), transform var(--duration-normal) var(--ease-out);
+  }
+  .elev-card:hover { border-color: var(--border-active); transform: translateY(-4px); }
+  .elev-card:focus-within { outline: 2px solid var(--accent); outline-offset: 3px; }
+  /* each card gets a mini elevation profile, unique per card */
+  .elev-card .profile { display: block; width: 100%; height: 56px; margin-bottom: var(--space-md); opacity: .7; transition: opacity var(--duration-normal); }
+  .elev-card:hover .profile { opacity: 1; }
+  .elev-card h3 { font-family: var(--font-display); font-size: var(--fs-lg); color: var(--text-heading); margin: 0 0 .5rem; }
+  .elev-card .elev-tag { font-family: var(--font-future); font-size: var(--fs-xs); color: var(--accent); letter-spacing: .1em; position: absolute; top: var(--space-md); right: var(--space-md); }
+  .elev-card p { color: var(--text-secondary); font-size: var(--fs-sm); margin: 0; }
+
+  @media (max-width: 860px) {
+    .sheet { grid-template-columns: 1fr; gap: var(--space-xl); }
+    .coord-card { max-width: 380px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .contours { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="crosshair" id="crosshair" aria-hidden="true"></div>
+
+<header class="survey" id="home">
+  <!-- contour lines: the A-mountain as elevation map, two peaks and the pass -->
+  <svg class="contours" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <defs>
+      <radialGradient id="peakGlow" cx="50%" cy="55%" r="55%">
+        <stop offset="0%" stop-color="rgba(23,147,209,0.10)"/>
+        <stop offset="100%" stop-color="rgba(23,147,209,0)"/>
+      </radialGradient>
+    </defs>
+    <rect width="1200" height="800" fill="url(#peakGlow)"/>
+    <!-- repeated contour loops = elevation bands; x scaled per band = peak shape -->
+    <g fill="none" stroke="var(--contour)" stroke-width="1">
+      <path d="M 100 700 Q 350 660 600 700 T 1100 700"/>
+      <path d="M 80 640 Q 300 600 480 640 Q 560 620 600 640 Q 720 600 920 640 T 1120 640"/>
+      <path d="M 60 580 Q 260 540 440 580 Q 540 540 660 580 Q 780 540 960 580 T 1140 580"/>
+      <path d="M 40 520 Q 220 480 400 520 Q 520 460 600 520 Q 700 460 800 520 Q 980 480 1160 520"/>
+      <path d="M 20 460 Q 180 420 360 460 Q 480 380 540 460 Q 600 380 660 460 Q 720 380 840 460 Q 1020 420 1180 460"/>
+      <path d="M 0 400 Q 140 360 320 400 Q 440 300 500 400 Q 600 300 700 400 Q 760 300 880 400 Q 1060 360 1200 400"/>
+      <path d="M 0 340 Q 100 300 280 340 Q 400 240 480 340 Q 600 220 720 340 Q 800 240 920 340 Q 1100 300 1200 340"/>
+      <path d="M 0 280 Q 60 240 240 280 Q 360 180 460 280 Q 600 150 740 280 Q 840 180 960 280 Q 1140 240 1200 280"/>
+    </g>
+    <!-- the summit ridge: single bright cyan line -->
+    <path d="M 0 220 Q 20 180 200 220 Q 320 130 440 220 Q 600 90 760 220 Q 880 130 1000 220 Q 1180 180 1200 220"
+          fill="none" stroke="var(--contour-hot)" stroke-width="1.4"/>
+    <!-- elevation points -->
+    <g fill="var(--contour-hot)">
+      <circle cx="440" cy="220" r="3"/><circle cx="760" cy="220" r="3"/>
+    </g>
+    <text x="440" y="200" fill="var(--text-muted)" font-family="JetBrains Mono, monospace" font-size="11">2624 m</text>
+    <text x="760" y="200" fill="var(--text-muted)" font-family="JetBrains Mono, monospace" font-size="11">2624 m</text>
+  </svg>
+
+  <span class="reg-mark tl" aria-hidden="true">+</span>
+  <span class="reg-mark tr" aria-hidden="true">+</span>
+
+  <div class="sheet">
+    <div class="sheet-main">
+      <h1>Arch <span class="alt">Linux</span></h1>
+      <p>Surveyed since 2002. A rolling-release Linux distribution for the self-directed: minimal base, exact documentation, no hidden layers between you and the summit.</p>
+      <div class="sheet-ctas">
+        <a class="btn btn-primary" href="#legend">Begin ascent</a>
+        <a class="btn" href="https://wiki.archlinux.org/" target="_blank" rel="noopener">Field manual (wiki)</a>
+      </div>
+    </div>
+
+    <aside class="coord-card" aria-label="Survey coordinates">
+      <div class="coord-row"><span class="label">SURVEY ID</span><span class="val">ARCH-2002-03</span></div>
+      <div class="coord-row"><span class="label">LAT</span><span class="val">59.4370° N</span></div>
+      <div class="coord-row"><span class="label">LON</span><span class="val">24.7536° E</span></div>
+      <div class="coord-row"><span class="label">ELEV</span><span class="val hot">2,624 m AGL</span></div>
+      <div class="coord-row"><span class="label">TERRAIN</span><span class="val">rolling-release</span></div>
+      <div class="coord-row"><span class="label">STATUS</span><span class="val"><span class="live-ping" aria-hidden="true"></span> maintained</span></div>
+    </aside>
+  </div>
+</header>
+
+<section class="legend" id="legend">
+  <div class="legend-header">
+    <span class="legend-kicker">Map legend</span>
+    <h2>Read the terrain before you climb it.</h2>
+    <span class="legend-note">Features rendered as elevation profiles. Hover to survey.</span>
+  </div>
+  <div class="legend-grid">
+    <article class="elev-card">
+      <span class="elev-tag">+2,624 m</span>
+      <svg class="profile" viewBox="0 0 260 56" aria-hidden="true">
+        <path d="M0 50 Q 40 46 80 50 Q 100 30 130 6 Q 160 30 180 50 Q 220 46 260 50"
+              fill="none" stroke="var(--primary)" stroke-width="1.5"/>
+        <path d="M0 52 Q 40 49 80 52 Q 100 38 130 18 Q 160 38 180 52 Q 220 49 260 52"
+              fill="none" stroke="rgba(34,211,238,.4)" stroke-width="1" stroke-dasharray="3 4"/>
+      </svg>
+      <h3>Rolling release</h3>
+      <p>Install once. `pacman -Syu` keeps the system current, forever. No version cliffs, no reinstall seasons.</p>
+    </article>
+    <article class="elev-card">
+      <span class="elev-tag">BASE CAMP</span>
+      <svg class="profile" viewBox="0 0 260 56" aria-hidden="true">
+        <path d="M0 50 L 60 50 L 60 20 L 100 20 L 100 50 L 260 50" fill="none" stroke="var(--primary)" stroke-width="1.5"/>
+        <path d="M0 53 L 260 53" stroke="rgba(34,211,238,.4)" stroke-width="1" stroke-dasharray="3 4"/>
+      </svg>
+      <h3>Minimal base</h3>
+      <p>Shell, network, editor. The base install is a basecamp, not a resort. Everything above it, you chose.</p>
+    </article>
+    <article class="elev-card">
+      <span class="elev-tag">FLOODlit</span>
+      <svg class="profile" viewBox="0 0 260 56" aria-hidden="true">
+        <path d="M0 50 Q 30 10 60 50 Q 90 10 120 50 Q 150 10 180 50 Q 210 10 240 50 L 260 50"
+              fill="none" stroke="var(--primary)" stroke-width="1.5"/>
+        <path d="M0 53 L 260 53" stroke="rgba(34,211,238,.4)" stroke-width="1" stroke-dasharray="3 4"/>
+      </svg>
+      <h3>Documented ascent</h3>
+      <p>The Arch Wiki is the best Linux documentation in existence. Every route up the mountain has been written down.</p>
+    </article>
+    <article class="elev-card">
+      <span class="elev-tag">80k ROUTES</span>
+      <svg class="profile" viewBox="0 0 260 56" aria-hidden="true">
+        <path d="M0 40 L 30 40 L 30 24 L 70 24 L 70 44 L 110 44 L 110 14 L 150 14 L 150 34 L 190 34 L 190 22 L 230 22 L 230 40 L 260 40"
+              fill="none" stroke="var(--primary)" stroke-width="1.5"/>
+        <path d="M0 53 L 260 53" stroke="rgba(34,211,238,.4)" stroke-width="1" stroke-dasharray="3 4"/>
+      </svg>
+      <h3>AUR</h3>
+      <p>80,000+ community routes to any summit. Every PKGBUILD is plain text you read before you run.</p>
+    </article>
+  </div>
+</section>
+
+<script>
+  // crosshair follows cursor within hero: survey instrument feel
+  const ch = document.getElementById('crosshair');
+  const survey = document.querySelector('.survey');
+  survey.addEventListener('mousemove', (e) => {
+    ch.style.opacity = '1';
+    ch.style.setProperty('transform', `translate(${e.clientX - innerWidth/2}px, ${e.clientY - innerHeight/2}px)`);
+    // CSS positions lines at 50%; translate the whole layer by half-screen offset
+    ch.style.transform = `translate(${e.clientX - innerWidth/2}px, ${e.clientY - innerHeight/2}px)`;
+  });
+  survey.addEventListener('mouseleave', () => { ch.style.opacity = '0'; });
+</script>
+</body>
+</html>

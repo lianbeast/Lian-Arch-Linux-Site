@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>06 — Prompt Garden</title>
+<link rel="stylesheet" href="../../design-systems/arch-linux-site/tokens/colors_and_type.css">
+<style>
+  /* ============ 06 PROMPT GARDEN ============
+     Concept: the shell as a living thing. The hero is one prompt that
+     GROWS: every command the visitor scrolls past adds a branch to an
+     SVG tree drawn from prompt glyphs. Features are grafted cuttings,
+     each shown rooted in a terminal. Growth = proof of life. */
+  :root {
+    --bark: rgba(23, 147, 209, 0.5);
+    --leaf: rgba(126, 198, 153, 0.8);
+    --leaf-dim: rgba(126, 198, 153, 0.25);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg-void);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    line-height: 1.65;
+    overflow-x: hidden;
+  }
+  ::selection { background: var(--primary-glow-strong); color: #fff; }
+
+  .garden {
+    min-height: 100vh;
+    position: relative;
+    display: grid;
+    align-content: center;
+    padding: clamp(2rem, 6vh, 5rem) clamp(1.5rem, 5vw, 4rem);
+    overflow: hidden;
+  }
+  /* the growing command tree — right side, drawn by scroll */
+  .tree-svg {
+    position: absolute; right: -4vw; bottom: 0; height: 88vh; width: min(48vw, 700px);
+    opacity: .9; pointer-events: none;
+  }
+  .branch { stroke-dasharray: 1200; stroke-dashoffset: 1200; animation: grow 2.4s var(--ease-out) forwards; }
+  @keyframes grow { to { stroke-dashoffset: 0; } }
+  .leafnode { opacity: 0; animation: leaf-pop .6s var(--ease-out) forwards; transform-origin: center; transform-box: fill-box; }
+  @keyframes leaf-pop { from { opacity: 0; transform: scale(0); } to { opacity: 1; transform: scale(1); } }
+
+  .garden-head { max-width: 620px; position: relative; z-index: 2; }
+  .garden-kicker { font-family: var(--font-tech); text-transform: uppercase; letter-spacing: .3em; color: var(--primary-light); font-size: var(--fs-sm); font-weight: 600; margin-bottom: 1rem; display: block; }
+  .garden-head h1 {
+    font-family: var(--font-display); font-weight: 700;
+    font-size: var(--fs-hero); line-height: 1.02; letter-spacing: -0.03em;
+    color: var(--text-heading); margin: 0 0 1.2rem;
+  }
+  .garden-head h1 .alive { color: var(--primary); }
+  .garden-head p { color: var(--text-secondary); font-size: var(--fs-md); margin: 0 0 2rem; max-width: 44ch; }
+
+  /* the seed prompt */
+  .seed {
+    font-family: var(--font-mono); font-size: var(--fs-base);
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md);
+    padding: var(--space-lg); max-width: 480px; line-height: 2;
+    position: relative; z-index: 2;
+  }
+  .seed .p1 { color: var(--primary-light); }
+  .seed .p2 { color: var(--accent); }
+  .seed .cursor {
+    display: inline-block; width: .55em; height: 1.05em; background: var(--accent);
+    vertical-align: -.15em; animation: blink 1.1s steps(1) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+  .seed-note { font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--text-muted); margin-top: .8rem; }
+
+  .garden-ctas { display: flex; gap: var(--space-md); flex-wrap: wrap; margin-top: var(--space-xl); position: relative; z-index: 2; }
+  .btn {
+    font-family: var(--font-mono); font-size: var(--fs-sm);
+    padding: 0.85rem 1.6rem; border-radius: var(--radius-sm);
+    text-decoration: none; cursor: pointer;
+    border: 1px solid var(--border); background: transparent; color: var(--text-primary);
+    transition: all var(--duration-normal) var(--ease-out);
+  }
+  .btn:hover { border-color: var(--border-active); box-shadow: 0 0 24px var(--primary-glow); color: var(--text-heading); }
+  .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .btn-primary { background: var(--primary); border-color: var(--primary); color: #04121c; font-weight: 700; }
+  .btn-primary:hover { box-shadow: 0 0 32px var(--primary-glow-strong); color: #04121c; }
+
+  /* ============ SECTION: cuttings ============ */
+  .cuttings { max-width: 1100px; margin: 0 auto; padding: var(--space-section) clamp(1.5rem, 5vw, 3rem); }
+  .cuttings-head { margin-bottom: var(--space-2xl); }
+  .cuttings-kicker { font-family: var(--font-tech); text-transform: uppercase; letter-spacing: .3em; color: var(--primary-light); font-size: var(--fs-sm); font-weight: 600; margin-bottom: .6rem; display: block; }
+  .cuttings-head h2 { font-family: var(--font-display); font-size: var(--fs-4xl); color: var(--text-heading); margin: 0; letter-spacing: -0.02em; }
+
+  .cutting-list { display: grid; gap: var(--space-lg); }
+  .cutting {
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    gap: var(--space-xl);
+    border: 1px solid var(--border); border-radius: var(--radius-md);
+    background: var(--bg-card); overflow: hidden;
+    transition: border-color var(--duration-normal) var(--ease-out), transform var(--duration-normal) var(--ease-out);
+  }
+  .cutting:hover { border-color: var(--border-active); transform: translateY(-3px); }
+  .cutting:focus-within { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .cutting-term {
+    font-family: var(--font-mono); font-size: var(--fs-sm); line-height: 1.9;
+    background: var(--bg-void); padding: var(--space-lg);
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .cutting-term .cmt { color: var(--comment, #5a7a52); }
+  .cutting-term .cmd { color: var(--text-primary); }
+  .cutting-term .out { color: var(--text-muted); }
+  .cutting-desc { padding: var(--space-lg); display: flex; flex-direction: column; justify-content: center; gap: .4rem; }
+  .cutting-desc h3 { font-family: var(--font-display); font-size: var(--fs-lg); color: var(--text-heading); margin: 0; }
+  .cutting-desc p { color: var(--text-secondary); font-size: var(--fs-sm); margin: 0; }
+
+  @media (max-width: 760px) {
+    .cutting { grid-template-columns: 1fr; }
+    .cutting-term { border-right: 0; border-bottom: 1px solid var(--border); }
+    .tree-svg { opacity: .35; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .branch { stroke-dashoffset: 0; }
+    .leafnode { opacity: 1; transform: scale(1); }
+  }
+</style>
+</head>
+<body>
+
+<header class="garden" id="home">
+  <!-- the command tree: branches grow on load, leaves pop after -->
+  <svg class="tree-svg" viewBox="0 0 700 800" aria-hidden="true">
+    <g fill="none" stroke="var(--bark)" stroke-width="2" stroke-linecap="round">
+      <path class="branch" style="animation-delay:.2s"  d="M 350 800 C 350 700 340 640 350 560"/>
+      <path class="branch" style="animation-delay:.5s"  d="M 350 560 C 320 520 280 500 240 460"/>
+      <path class="branch" style="animation-delay:.7s"  d="M 350 560 C 380 520 420 500 460 460"/>
+      <path class="branch" style="animation-delay:.9s"  d="M 240 460 C 210 420 200 380 220 330"/>
+      <path class="branch" style="animation-delay:1.1s" d="M 460 460 C 490 420 500 380 480 330"/>
+      <path class="branch" style="animation-delay:1.3s" d="M 350 560 C 350 500 350 460 350 420"/>
+      <path class="branch" style="animation-delay:1.5s" d="M 220 330 C 200 300 210 260 240 230"/>
+      <path class="branch" style="animation-delay:1.7s" d="M 480 330 C 500 300 490 260 460 230"/>
+      <path class="branch" style="animation-delay:1.9s" d="M 350 420 C 340 380 360 340 350 300"/>
+    </g>
+    <g fill="var(--leaf)">
+      <circle class="leafnode" style="animation-delay:1.9s" cx="240" cy="230" r="5"/>
+      <circle class="leafnode" style="animation-delay:2.1s" cx="460" cy="230" r="5"/>
+      <circle class="leafnode" style="animation-delay:2.3s" cx="350" cy="300" r="5"/>
+      <circle class="leafnode" style="animation-delay:2.0s" cx="220" cy="330" r="4"/>
+      <circle class="leafnode" style="animation-delay:2.2s" cx="480" cy="330" r="4"/>
+    </g>
+    <g fill="var(--accent)" opacity=".9">
+      <circle class="leafnode" style="animation-delay:2.6s" cx="350" cy="800" r="6"/>
+    </g>
+  </svg>
+
+  <div class="garden-head">
+    <span class="garden-kicker">Est. 2002 · still growing</span>
+    <h1>Grown from a <span class="alive">single prompt.</span></h1>
+    <p>Arch starts as one line in a terminal and becomes whatever you cultivate. No installer makes choices for you, so no choice is ever hidden from you.</p>
+
+    <div class="seed" aria-label="The seed prompt">
+      <div><span class="p1">[you@arch ~]</span>$ <span class="p2">curl -O archlinux.iso</span></div>
+      <div><span class="p1">[you@arch ~]</span>$ <span class="p2">timedatectl, fdisk, pacstrap…</span></div>
+      <div><span class="p1">[you@arch ~]</span>$ <span class="cursor" aria-hidden="true"></span></div>
+      <p class="seed-note"># every branch above is a command you chose</p>
+    </div>
+
+    <div class="garden-ctas">
+      <a class="btn btn-primary" href="#cuttings">Take cuttings</a>
+      <a class="btn" href="https://wiki.archlinux.org/" target="_blank" rel="noopener">Read the wiki</a>
+    </div>
+  </div>
+</header>
+
+<section class="cuttings" id="cuttings">
+  <div class="cuttings-head">
+    <span class="cuttings-kicker">Cuttings</span>
+    <h2>Every feature is a rooted command.</h2>
+  </div>
+  <div class="cutting-list">
+    <article class="cutting">
+      <div class="cutting-term">
+        <div><span class="cmt"># daily ritual, 30 seconds</span></div>
+        <div><span class="cmd">$ pacman -Syu</span></div>
+        <div class="out">:: full system upgrade… done.</div>
+      </div>
+      <div class="cutting-desc">
+        <h3>Rolling release</h3>
+        <p>The tree never stops growing. One command keeps every branch current, forever.</p>
+      </div>
+    </article>
+    <article class="cutting">
+      <div class="cutting-term">
+        <div><span class="cmt"># plant only what you use</span></div>
+        <div><span class="cmd">$ pacstrap /mnt base linux</span></div>
+        <div class="out">→ boots to a shell. yours from here.</div>
+      </div>
+      <div class="cutting-desc">
+        <h3>Minimal base</h3>
+        <p>Two packages in, everything else is your decision. No pre-grown hedge.</p>
+      </div>
+    </article>
+    <article class="cutting">
+      <div class="cutting-term">
+        <div><span class="cmt"># graft from 80,000+ community branches</span></div>
+        <div><span class="cmd">$ makepkg -si</span></div>
+        <div class="out">→ PKGBUILD: plain text, read before run.</div>
+      </div>
+      <div class="cutting-desc">
+        <h3>AUR</h3>
+        <p>Every community package is a recipe you can inspect. Trust grows from transparency.</p>
+      </div>
+    </article>
+    <article class="cutting">
+      <div class="cutting-term">
+        <div><span class="cmt"># the field guide other distros cite</span></div>
+        <div><span class="cmd">$ xdg-open https://wiki.archlinux.org</span></div>
+        <div class="out">→ 55,000+ articles. precise. current.</div>
+      </div>
+      <div class="cutting-desc">
+        <h3>The wiki</h3>
+        <p>Documentation treated like the system itself: maintained, versioned, exact.</p>
+      </div>
+    </article>
+  </div>
+</section>
+
+</body>
+</html>

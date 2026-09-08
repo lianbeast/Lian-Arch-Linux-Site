@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>01 — Boot Sequence</title>
+<link rel="stylesheet" href="../../design-systems/arch-linux-site/tokens/colors_and_type.css">
+<style>
+  /* ============ 01 BOOT SEQUENCE ============
+     Concept: the hero IS a boot log. Headline doesn't sit above the machine —
+     it types itself between kernel messages, the way dmesg actually reads.
+     Scroll progress bar styled as pacman's download bar. */
+  :root {
+    --boot-green: #7ec699;
+    --boot-ok: #a3be8c;
+    --log-dim: #3b4a63;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg-void);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    line-height: 1.65;
+    overflow-x: hidden;
+  }
+  ::selection { background: var(--primary-glow-strong); color: #fff; }
+
+  /* pacman-style progress */
+  .pacman-progress {
+    position: fixed; top: 0; left: 0; right: 0; height: 6px;
+    background: rgba(148,163,184,.06);
+    z-index: var(--z-progress);
+  }
+  .pacman-progress-fill {
+    height: 100%;
+    background: var(--primary);
+    box-shadow: 0 0 12px var(--primary-glow-strong);
+    transform-origin: left;
+    transform: scaleX(0);
+  }
+
+  /* ============ BOOT HERO ============ */
+  .boot {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-content: center;
+    padding: clamp(1rem, 4vw, 5rem);
+    position: relative;
+  }
+  .boot-log {
+    font-family: var(--font-mono);
+    font-size: clamp(12px, 1.3vw, 15px);
+    max-width: 900px;
+    width: 100%;
+    margin: 0 auto;
+    line-height: 1.9;
+  }
+  .log-line { color: var(--log-dim); white-space: nowrap; overflow: hidden; display: block; }
+  .log-line .ts { color: #2d3a52; margin-right: 1ch; }
+  .log-line.ok { color: var(--boot-green); }
+  .log-line.dim { color: var(--log-dim); }
+
+  /* headline typed between messages */
+  .headline-block { padding: 6vh 0; }
+  .headline-block h1 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--fs-hero);
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+    color: var(--text-heading);
+    margin: 0 0 1.2rem;
+  }
+  .headline-block h1 .arch-word { color: var(--primary); }
+  .headline-block p { max-width: 46ch; color: var(--text-secondary); font-size: var(--fs-md); margin: 0 0 2.2rem; }
+  .boot-ctas { display: flex; gap: var(--space-md); flex-wrap: wrap; align-items: center; }
+
+  .btn {
+    font-family: var(--font-mono);
+    font-size: var(--fs-sm);
+    padding: 0.85rem 1.6rem;
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-primary);
+    transition: all var(--duration-normal) var(--ease-out);
+    display: inline-flex; align-items: center; gap: .6rem;
+  }
+  .btn:hover { border-color: var(--border-active); box-shadow: 0 0 24px var(--primary-glow); color: var(--text-heading); }
+  .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .btn-primary {
+    background: var(--primary); border-color: var(--primary); color: #04121c; font-weight: 700;
+    position: relative; overflow: hidden;
+  }
+  .btn-primary:hover { box-shadow: 0 0 32px var(--primary-glow-strong); color: #04121c; }
+  .btn-primary::after {
+    content: ''; position: absolute; top: 0; bottom: 0; left: -80%; width: 40%;
+    background: linear-gradient(105deg, transparent, rgba(255,255,255,.5), transparent);
+    transform: skewX(-18deg);
+    animation: sheen 3.2s var(--ease-out) infinite;
+  }
+  @keyframes sheen { 0%, 55% { left: -80%; } 85%, 100% { left: 160%; } }
+
+  /* typed caret */
+  .caret {
+    display: inline-block; width: .55em; height: 1.05em;
+    background: var(--accent); vertical-align: -0.15em; margin-left: .1em;
+    animation: caret-blink 1s steps(1) infinite;
+  }
+  @keyframes caret-blink { 50% { opacity: 0; } }
+
+  /* boot reveal choreography */
+  .boot-line-anim { animation: bootline .5s var(--ease-out) both; }
+  @keyframes bootline { from { opacity: 0; transform: translateY(4px); } }
+
+  /* ============ FEATURES AS PACKAGE INSTALL ============ */
+  .install {
+    max-width: 900px; margin: 0 auto; padding: var(--space-section) clamp(1rem, 4vw, 3rem);
+  }
+  .install-header { margin-bottom: var(--space-2xl); }
+  .eyebrow {
+    font-family: var(--font-tech); text-transform: uppercase; letter-spacing: .3em;
+    color: var(--primary-light); font-size: var(--fs-sm); font-weight: 600;
+    display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;
+  }
+  .eyebrow::before { content: '::'; color: var(--accent); font-family: var(--font-mono); }
+  .install-header h2 { font-family: var(--font-display); font-size: var(--fs-4xl); color: var(--text-heading); margin: 0; letter-spacing: -0.02em; }
+  .install-header .syncline { font-family: var(--font-mono); color: var(--text-muted); font-size: var(--fs-sm); margin-top: .8rem; }
+
+  .pkg-list { display: grid; gap: 0; border-top: 1px solid var(--border); }
+  .pkg-row {
+    display: grid;
+    grid-template-columns: 3.2rem 1fr auto;
+    gap: var(--space-lg);
+    padding: var(--space-lg) var(--space-sm);
+    border-bottom: 1px solid var(--border);
+    align-items: baseline;
+    position: relative;
+    transition: background var(--duration-normal) var(--ease-out);
+    cursor: default;
+  }
+  .pkg-row:hover { background: var(--bg-card); }
+  .pkg-row::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px;
+    background: var(--primary);
+    transform: scaleY(0); transform-origin: top;
+    transition: transform var(--duration-normal) var(--ease-out);
+  }
+  .pkg-row:hover::before { transform: scaleY(1); }
+  .pkg-row:hover .pkg-num { color: var(--accent); text-shadow: 0 0 12px var(--accent-glow); }
+  .pkg-row:hover .pkg-name { color: var(--text-heading); }
+  .pkg-num { font-family: var(--font-future); font-size: var(--fs-xs); color: var(--text-muted); transition: color var(--duration-fast); }
+  .pkg-name { font-family: var(--font-mono); color: var(--text-primary); font-size: var(--fs-md); transition: color var(--duration-fast); }
+  .pkg-name::before { content: ':: '; color: var(--primary); }
+  .pkg-desc { grid-column: 2 / -1; color: var(--text-secondary); font-size: var(--fs-sm); max-width: 62ch; }
+  .pkg-size { font-family: var(--font-mono); color: var(--text-muted); font-size: var(--fs-xs); white-space: nowrap; }
+
+  .resolution {
+    margin-top: var(--space-xl); font-family: var(--font-mono); font-size: var(--fs-sm);
+    color: var(--text-secondary);
+  }
+  .resolution .ok-tag { color: var(--boot-green); }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .pacman-progress-fill { transform: scaleX(.6); }
+  }
+</style>
+</head>
+<body>
+
+<div class="pacman-progress"><div class="pacman-progress-fill" id="ppf"></div></div>
+
+<header class="boot" id="home">
+  <div class="boot-log">
+    <span class="log-line dim boot-line-anim" style="animation-delay:.1s"><span class="ts">[ 0.000000]</span>Linux version 6.6.8-arch1-1 (linux@archlinux.org)</span>
+    <span class="log-line dim boot-line-anim" style="animation-delay:.25s"><span class="ts">[ 0.000000]</span>Command line: root=/dev/sda2 rw quiet</span>
+    <span class="log-line boot-line-anim" style="animation-delay:.4s"><span class="ts">[ 0.413321]</span>ACPI: Core revision 20240827</span>
+    <span class="log-line ok boot-line-anim" style="animation-delay:.55s"><span class="ts">[ 0.512321]</span>Ext4-fs (sda2): mounted filesystem with ordered data mode</span>
+
+    <div class="headline-block boot-line-anim" style="animation-delay:.75s">
+      <h1>Arch <span class="arch-word">Linux</span><span class="caret" aria-hidden="true"></span></h1>
+      <p>A lightweight, flexible, rolling-release Linux distribution for the self-directed. You build it. You own it. Nothing hides behind a curtain.</p>
+      <div class="boot-ctas">
+        <a class="btn btn-primary" href="#features"># pacman -S freedom</a>
+        <a class="btn" href="https://wiki.archlinux.org/" target="_blank" rel="noopener">wiki.archlinux.org</a>
+      </div>
+    </div>
+
+    <span class="log-line dim boot-line-anim" style="animation-delay:1s"><span class="ts">[ 1.204442]</span>Freeing unused kernel image (initmem) memory: 2104K</span>
+    <span class="log-line ok boot-line-anim" style="animation-delay:1.15s"><span class="ts">[ 1.821321]</span>Reached target Graphical Interface.</span>
+    <span class="log-line boot-line-anim" style="animation-delay:1.3s"><span class="ts">[ 2.049113]</span>arch-linux-site 2026.09.08 — you are in control<span class="caret" aria-hidden="true"></span></span>
+  </div>
+</header>
+
+<section class="install" id="features">
+  <div class="install-header">
+    <div class="eyebrow">Core packages</div>
+    <h2>Everything you need. Nothing you didn't ask for.</h2>
+    <p class="syncline">:: Synchronizing package databases… resolving targets…</p>
+  </div>
+  <div class="pkg-list">
+    <div class="pkg-row">
+      <span class="pkg-num">[1/4]</span>
+      <span class="pkg-name">rolling-release</span>
+      <span class="pkg-size">installed: always</span>
+      <p class="pkg-desc">Install once, run `pacman -Syu`, stay current forever. No version numbers to chase, no reinstall parties every two years.</p>
+    </div>
+    <div class="pkg-row">
+      <span class="pkg-num">[2/4]</span>
+      <span class="pkg-name">simplicity</span>
+      <span class="pkg-size">without-the-bloat</span>
+      <p class="pkg-desc">The system ships minimal and stays out of your way. Every package installed, you chose. Every service running, you started.</p>
+    </div>
+    <div class="pkg-row">
+      <span class="pkg-num">[3/4]</span>
+      <span class="pkg-name">pacman</span>
+      <span class="pkg-size">4.2 MiB</span>
+      <p class="pkg-desc">One fast, dependency-aware package manager. Official repos plus the AUR: 80,000+ packages, every PKGBUILD plain text you can read before you run.</p>
+    </div>
+    <div class="pkg-row">
+      <span class="pkg-num">[4/4]</span>
+      <span class="pkg-name">the-arch-way</span>
+      <span class="pkg-size">0 MiB (already in you)</span>
+      <p class="pkg-desc">Documentation over guesswork. Questions answered by wiki, not vibes. competence is the entry fee; understanding is the reward.</p>
+    </div>
+  </div>
+  <p class="resolution"><span class="ok-tag">:: transaction completed.</span> 4 targets installed. System is yours.</p>
+</section>
+
+<script>
+  // pacman progress bar = scroll progress
+  const fill = document.getElementById('ppf');
+  addEventListener('scroll', () => {
+    const h = document.documentElement.scrollHeight - innerHeight;
+    fill.style.transform = `scaleX(${h > 0 ? scrollY / h : 0})`;
+  }, { passive: true });
+</script>
+</body>
+</html>

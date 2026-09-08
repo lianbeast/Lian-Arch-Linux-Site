@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>04 — Mirrorlist Race</title>
+<link rel="stylesheet" href="../../design-systems/arch-linux-site/tokens/colors_and_type.css">
+<style>
+  /* ============ 04 MIRRORLIST RACE ============
+     Concept: the hero is a live latency ticker — real reflector output,
+     mirrors ranked by ping. Data does the selling. Features section is a
+     ranking table where the "winner" is the reader's own machine. */
+  :root {
+    --good: #7ec699;
+    --warn: #e5c07b;
+    --row-h: 56px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg-void);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    line-height: 1.65;
+    overflow-x: hidden;
+  }
+  ::selection { background: var(--primary-glow-strong); color: #fff; }
+
+  /* ============ RACETRACK HERO ============ */
+  .race {
+    min-height: 100vh;
+    display: grid;
+    align-content: center;
+    padding: clamp(2rem, 6vh, 5rem) clamp(1.5rem, 5vw, 4rem);
+    position: relative;
+    overflow: hidden;
+  }
+  .race-head { max-width: 1100px; width: 100%; margin: 0 auto; margin-bottom: var(--space-2xl); }
+  .race-kicker { font-family: var(--font-tech); text-transform: uppercase; letter-spacing: .3em; color: var(--primary-light); font-size: var(--fs-sm); font-weight: 600; margin-bottom: 1rem; display: block; }
+  .race-head h1 {
+    font-family: var(--font-display); font-weight: 700;
+    font-size: var(--fs-hero); line-height: 1.02; letter-spacing: -0.03em;
+    color: var(--text-heading); margin: 0 0 1rem;
+  }
+  .race-head h1 .fast { color: var(--primary); }
+  .race-head p { max-width: 52ch; color: var(--text-secondary); font-size: var(--fs-md); margin: 0 0 2rem; }
+  .race-ctas { display: flex; gap: var(--space-md); flex-wrap: wrap; }
+
+  .btn {
+    font-family: var(--font-mono); font-size: var(--fs-sm);
+    padding: 0.85rem 1.6rem; border-radius: var(--radius-sm);
+    text-decoration: none; cursor: pointer;
+    border: 1px solid var(--border); background: transparent; color: var(--text-primary);
+    transition: all var(--duration-normal) var(--ease-out);
+  }
+  .btn:hover { border-color: var(--border-active); box-shadow: 0 0 24px var(--primary-glow); color: var(--text-heading); }
+  .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .btn-primary { background: var(--primary); border-color: var(--primary); color: #04121c; font-weight: 700; }
+  .btn-primary:hover { box-shadow: 0 0 32px var(--primary-glow-strong); color: #04121c; }
+
+  /* ---- the ticker table ---- */
+  .ticker {
+    max-width: 1100px; width: 100%; margin: 0 auto;
+    font-family: var(--font-mono); font-size: var(--fs-sm);
+    border: 1px solid var(--border); border-radius: var(--radius-md);
+    background: var(--bg-card);
+    overflow: hidden;
+  }
+  .ticker-head, .ticker-row {
+    display: grid;
+    grid-template-columns: minmax(7rem, 10rem) 1fr minmax(5.5rem, 6rem);
+    gap: var(--space-md);
+    align-items: center;
+    padding: 0 var(--space-lg);
+  }
+  .ticker-head {
+    font-size: var(--fs-xs); color: var(--text-muted); letter-spacing: .12em;
+    border-bottom: 1px solid var(--border);
+    padding-top: var(--space-sm); padding-bottom: var(--space-sm);
+    text-transform: uppercase;
+  }
+  .ticker-row { height: var(--row-h); border-bottom: 1px solid var(--border-subtle); position: relative; }
+  .ticker-row:last-child { border-bottom: 0; }
+  .mirror-name { color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mirror-loc { color: var(--text-muted); font-size: var(--fs-xs); display: block; }
+  .ping-val { text-align: right; color: var(--text-secondary); }
+  .ping-val.fast { color: var(--good); }
+  .ping-val.mid { color: var(--warn); }
+
+  /* latency bars fill as "race" — transform-only */
+  .bar-track { height: 4px; background: rgba(148,163,184,.08); border-radius: 2px; overflow: hidden; }
+  .bar-fill {
+    height: 100%; border-radius: 2px;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    transform: scaleX(0); transform-origin: left;
+    transition: transform 1.2s var(--ease-out);
+    box-shadow: 0 0 8px var(--primary-glow);
+  }
+  .go .bar-fill { transform: scaleX(var(--w)); }
+
+  /* winner flash */
+  .winner-flash { animation: win-pulse 2.4s var(--ease-out) 1.2s infinite; }
+  @keyframes win-pulse { 0%, 100% { background: transparent; } 8% { background: var(--accent-dim); } }
+  .tick-note { font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--text-muted); margin-top: var(--space-md); max-width: 1100px; width: 100%; margin-left: auto; margin-right: auto; }
+
+  /* ============ SECTION: reader's machine wins ============ */
+  .podium { max-width: 1100px; margin: 0 auto; padding: var(--space-section) clamp(1.5rem, 5vw, 3rem); }
+  .podium-head { margin-bottom: var(--space-2xl); }
+  .podium-kicker { font-family: var(--font-tech); text-transform: uppercase; letter-spacing: .3em; color: var(--primary-light); font-size: var(--fs-sm); font-weight: 600; margin-bottom: .6rem; display: block; }
+  .podium-head h2 { font-family: var(--font-display); font-size: var(--fs-4xl); color: var(--text-heading); margin: 0; letter-spacing: -0.02em; }
+
+  .rank-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--space-lg); }
+  .rank-card {
+    border: 1px solid var(--border); border-radius: var(--radius-md);
+    background: var(--bg-card); padding: var(--space-xl);
+    position: relative; overflow: hidden;
+    transition: transform var(--duration-normal) var(--ease-out), border-color var(--duration-normal) var(--ease-out);
+  }
+  .rank-card:hover { transform: translateY(-4px); border-color: var(--border-active); }
+  .rank-card:focus-within { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .rank-card .medal { font-family: var(--font-future); font-size: var(--fs-xs); color: var(--accent); letter-spacing: .14em; }
+  .rank-card h3 { font-family: var(--font-display); font-size: var(--fs-lg); color: var(--text-heading); margin: .6rem 0 .5rem; }
+  .rank-card p { color: var(--text-secondary); font-size: var(--fs-sm); margin: 0 0 var(--space-md); }
+  .rank-card .metric { font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--text-muted); border-top: 1px solid var(--border-subtle); padding-top: var(--space-sm); }
+  .rank-card .metric b { color: var(--primary-light); font-weight: 400; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .bar-fill { transform: scaleX(var(--w)); }
+  }
+</style>
+</head>
+<body>
+
+<header class="race" id="home">
+  <div class="race-head">
+    <span class="race-kicker">Reflector · ranking mirrors</span>
+    <h1>Fast because nothing <span class="fast">slows it down.</span></h1>
+    <p>Every Arch mirror is a server you can measure. Latency, throughput, uptime: public numbers, real race. The same transparency runs the whole system.</p>
+    <div class="race-ctas">
+      <a class="btn btn-primary" href="#podium">Rank your machine</a>
+      <a class="btn" href="https://archlinux.org/mirrors/status/" target="_blank" rel="noopener">archlinux.org/mirrors</a>
+    </div>
+  </div>
+
+  <div class="ticker" id="ticker" role="table" aria-label="Mirror latency ranking">
+    <div class="ticker-head" role="row">
+      <span role="columnheader">Server</span>
+      <span role="columnheader">Latency</span>
+      <span role="columnheader">Score</span>
+    </div>
+    <div class="ticker-row" role="row">
+      <span class="mirror-name" role="cell">mirror.osbeck.com<span class="mirror-loc">Luleå, SE</span></span>
+      <span class="bar-track" role="cell"><span class="bar-fill" style="--w:.14"></span></span>
+      <span class="ping-val fast" role="cell">14.2 ms</span>
+    </div>
+    <div class="ticker-row" role="row">
+      <span class="mirror-name" role="cell">mirror.t-home.mk<span class="mirror-loc">Skopje, MK</span></span>
+      <span class="bar-track" role="cell"><span class="bar-fill" style="--w:.19"></span></span>
+      <span class="ping-val fast" role="cell">19.8 ms</span>
+    </div>
+    <div class="ticker-row" role="row">
+      <span class="mirror-name" role="cell">arch.jensgutermuth.de<span class="mirror-loc">Falkenstein, DE</span></span>
+      <span class="bar-track" role="cell"><span class="bar-fill" style="--w:.26"></span></span>
+      <span class="ping-val fast" role="cell">26.1 ms</span>
+    </div>
+    <div class="ticker-row" role="row">
+      <span class="mirror-name" role="cell">mirror.23m.com<span class="mirror-loc">Vienna, AT</span></span>
+      <span class="bar-track" role="cell"><span class="bar-fill" style="--w:.31"></span></span>
+      <span class="ping-val fast" role="cell">31.4 ms</span>
+    </div>
+    <div class="ticker-row" role="row">
+      <span class="mirror-name" role="cell">mirrors.kernel.org<span class="mirror-loc">San Francisco, US</span></span>
+      <span class="bar-track" role="cell"><span class="bar-fill" style="--w:.47"></span></span>
+      <span class="ping-val mid" role="cell">47.0 ms</span>
+    </div>
+    <div class="ticker-row winner-flash" role="row">
+      <span class="mirror-name" role="cell"><b>localhost</b> · your machine<span class="mirror-loc">wherever you are</span></span>
+      <span class="bar-track" role="cell"><span class="bar-fill" style="--w:.04"></span></span>
+      <span class="ping-val fast" role="cell">0.04 ms</span>
+    </div>
+  </div>
+  <p class="tick-note">// numbers illustrative — run `reflector --verbose --latest 5` for yours</p>
+</header>
+
+<section class="podium" id="podium">
+  <div class="podium-head">
+    <span class="podium-kicker">Benchmarks that matter</span>
+    <h2>Nothing between you and first place.</h2>
+  </div>
+  <div class="rank-grid">
+    <article class="rank-card">
+      <span class="medal">IDLE FOOTPRINT</span>
+      <h3>~200 packages base</h3>
+      <p>What you don't install costs nothing. No telemetry daemons, no preloaded desktop suites, no "helper" services phoning home.</p>
+      <p class="metric">RAM at idle: <b>yours to measure</b></p>
+    </article>
+    <article class="rank-card">
+      <span class="medal">UPDATE CADENCE</span>
+      <h3>Daily, if you want</h3>
+      <p>Rolling release means `pacman -Syu` is the whole upgrade procedure. Median time from upstream release to repo: hours, not seasons.</p>
+      <p class="metric">Time between releases: <b>zero</b></p>
+    </article>
+    <article class="rank-card">
+      <span class="medal">BOOT PATH</span>
+      <h3>What you load is what boots</h3>
+      <p>No services you didn't enable. The kernel boots what you told it to boot, which is why nothing competes for first place except your work.</p>
+      <p class="metric">Services you didn't ask for: <b>0</b></p>
+    </article>
+  </div>
+</section>
+
+<script>
+  // race start on load: bars fill from 0
+  const t = document.getElementById('ticker');
+  addEventListener('DOMContentLoaded', () => setTimeout(() => t.classList.add('go'), 300));
+</script>
+</body>
+</html>

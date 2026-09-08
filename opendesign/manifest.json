@@ -1,0 +1,38 @@
+{
+  "generated": "2026-09-08T00:00:00Z",
+  "sections": [
+    {
+      "id": "mockups",
+      "label": "Mockups",
+      "groups": [
+        {
+          "slug": "arch-hero-visions",
+          "files": [
+            { "label": "01 Boot Sequence", "path": "mockups/arch-hero-visions/01-boot-sequence.html" },
+            { "label": "02 Topographic Survey", "path": "mockups/arch-hero-visions/02-topographic-survey.html" },
+            { "label": "03 PKGBUILD Spec Sheet", "path": "mockups/arch-hero-visions/03-spec-sheet.html" },
+            { "label": "04 Mirrorlist Race", "path": "mockups/arch-hero-visions/04-mirrorlist-race.html" },
+            { "label": "05 Tiling WM", "path": "mockups/arch-hero-visions/05-tiling-wm.html" },
+            { "label": "06 Prompt Garden", "path": "mockups/arch-hero-visions/06-shell-garden.html" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "design-systems",
+      "label": "Design Systems",
+      "groups": [
+        {
+          "slug": "arch-linux-site",
+          "files": [
+            { "label": "SKILL.md", "path": "design-systems/arch-linux-site/SKILL.md" },
+            { "label": "README.md", "path": "design-systems/arch-linux-site/README.md" },
+            { "label": "Voice and Tone", "path": "design-systems/arch-linux-site/brand/voice-and-tone.md" },
+            { "label": "Style Notes", "path": "design-systems/arch-linux-site/brand/style-notes.md" },
+            { "label": "Tokens", "path": "design-systems/arch-linux-site/tokens/colors_and_type.css" }
+          ]
+        }
+      ]
+    }
+  ]
+}
