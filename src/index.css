@@ -593,7 +593,7 @@ main { position: relative; z-index: var(--z-content); }
   html { scroll-behavior: auto; }
   .terminal-cursor { animation: none; }
   .marquee-track { animation: none; }
-  .hero-gradient-orb { animation: none; }
+  .hero-glow-single { animation: none; }
   .hero-scroll-hint { animation: none; }
   .btn-primary::after { display: none; }
   .nav-link { transition: none; opacity: 1; transform: none; }
@@ -613,7 +613,24 @@ main { position: relative; z-index: var(--z-content); }
   overflow: hidden;
 }
 
-/* Gradient mesh background */
+/* Hero background layers — mesh on top, one static glow beneath */
+.hero-mesh {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.hero-mesh canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+  opacity: 0.9;
+  /* Fade the mesh at the edges so it melts into the page, not boxes it */
+  mask-image: radial-gradient(ellipse 90% 80% at 50% 55%, black 40%, transparent 85%);
+  -webkit-mask-image: radial-gradient(ellipse 90% 80% at 50% 55%, black 40%, transparent 85%);
+}
+
 .hero-bg {
   position: absolute;
   inset: 0;
@@ -621,54 +638,16 @@ main { position: relative; z-index: var(--z-content); }
   z-index: 0;
 }
 
-.hero-gradient-orb {
+.hero-glow-single {
   position: absolute;
+  width: 800px;
+  height: 800px;
   border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.5;
-}
-
-.hero-gradient-orb--1 {
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
-  top: -20%;
-  left: -10%;
-  animation: orbFloat1 12s ease-in-out infinite;
-}
-
-.hero-gradient-orb--2 {
-  width: 500px;
-  height: 500px;
-  background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
-  bottom: -20%;
-  right: -10%;
-  animation: orbFloat2 15s ease-in-out infinite;
-}
-
-.hero-gradient-orb--3 {
-  width: 400px;
-  height: 400px;
-  background: radial-gradient(circle, rgba(23, 147, 209, 0.4) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(23, 147, 209, 0.16) 0%, transparent 70%);
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
-  animation: orbFloat3 10s ease-in-out infinite;
-}
-
-@keyframes orbFloat1 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(60px, 40px) scale(1.1); }
-  66% { transform: translate(-30px, 60px) scale(0.95); }
-}
-@keyframes orbFloat2 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(-50px, -30px) scale(1.05); }
-  66% { transform: translate(40px, -50px) scale(0.9); }
-}
-@keyframes orbFloat3 {
-  0%, 100% { transform: translate(-50%, -50%) scale(1); }
-  50% { transform: translate(-50%, -50%) scale(1.15); }
+  transform: translate(-50%, -42%);
+  filter: blur(60px);
 }
 
 .hero-content {

@@ -10,10 +10,11 @@ import Architectures from './components/sections/Architectures'
 import Download from './components/sections/Download'
 import PackageSearch from './components/sections/PackageSearch'
 import Faq from './components/sections/Faq'
+
 import UseCases from './components/sections/UseCases'
 import Community from './components/sections/Community'
 import Footer from './components/sections/Footer'
-import BgCanvas from './components/ui/BgCanvas'
+
 
 function useReveal() {
   useEffect(() => {
@@ -244,7 +245,6 @@ export default function App() {
   return (
     <>
       <a href="#main-content" className="skip-link">Skip to main content</a>
-      <BgCanvas />
       <ScrollProgress progress={progress} />
       <Navbar activeSection={activeSection} />
       <main id="main-content">

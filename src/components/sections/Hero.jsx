@@ -1,13 +1,21 @@
+import { Suspense, lazy } from 'react'
 import { ArchLinuxIcon, ArrowDownIcon } from '../ui/Icons'
+
+// Mountain split out of the main bundle — it's the one heavy thing on the page
+const ArchMesh = lazy(() => import('../ui/ArchMesh.jsx'))
 
 export default function Hero() {
   return (
     <section id="home" className="section hero" aria-label="Hero">
-      {/* Animated gradient mesh background */}
+      {/* 3D wireframe mountain — the Arch "A" read as terrain */}
+      <div className="hero-mesh" aria-hidden="true">
+        <Suspense fallback={null}>
+          <ArchMesh />
+        </Suspense>
+      </div>
+      {/* Single static glow behind the peaks — the old orb trio is gone */}
       <div className="hero-bg" aria-hidden="true">
-        <div className="hero-gradient-orb hero-gradient-orb--1" />
-        <div className="hero-gradient-orb hero-gradient-orb--2" />
-        <div className="hero-gradient-orb hero-gradient-orb--3" />
+        <div className="hero-glow-single" />
       </div>
 
       <div className="hero-content reveal-stagger">
