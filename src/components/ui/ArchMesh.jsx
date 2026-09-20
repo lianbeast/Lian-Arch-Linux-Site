@@ -71,7 +71,7 @@ export default function ArchMesh({ reduced = getReducedMotion() }) {
     <Canvas
       className="arch-mesh-canvas"
       camera={{ position: [0, 2.2, 7], fov: 42 }}
-      dpr={[1, 1.75]}
+      dpr={[1, 1.5]}
       frameloop={reduced ? 'demand' : 'always'}
       gl={{ antialias: true, alpha: true }}
       aria-hidden="true"

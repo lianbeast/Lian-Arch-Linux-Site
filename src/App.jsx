@@ -63,23 +63,6 @@ function useActiveSection() {
   return { activeSection }
 }
 
-function useScrollProgress() {
-  const [progress, setProgress] = useState(0)
-
-  useEffect(() => {
-    const onScroll = () => {
-      const scrollTop = window.scrollY
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight
-      setProgress(docHeight > 0 ? (scrollTop / docHeight) * 100 : 0)
-    }
-    window.addEventListener('scroll', onScroll, { passive: true })
-    onScroll()
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
-
-  return progress
-}
-
 const REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 function Navbar({ activeSection }) {
@@ -141,7 +124,7 @@ function Navbar({ activeSection }) {
       cleanups.push(() => { link.removeEventListener('mousemove', onMove); link.removeEventListener('mouseleave', onLeave) })
     })
     return () => cleanups.forEach(fn => fn())
-  })
+  }, [])
 
   // Close mobile menu on resize to desktop
   useEffect(() => {
@@ -231,28 +214,56 @@ function Navbar({ activeSection }) {
   )
 }
 
-function ScrollProgress({ progress }) {
-  const blocks = Math.round(progress / 5)
+function ScrollProgress() {
+  const fillRef = useRef(null)
+  const readoutRef = useRef(null)
+  const frameRef = useRef(0)
+
+  useEffect(() => {
+    const update = () => {
+      frameRef.current = 0
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight
+      const progress = docHeight > 0
+        ? Math.min(100, Math.max(0, (window.scrollY / docHeight) * 100))
+        : 0
+      const blocks = Math.round(progress / 5)
+      if (fillRef.current) fillRef.current.style.transform = `scaleX(${progress / 100})`
+      if (readoutRef.current) {
+        readoutRef.current.style.opacity = progress > 1 && progress < 99 ? '1' : '0'
+        readoutRef.current.textContent =
+          `arch-linux-site ${String(Math.round(progress)).padStart(2, ' ')}% [${'#'.repeat(blocks)}${'·'.repeat(20 - blocks)}]`
+      }
+    }
+    const onScroll = () => {
+      if (!frameRef.current) frameRef.current = requestAnimationFrame(update)
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll, { passive: true })
+    update()
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+      if (frameRef.current) cancelAnimationFrame(frameRef.current)
+    }
+  }, [])
+
   return (
     <div className="scroll-progress" aria-hidden="true">
-      <div className="scroll-progress-fill" style={{ transform: `scaleX(${progress / 100})` }} />
-      <div className="pacman-readout" style={{ opacity: progress > 1 && progress < 99 ? 1 : 0 }}>
-        arch-linux-site {String(Math.round(progress)).padStart(2, ' ')}% [{'#'.repeat(blocks)}{'·'.repeat(20 - blocks)}]
-      </div>
+      <div ref={fillRef} className="scroll-progress-fill" />
+      <div ref={readoutRef} className="pacman-readout" />
     </div>
   )
 }
 
 export default function App() {
   const { activeSection } = useActiveSection()
-  const progress = useScrollProgress()
 
   useReveal()
 
   return (
     <>
       <a href="#main-content" className="skip-link">Skip to main content</a>
-      <ScrollProgress progress={progress} />
+      <ScrollProgress />
       <Navbar activeSection={activeSection} />
       <main id="main-content">
         <BootHero />
