@@ -1,6 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 
-const REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+/**
+ * In-page shell. Everything is parsed locally — no network, no state leaves
+ * the browser. Reduced motion gets the same output as static text instead of
+ * a suppressed animation, so the feature never silently disappears.
+ */
+
+/* Keys are a module-level counter rather than crypto.randomUUID(), which is
+   only defined in a secure context. This page must work on plain HTTP too. */
+let uid = 0
+const nextKey = () => `l${++uid}`
 
 const NEOFETCH_LOGO = [
   '                   -`',
@@ -24,7 +33,7 @@ const NEOFETCH_LOGO = [
   ' .`                                 `:/',
 ]
 
-// Local package list for pacman -Ss — mirrors repo style, no network
+/* Mirrors real pacman output shape. Local table — nothing is fetched. */
 const PKG_DB = [
   { name: 'firefox', repo: 'extra', ver: '129.0.2-1', desc: 'Standalone web browser from Mozilla' },
   { name: 'linux', repo: 'core', ver: '6.10.5-arch1-1', desc: 'The Linux kernel and modules' },
@@ -64,7 +73,7 @@ const BASE_COMMANDS = {
     { kind: 'out', text: '... 1,247 packages total' },
   ],
   'uname -a': [
-    { kind: 'out', text: 'Linux archbox 6.10.5-arch1-1 #1 SMP PREEMPT_DYNAMIC Thu, 08 Aug 2026 20:00:00 +0000 x86_64 GNU/Linux' },
+    { kind: 'out', text: 'Linux archbox 6.10.5-arch1-1 #1 SMP PREEMPT_DYNAMIC x86_64 GNU/Linux' },
   ],
   neofetch: NEOFETCH_LOGO.map((text, i) => ({ kind: i < 2 ? 'out' : 'out-dim', text })),
   ls: [
@@ -75,7 +84,7 @@ const BASE_COMMANDS = {
     { kind: 'out', text: ' 20:41:02 up 3 days,  4:12,  1 user,  load average: 0.42, 0.35, 0.31' },
   ],
   'man pacman': [
-    { kind: 'out', text: 'PACMAN(8)                    System Administration                   PACMAN(8)' },
+    { kind: 'out', text: 'PACMAN(8)              System Administration              PACMAN(8)' },
     { kind: 'out-dim', text: '' },
     { kind: 'out', text: 'NAME' },
     { kind: 'out-dim', text: '       pacman - package manager with dependency resolution' },
@@ -87,7 +96,6 @@ const BASE_COMMANDS = {
   help: HELP_LINES,
 }
 
-// Animated script for pacman -Syu — rendered line-by-line; bar lines animate
 const SYU_SCRIPT = [
   { kind: 'out', text: ':: Synchronizing package databases...', delay: 100 },
   { kind: 'bar', label: 'core', delay: 300 },
@@ -119,10 +127,9 @@ const SYU_SCRIPT = [
   { kind: 'out', text: '(2/3) Arming ConditionNeedsUpdate' },
   { kind: 'out', text: '(3/3) Updating module dependencies' },
   { kind: 'out', text: '' },
-  { kind: 'out-dim', text: '# upgrade complete — system is current. nothing was held back.' },
+  { kind: 'out-ok', text: '# upgrade complete - system is current. nothing was held back.' },
 ]
 
-// Static fallback output for reduced motion: bars become finished bars
 const SYU_STATIC = SYU_SCRIPT.map((s) =>
   s.kind === 'bar'
     ? { kind: 'out-dim', text: ` ${s.label.padEnd(18, ' ')} [################] 100%` }
@@ -130,8 +137,9 @@ const SYU_STATIC = SYU_SCRIPT.map((s) =>
 )
 
 const CHIPS = ['pacman -Syu', 'neofetch', 'pacman -Ss firefox', 'uname -a', 'help']
-
 const BAR_WIDTH = 16
+const REDUCED = typeof window !== 'undefined' &&
+  window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
 
 export default function Terminal() {
   const [lines, setLines] = useState([])
@@ -148,14 +156,8 @@ export default function Terminal() {
 
   const knownCommands = useMemo(() => Object.keys(BASE_COMMANDS), [])
 
-  const scrollDown = () => {
-    bodyRef.current?.scrollTo({ top: bodyRef.current.scrollHeight, behavior: 'smooth' })
-  }
-
-  useEffect(scrollDown, [lines])
-
   const appendLines = (out) => {
-    setLines((prev) => [...prev, ...out.map((o) => ({ ...o, key: crypto.randomUUID() }))])
+    setLines((prev) => [...prev, ...out.map((o) => ({ ...o, key: nextKey() }))])
   }
 
   const clearTimers = () => {
@@ -165,97 +167,53 @@ export default function Terminal() {
 
   useEffect(() => clearTimers, [])
 
-  // Drive the animated script: reveal lines one by one, animate bar fills
+  /* Follow new output, but respect a reduced-motion preference. */
+  useEffect(() => {
+    const el = bodyRef.current
+    if (!el) return
+    el.scrollTo({ top: el.scrollHeight, behavior: REDUCED ? 'auto' : 'smooth' })
+  }, [lines])
+
   const runScript = (script) => {
     animatingRef.current = true
     setAnimating(true)
-    setLines((prev) => [...prev, ...script.slice(0, 1).map((o) => ({ ...o, key: crypto.randomUUID() }))])
+    setLines((prev) => [...prev, { ...script[0], key: nextKey() }])
+
     let t = script[0]?.delay ?? 100
     script.slice(1).forEach((step, i) => {
-      const timer = setTimeout(() => {
+      timersRef.current.push(setTimeout(() => {
         if (step.kind === 'bar') {
-          // Animate the bar: append a bar line, then grow it over ~600ms
-          const lineKey = crypto.randomUUID()
+          const lineKey = nextKey()
           setLines((prev) => [...prev, { kind: 'bar', label: step.label, progress: 0, key: lineKey }])
           for (let p = 1; p <= BAR_WIDTH; p++) {
-            timersRef.current.push(
-              setTimeout(() => {
-                setLines((prev) => prev.map((l) => (l.key === lineKey ? { ...l, progress: p } : l)))
-                if (p === BAR_WIDTH) {
-                  if (i === script.length - 2) {
-                    animatingRef.current = false
-                    setAnimating(false)
-                  }
-                }
-              }, (600 / BAR_WIDTH) * p)
-            )
+            timersRef.current.push(setTimeout(() => {
+              setLines((prev) => prev.map((l) => (l.key === lineKey ? { ...l, progress: p } : l)))
+            }, (600 / BAR_WIDTH) * p))
           }
         } else {
-          setLines((prev) => [...prev, { ...step, key: crypto.randomUUID() }])
-          if (i === script.length - 1) {
-            animatingRef.current = false
-            setAnimating(false)
-          }
+          setLines((prev) => [...prev, { ...step, key: nextKey() }])
         }
-      }, t)
-      timersRef.current.push(timer)
+        if (i === script.length - 2) {
+          animatingRef.current = false
+          setAnimating(false)
+        }
+      }, t))
       t += step.delay ?? 80
     })
-    // Safety: if script ended on a bar, the last-index check above may not fire
-    const finisher = setTimeout(() => {
+
+    /* Safety net: if the script ends on a bar line the check above never fires. */
+    timersRef.current.push(setTimeout(() => {
       animatingRef.current = false
       setAnimating(false)
-    }, t + 800)
-    timersRef.current.push(finisher)
-  }
-
-  const run = (cmd) => {
-    const trimmed = cmd.trim()
-    if (!trimmed) return
-    if (animatingRef.current) return
-
-    setHistory((prev) => (prev[prev.length - 1] === trimmed ? prev : [...prev, trimmed]))
-    histIdxRef.current = -1
-    draftRef.current = ''
-
-    if (trimmed === 'clear') {
-      clearTimers()
-      setLines([])
-      setInput('')
-      return
-    }
-
-    const promptLine = { kind: 'cmd', text: trimmed }
-    setInput('')
-
-    if (trimmed === 'pacman -Syu') {
-      setLines((prev) => [...prev, promptLine])
-      if (REDUCED_MOTION) appendLines(SYU_STATIC)
-      else runScript(SYU_SCRIPT)
-      return
-    }
-
-    if (trimmed.startsWith('pacman -Ss ')) {
-      const term = trimmed.slice('pacman -Ss '.length).trim()
-      const hits = term
-        ? PKG_DB.filter((p) => p.name.includes(term) || p.desc.toLowerCase().includes(term.toLowerCase()))
-        : PKG_DB
-      appendLines([promptLine, ...renderSearch(hits, term)])
-      return
-    }
-
-    if (trimmed.startsWith('echo ')) {
-      appendLines([promptLine, { kind: 'out', text: trimmed.slice(5) }])
-      return
-    }
-
-    const out = BASE_COMMANDS[trimmed] ?? [{ kind: 'out-dim', text: `bash: ${trimmed}: command not found` }]
-    appendLines([promptLine, ...out.map((o) => ({ ...o }))])
+    }, t + 800))
   }
 
   const renderSearch = (hits, term) => {
     if (!hits.length) {
-      return [{ kind: 'out-dim', text: `no packages matched "${term}" in this demo database — the live search section below covers all 80k` }]
+      return [{
+        kind: 'out-dim',
+        text: `no packages matched "${term}" in this demo database - the live search section below covers the real index`,
+      }]
     }
     return hits.flatMap((p) => [
       { kind: 'out', text: `${p.repo}/${p.name} ${p.ver}` },
@@ -263,7 +221,50 @@ export default function Terminal() {
     ])
   }
 
-  // Ghost autocomplete: longest known command that starts with input
+  const run = (raw) => {
+    const cmd = raw.trim()
+    if (!cmd || animatingRef.current) return
+
+    setHistory((prev) => (prev[prev.length - 1] === cmd ? prev : [...prev, cmd]))
+    histIdxRef.current = -1
+    draftRef.current = ''
+    setInput('')
+
+    if (cmd === 'clear') {
+      clearTimers()
+      setLines([])
+      return
+    }
+
+    const prompt = { kind: 'cmd', text: cmd }
+
+    if (cmd === 'pacman -Syu') {
+      setLines((prev) => [...prev, prompt])
+      if (REDUCED) appendLines(SYU_STATIC)
+      else runScript(SYU_SCRIPT)
+      return
+    }
+
+    if (cmd.startsWith('pacman -Ss ')) {
+      const term = cmd.slice('pacman -Ss '.length).trim()
+      const hits = term
+        ? PKG_DB.filter((p) =>
+            p.name.includes(term) || p.desc.toLowerCase().includes(term.toLowerCase()))
+        : PKG_DB
+      appendLines([prompt, ...renderSearch(hits, term)])
+      return
+    }
+
+    if (cmd.startsWith('echo ')) {
+      appendLines([prompt, { kind: 'out', text: cmd.slice(5) }])
+      return
+    }
+
+    const out = BASE_COMMANDS[cmd] ?? [{ kind: 'out-dim', text: `bash: ${cmd}: command not found` }]
+    appendLines([prompt, ...out])
+  }
+
+  /* Ghost completion: longest known command that extends what is typed. */
   const ghost = useMemo(() => {
     if (!input) return ''
     const match = knownCommands.find((c) => c.startsWith(input) && c !== input)
@@ -273,12 +274,14 @@ export default function Terminal() {
   const onKeyDown = (e) => {
     if (e.key === 'Enter') {
       run(input)
-    } else if (e.key === 'Tab') {
+      return
+    }
+    if (e.key === 'Tab') {
       e.preventDefault()
-      if (ghost) {
-        setInput((prev) => prev + ghost)
-      }
-    } else if (e.key === 'ArrowUp') {
+      if (ghost) setInput((prev) => prev + ghost)
+      return
+    }
+    if (e.key === 'ArrowUp') {
       e.preventDefault()
       if (!history.length) return
       if (histIdxRef.current === -1) {
@@ -288,10 +291,12 @@ export default function Terminal() {
         histIdxRef.current = Math.max(0, histIdxRef.current - 1)
       }
       setInput(history[histIdxRef.current])
-    } else if (e.key === 'ArrowDown') {
+      return
+    }
+    if (e.key === 'ArrowDown') {
       e.preventDefault()
       if (histIdxRef.current === -1) return
-      histIdxRef.current++
+      histIdxRef.current += 1
       if (histIdxRef.current >= history.length) {
         histIdxRef.current = -1
         setInput(draftRef.current)
@@ -301,97 +306,91 @@ export default function Terminal() {
     }
   }
 
-  const focusInput = () => inputRef.current?.focus()
-
   const renderLine = (l) => {
     if (l.kind === 'cmd') {
       return (
-        <div className="terminal-line">
-          <span className="terminal-prompt">$</span>
-          <span className="terminal-out">{l.text}</span>
+        <div className="term-line">
+          <span className="term-prompt">$</span>
+          <span className="term-out">{l.text}</span>
         </div>
       )
     }
     if (l.kind === 'bar') {
       const filled = '#'.repeat(l.progress || 0).padEnd(BAR_WIDTH, ' ')
+      const pct = Math.round(((l.progress || 0) / BAR_WIDTH) * 100)
       return (
-        <div className="terminal-line terminal-out-dim">
-          {` ${l.label.padEnd(18, ' ')} [${filled}] ${Math.round(((l.progress || 0) / BAR_WIDTH) * 100)}%`}
+        <div className="term-line term-out-dim">
+          {` ${l.label.padEnd(18, ' ')} [${filled}] ${pct}%`}
         </div>
       )
     }
-    return <div className={`terminal-line terminal-${l.kind}`}>{l.text}</div>
+    const cls = l.kind === 'out-ok' ? 'term-ok' : `term-${l.kind}`
+    return <div className={`term-line ${cls}`}>{l.text}</div>
   }
 
   return (
-    <section id="terminal" className="section" aria-label="Interactive terminal">
-      <div className="section-header reveal">
-        <p className="section-tag">Interactive</p>
-        <h2 className="section-title">The terminal front door</h2>
-        <p className="section-lead">
+    <section id="terminal" className="sec" aria-labelledby="terminal-title">
+      <header className="sec-head">
+        <p className="sec-name">terminal</p>
+        <h2 id="terminal-title" className="sec-title">
+          The terminal front door
+        </h2>
+        <p className="sec-lead">
           Click the window, type a command, or pick a chip. Tab completes,
-          arrows walk history. Real output, no pointer needed.
+          arrows walk history. Every response is generated locally.
         </p>
-      </div>
-      <div className="terminal-wrapper reveal">
+      </header>
+
+      <div className="term reveal">
+        <div className="term-bar">
+          <span>root@archbox:~</span>
+        </div>
+
         <div
-          className="terminal"
-          role="region"
-          aria-label="Arch Linux terminal"
-          onClick={focusInput}
+          className="term-body"
+          ref={bodyRef}
+          onClick={() => inputRef.current?.focus()}
         >
-          <div className="terminal-header">
-            <span className="terminal-dot red" aria-hidden="true" />
-            <span className="terminal-dot yellow" aria-hidden="true" />
-            <span className="terminal-dot green" aria-hidden="true" />
-            <span className="terminal-title">root@archbox:~</span>
-          </div>
-          <div className="terminal-body" ref={bodyRef}>
+          {/* The live region wraps only the output. Putting it around the
+              input too would make every keystroke a potential announcement. */}
+          <div role="log" aria-live="polite" aria-label="Terminal output">
             {lines.map((l) => <div key={l.key}>{renderLine(l)}</div>)}
-            <div className="terminal-line terminal-input-row">
-              <span className="terminal-prompt">$</span>
-              <span className="terminal-input-wrap">
-                {ghost && (
-                  <span
-                    className="terminal-ghost"
-                    aria-hidden="true"
-                    style={{ left: `${input.length}ch` }}
-                  >
-                    {ghost}
-                  </span>
-                )}
-                <input
-                  ref={inputRef}
-                  className="terminal-input"
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={onKeyDown}
-                  placeholder="type a command…"
-                  aria-label="Terminal input"
-                  disabled={animating}
-                  autoComplete="off"
-                  autoCorrect="off"
-                  spellCheck={false}
-                />
-              </span>
-              <span className="terminal-cursor" aria-hidden="true" />
-            </div>
           </div>
-          <div className="terminal-chips" aria-label="Quick commands">
-            {CHIPS.map((c) => (
-              <button
-                key={c}
-                type="button"
-                className="terminal-chip"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  run(c)
-                }}
-              >
-                {c}
-              </button>
-            ))}
+
+          <div className="term-line term-input-row">
+            <span className="term-prompt">$</span>
+            <span className="term-input-wrap">
+              {ghost && (
+                <span className="term-ghost" aria-hidden="true" style={{ left: `${input.length}ch` }}>
+                  {ghost}
+                </span>
+              )}
+              <input
+                ref={inputRef}
+                className="term-input"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={onKeyDown}
+                placeholder="type a command"
+                aria-label="Terminal command input"
+                readOnly={animating}
+                aria-busy={animating}
+                autoComplete="off"
+                autoCorrect="off"
+                autoCapitalize="off"
+                spellCheck={false}
+              />
+            </span>
+            <span className="term-cursor" aria-hidden="true" />
           </div>
+        </div>
+
+        <div className="term-chips" role="group" aria-label="Quick commands">
+          {CHIPS.map((c) => (
+            <button key={c} type="button" className="chip" onClick={() => run(c)}>
+              {c}
+            </button>
+          ))}
         </div>
       </div>
     </section>

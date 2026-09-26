@@ -2,170 +2,155 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Arch Linux — you decide what belongs</title>
+    <meta
+      name="description"
+      content="A lightweight, rolling-release Linux distribution for the self-directed. Rolling releases, pacman, the AUR, and the wiki."
+    />
+    <link rel="canonical" href="https://lianbeast.github.io/Lian-Arch-Linux-Site/" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#0b0c0e" />
+
     <link rel="icon" type="image/svg+xml" href="%BASE_URL%favicon.svg" />
-    <link rel="preload" href="%BASE_URL%fonts/SpaceGrotesk-SemiBold.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="%BASE_URL%fonts/Inter-Regular.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="%BASE_URL%fonts/JetBrainsMono-Variable.woff2" as="font" type="font/woff2" crossorigin />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Arch Linux - A simple, lightweight distribution. You decide what belongs. Rolling releases, pacman, the AUR, and a community of contributors." />
-    <meta name="theme-color" content="#050a12" />
 
-    <!-- Open Graph for social sharing -->
-    <meta property="og:title" content="Arch Linux">
-    <meta property="og:description" content="Arch Linux - A simple, lightweight distribution. You decide what belongs. Rolling releases, pacman, the AUR, and a community of contributors.">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://lianbeast.github.io/Lian-Arch-Linux-Site/">
-    <meta property="og:image" content="%BASE_URL%demo.gif">
-    <meta property="og:image:width" content="1000">
-    <meta property="og:image:height" content="760">
-    <meta property="og:image:type" content="image/gif">
-    <meta property="og:video" content="%BASE_URL%demo.mp4">
-    <meta property="og:video:type" content="video/mp4">
-    <meta property="og:site_name" content="Arch Linux">
-    <meta property="og:locale" content="en_US">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Arch Linux">
-    <meta name="twitter:description" content="Arch Linux - A simple, lightweight distribution. You decide what belongs. Rolling releases, pacman, the AUR, and a community of contributors.">
-    <meta name="twitter:image" content="%BASE_URL%demo.gif">
+    <!-- Preload only the two faces that paint above the fold. -->
+    <link
+      rel="preload"
+      href="%BASE_URL%fonts/SpaceGrotesk-SemiBold.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="%BASE_URL%fonts/JetBrainsMono-Variable.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
 
-    <!-- JSON-LD Structured Data -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Arch Linux" />
+    <meta property="og:title" content="Arch Linux — you decide what belongs" />
+    <meta
+      property="og:description"
+      content="A lightweight, rolling-release Linux distribution for the self-directed."
+    />
+    <meta property="og:url" content="https://lianbeast.github.io/Lian-Arch-Linux-Site/" />
+    <!--
+      Absolute, not %BASE_URL%-relative. Social crawlers do not reliably resolve
+      relative og:image paths — Facebook guesses against og:url, Twitter and
+      LinkedIn reject them outright. This requires demo.gif to live in public/
+      so its path is stable and unhashed. See the note in README.md.
+    -->
+    <meta property="og:image" content="https://lianbeast.github.io/Lian-Arch-Linux-Site/demo.gif" />
+    <meta property="og:image:alt" content="The interactive terminal running pacman commands." />
+    <meta property="og:locale" content="en_US" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Arch Linux — you decide what belongs" />
+    <meta
+      name="twitter:description"
+      content="A lightweight, rolling-release Linux distribution for the self-directed."
+    />
+    <meta name="twitter:image" content="https://lianbeast.github.io/Lian-Arch-Linux-Site/demo.gif" />
+
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "WebSite",
+      "@type": "WebPage",
       "name": "Arch Linux",
-      "description": "Arch Linux - A simple, lightweight distribution. You decide what belongs. Rolling releases, pacman, the AUR, and a community of contributors.",
+      "description": "A lightweight, rolling-release Linux distribution for the self-directed.",
       "url": "https://lianbeast.github.io/Lian-Arch-Linux-Site/",
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": "https://lianbeast.github.io/Lian-Arch-Linux-Site/?s={search_term_string}",
-        "query-input": "required name=search_term_string"
-      }
+      "inLanguage": "en",
+      "isAccessibleForFree": true
     }
     </script>
 
-    <title>Arch Linux</title>
-
     <style>
-      /* Self-hosted fonts - served from public/fonts, no CDN dependency, no tofu boxes */
+      /* Self-hosted, no CDN. Only the two families this site actually uses. */
       @font-face {
         font-family: 'Space Grotesk';
         src: url('%BASE_URL%fonts/SpaceGrotesk-Regular.woff2') format('woff2');
-        font-display: swap;
         font-weight: 400;
+        font-display: swap;
       }
       @font-face {
         font-family: 'Space Grotesk';
         src: url('%BASE_URL%fonts/SpaceGrotesk-Medium.woff2') format('woff2');
-        font-display: swap;
         font-weight: 500;
+        font-display: swap;
       }
       @font-face {
         font-family: 'Space Grotesk';
         src: url('%BASE_URL%fonts/SpaceGrotesk-SemiBold.woff2') format('woff2');
-        font-display: swap;
         font-weight: 600;
-      }
-      @font-face {
-        font-family: 'Space Grotesk';
-        src: url('%BASE_URL%fonts/SpaceGrotesk-Bold.woff2') format('woff2');
         font-display: swap;
-        font-weight: 700;
-      }
-      @font-face {
-        font-family: 'Inter';
-        src: url('%BASE_URL%fonts/Inter-Regular.woff2') format('woff2');
-        font-display: swap;
-        font-weight: 400;
-      }
-      @font-face {
-        font-family: 'Inter';
-        src: url('%BASE_URL%fonts/Inter-Medium.woff2') format('woff2');
-        font-display: swap;
-        font-weight: 500;
-      }
-      @font-face {
-        font-family: 'Inter';
-        src: url('%BASE_URL%fonts/Inter-SemiBold.woff2') format('woff2');
-        font-display: swap;
-        font-weight: 600;
-      }
-      @font-face {
-        font-family: 'Inter';
-        src: url('%BASE_URL%fonts/Inter-Bold.woff2') format('woff2');
-        font-display: swap;
-        font-weight: 700;
       }
       @font-face {
         font-family: 'JetBrains Mono';
         src: url('%BASE_URL%fonts/JetBrainsMono-Variable.woff2') format('woff2');
-        font-display: swap;
         font-weight: 100 800;
-      }
-      @font-face {
-        font-family: 'Rajdhani';
-        src: url('%BASE_URL%fonts/Rajdhani-Regular.woff2') format('woff2');
         font-display: swap;
-        font-weight: 400;
       }
-      @font-face {
-        font-family: 'Rajdhani';
-        src: url('%BASE_URL%fonts/Rajdhani-Medium.woff2') format('woff2');
-        font-display: swap;
+
+      /* Pre-mount fallback. Deliberately inline and dependency-free so it
+         survives a failed stylesheet, and delayed so it never flashes when
+         the app boots normally. */
+      .boot {
+        max-width: 44rem;
+        margin: 0 auto;
+        padding: 5rem 1.5rem;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 0.875rem;
+        line-height: 1.7;
+        color: #a2a8af;
+        opacity: 0;
+        animation: boot-in 200ms ease 1200ms forwards;
+      }
+      .boot h1 {
+        margin: 0 0 0.75rem;
+        font-size: 1.125rem;
         font-weight: 500;
+        color: #e7e8ea;
       }
-      @font-face {
-        font-family: 'Rajdhani';
-        src: url('%BASE_URL%fonts/Rajdhani-SemiBold.woff2') format('woff2');
-        font-display: swap;
-        font-weight: 600;
+      .boot p { margin: 0 0 0.5rem; }
+      .boot a { color: #6cc0e8; }
+      @keyframes boot-in { to { opacity: 1; } }
+      @media (prefers-reduced-motion: reduce) {
+        /* Keep the 1200ms delay, drop the fade. */
+        .boot { animation-duration: 1ms; }
       }
-      @font-face {
-        font-family: 'Rajdhani';
-        src: url('%BASE_URL%fonts/Rajdhani-Bold.woff2') format('woff2');
-        font-display: swap;
-        font-weight: 700;
-      }
-      @font-face {
-        font-family: 'Michroma';
-        src: url('%BASE_URL%fonts/Michroma-Regular.woff2') format('woff2');
-        font-display: swap;
-        font-weight: 400;
-      }
-      /* Visually-hidden but screen-reader accessible */
-      .sr-only {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        padding: 0;
-        margin: -1px;
-        overflow: hidden;
-        clip: rect(0, 0, 0, 0);
-        white-space: nowrap;
-        border: 0;
-      }
-      /* Keyboard skip-nav link: off-screen until keyboard-focus lands */
-      .skip-link {
-        position: absolute;
-        top: -100px;
-        left: 1rem;
-        background: #00d4ff;
-        color: #000;
-        padding: 0.6rem 1rem;
-        border-radius: 6px;
-        font: 700 0.95rem/1 'Rajdhani', system-ui, sans-serif;
-        text-decoration: none;
-        z-index: var(--z-skip-link, 9000);
-        box-shadow: 0 0 20px rgba(0, 212, 255, 0.45);
-        transition: top 0.2s ease;
-      }
-      .skip-link:focus { top: 1rem; outline: 2px solid #fff; outline-offset: 2px; }
-      @media (prefers-reduced-motion: reduce) { .skip-link { transition: none; } }  </style>
-</head>
+    </style>
+
+    <noscript>
+      <!-- Scroll reveals start hidden and are shown by JavaScript. Without JS
+           there is nothing to reveal them, so force them visible. -->
+      <style>
+        .reveal, .reveal-stagger > * {
+          opacity: 1 !important;
+          transform: none !important;
+          filter: none !important;
+        }
+      </style>
+    </noscript>
+  </head>
   <body>
-    <a href="#root" class="skip-link">Skip to main content</a>
-    <h1 class="sr-only">Arch Linux - You decide what belongs.</h1>
-    <main id="root" tabindex="-1"></main>
+    <!-- Replaced by React on mount (see src/main.jsx). If the bundle fails to
+         load, this is what the reader sees instead of an empty black page. -->
+    <div id="root">
+      <div class="boot">
+        <h1>Arch Linux</h1>
+        <p>Loading the page…</p>
+        <p>
+          If this message stays on screen, the script bundle failed to load.
+          Try a hard reload, or read
+          <a href="https://wiki.archlinux.org/">the wiki</a> meanwhile.
+        </p>
+      </div>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
-</body>
+  </body>
 </html>

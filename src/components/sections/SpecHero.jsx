@@ -1,88 +1,102 @@
-// Mockup 03: hero as PKGBUILD spec sheet. Left = the recipe, right = the margin notes.
-const SPEC_LINES = [
-  { num: 1,  indent: '', code: '# The Arch Way, in plain text', cls: 'cm' },
-  { num: 2,  indent: '', code: '', cls: '' },
-  { num: 3,  indent: '', code: '<span class="big type-anim">Arch <span class="hl">Linux</span></span>', cls: '' },
-  { num: 4,  indent: '', code: '', cls: '' },
-  { num: 5,  indent: '', code: '<span class="kw">pkgname</span>=<span class="type-anim"><span>your-machine</span></span>', cls: '' },
-  { num: 6,  indent: '', code: '<span class="kw">pkgver</span>=<span class="type-anim"><span>2026.09.08</span></span>', cls: '' },
-  { num: 7,  indent: '', code: '<span class="kw">pkgrel</span>=<span class="type-anim"><span>1</span></span>', cls: '' },
-  { num: 8,  indent: '', code: '<span class="kw">arch</span>=(<span class="type-anim"><span>\'x86_64\'</span></span>)', cls: '' },
-  { num: 9,  indent: '', code: '<span class="cm comment-pin"># build() is called by makepkg, actually</span>', cls: '' },
-  { num: 10, indent: '', code: '<span class="kw">depends</span>=(<span class="type-anim"><span>\'you\'</span></span>)', cls: '' },
-]
-
-const MARGIN_NOTES = [
+/**
+ * The hero is a PKGBUILD.
+ *
+ * The whole thesis of the brand — sovereignty, the user as the load-bearing
+ * component — stated as a build recipe instead of a claim. The headline sits
+ * on its own line of the sheet, so the reader gets the name and the argument
+ * before anything else, and the last line is the payoff: depends=('you').
+ */
+const NOTES = [
   {
-    title: 'Plain text, or it doesn\'t exist',
-    body: 'Everything Arch ships can be read. Packages are build recipes, configs are files, the wiki explains why.',
-    ref: 'line 1',
+    h: 'pkgname',
+    p: 'Every package is a PKGBUILD — plain text you can read before you run it. Nothing arrives compiled from a source you cannot inspect.',
+    ref: 'line 5',
   },
   {
-    title: 'You are the dependency',
-    body: 'The system assumes competence and rewards it. Nothing is pre-decided for you, which means nothing is hidden from you.',
-    ref: 'depends',
+    h: 'pkgver',
+    p: 'One command keeps the system current. There is no upgrade cycle because there is no version. The date is the version; the version is the date.',
+    ref: 'line 6',
   },
   {
-    title: 'Today\'s version is the only version',
-    body: 'Rolling release: one <code>pacman -Syu</code> and your pkgver is current. The date is the version, the version is the date.',
-    ref: 'pkgver',
+    h: 'depends',
+    p: 'Arch decides nothing for you. Every choice the system makes is a choice you made first — which is why nothing is ever hidden from you.',
+    ref: 'line 9',
   },
-]
-
-const BUILD_FIELDS = [
-  { key: 'release_model', desc: 'One command, always current. No "LTS or bleeding edge?" dilemma: the edge is the release.', val: 'rolling' },
-  { key: 'base_install', desc: 'Under 200 packages. You add what you use, and you know why each one is there.', val: '~2 GB' },
-  { key: 'init', desc: 'systemd by default, replaceable by design. The choice ships as a choice.', val: 'yours' },
-  { key: 'documentation', desc: 'The Arch Wiki: the documentation other distros link to when their own runs out.', val: '55k+ articles' },
-  { key: 'aur_routes', desc: '80,000+ community-maintained PKGBUILDs. Every one readable before you run it.', val: '80,000+' },
 ]
 
 export default function SpecHero() {
   return (
-    <section id="home" className="section hero spec-hero" aria-label="Hero">
-      <div className="spec-code">
-        <div className="spec-gutter" aria-hidden="true">
-          {SPEC_LINES.map((l) => (
-            <span key={l.num} className="lineno" style={{ '--n': l.num }}>{l.num}</span>
-          ))}
-        </div>
-        <div className="spec-lines" role="code">
-          {SPEC_LINES.map((l, i) => (
-            <div key={i} className={`spec-line ${l.cls}`} dangerouslySetInnerHTML={{ __html: l.code }} />
-          ))}
-        </div>
-      </div>
+    <section id="home" className="hero" aria-labelledby="hero-title">
+      <div className="hero-grid">
+        <div className="hero-code">
+          <span className="ln" aria-hidden="true">1</span>
+          <span className="code c"># The Arch Way, in plain text</span>
 
-      <div className="spec-margin">
-        {MARGIN_NOTES.map((note, i) => (
-          <div key={i} className="margin-note">
-            <h3>{note.title}</h3>
-            <p dangerouslySetInnerHTML={{ __html: note.body }} />
-            <span className="ref">see <b>{note.ref}</b></span>
+          <span className="ln" aria-hidden="true">2</span>
+          <span className="code">&nbsp;</span>
+
+          <span className="ln" aria-hidden="true">3</span>
+          <div className="code code--block">
+            <h1 id="hero-title" className="hero-title">
+              Arch <em>Linux</em>
+            </h1>
+            <p className="hero-lead">
+              A lightweight, rolling-release distribution for people who want to
+              know exactly what is on their machine. You build it. You own it.
+              Nothing hides behind a curtain.
+            </p>
+            <div className="hero-cta">
+              <a className="btn btn-solid" href="#download">Download</a>
+              <a
+                className="btn btn-line"
+                href="https://wiki.archlinux.org/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Read the wiki
+              </a>
+            </div>
           </div>
-        ))}
-        <div className="spec-ctas">
-          <a className="btn btn-primary" href="#fields">View build fields</a>
-          <a className="btn" href="https://wiki.archlinux.org/" target="_blank" rel="noopener noreferrer">Read the wiki</a>
-        </div>
-      </div>
 
-      <section className="fields" id="fields">
-        <div className="fields-head">
-          <span className="fields-kicker">Build fields</span>
-          <h2>Every field is a promise. Each one checkable.</h2>
+          <span className="ln" aria-hidden="true">4</span>
+          <span className="code">&nbsp;</span>
+
+          <span className="ln" aria-hidden="true">5</span>
+          <span className="code">
+            <span className="k">pkgname</span>=<span className="v">your-machine</span>
+          </span>
+
+          <span className="ln" aria-hidden="true">6</span>
+          <span className="code">
+            <span className="k">pkgver</span>=<span className="v">rolling</span>
+          </span>
+
+          <span className="ln" aria-hidden="true">7</span>
+          <span className="code">
+            <span className="k">pkgrel</span>=<span className="v">1</span>
+          </span>
+
+          <span className="ln" aria-hidden="true">8</span>
+          <span className="code">
+            <span className="k">arch</span>=<span className="v">('x86_64' 'aarch64' 'armv7h' 'riscv64')</span>
+          </span>
+
+          <span className="ln" aria-hidden="true">9</span>
+          <span className="code">
+            <span className="k">depends</span>=<span className="v">('you')</span>
+          </span>
         </div>
-        <div className="field-table">
-          {BUILD_FIELDS.map((f, i) => (
-            <div key={i} className="field-row">
-              <span className="field-key">{f.key}</span>
-              <p className="field-desc">{f.desc}</p>
-              <span className="field-val">{f.val}</span>
+
+        <aside className="hero-notes" aria-label="Annotations">
+          {NOTES.map((n) => (
+            <div className="note" key={n.h}>
+              <p className="note-h">{n.h}</p>
+              <p className="note-p">{n.p}</p>
+              <span className="note-ref">see {n.ref}</span>
             </div>
           ))}
-        </div>
-      </section>
+        </aside>
+      </div>
     </section>
   )
 }

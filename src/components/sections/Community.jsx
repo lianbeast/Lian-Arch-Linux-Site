@@ -1,69 +1,45 @@
-const links = [
-  {
-    label: 'IRC',
-    text: '#archlinux on Libera.Chat — help, chatter, both.',
-    href: 'https://libera.chat/',
-  },
-  {
-    label: 'Forum',
-    text: 'General support, packaging, dev talks.',
-    href: 'https://bbs.archlinux.org/',
-  },
-  {
-    label: 'Bug Tracker',
-    text: 'Found a bug? File it. All bugs are public.',
-    href: 'https://bugs.archlinux.org/',
-  },
-  {
-    label: 'Wiki',
-    text: 'The most-cited Linux reference on the internet.',
-    href: 'https://wiki.archlinux.org/',
-  },
-]
-
-const marqueeWords = [
-  'Arch Linux', 'Rolling Release', 'KISS', 'Pacman', 'AUR', 'Wiki',
-  'Open Source', 'Do It Yourself', 'Minimal', 'DIY', 'Pkgbuild', 'Git',
+/**
+ * The scrolling keyword marquee is gone.
+ *
+ * It was twelve words on a loop, carrying no information the reader did not
+ * already have from the section above it. What remains is a plain list of
+ * places to go, which is what the section was actually for.
+ */
+const LINKS = [
+  { label: 'IRC', text: '#archlinux on Libera.Chat — help and chatter, both.', href: 'https://libera.chat/' },
+  { label: 'Forum', text: 'General support, packaging, and development talk.', href: 'https://bbs.archlinux.org/' },
+  { label: 'Bug tracker', text: 'Found a bug? File it. Every report is public.', href: 'https://bugs.archlinux.org/' },
+  { label: 'Wiki', text: 'The most-cited Linux reference on the internet.', href: 'https://wiki.archlinux.org/' },
 ]
 
 export default function Community() {
   return (
-    <section id="community" className="section" aria-label="Community">
-      <div className="section-header reveal">
-        <p className="section-tag">Community</p>
-        <h2 className="section-title">
-          No. 1 question: "Is Arch worth it?"
+    <section id="community" className="sec" aria-labelledby="community-title">
+      <header className="sec-head">
+        <p className="sec-name">community</p>
+        <h2 id="community-title" className="sec-title">
+          The number one question: is Arch worth it?
         </h2>
-        <p className="section-lead">
-          The community will not judge you for asking. They will judge you for not
-          reading the wiki first.
+        <p className="sec-lead">
+          The community will not judge you for asking. They will judge you for
+          not reading the wiki first.
         </p>
-      </div>
+      </header>
 
-      <div className="marquee reveal" aria-hidden="true">
-        <div className="marquee-track">
-          {[...marqueeWords, ...marqueeWords].map((w, i) => (
-            <span key={i} className="marquee-word">{w}</span>
-          ))}
-        </div>
-      </div>
-
-      <ul className="grid-2 reveal-stagger" aria-label="Community links">
-        {links.map((l) => (
-          <li key={l.label}>
-            <a
-              href={l.href}
-              className="card"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ display: 'block', textDecoration: 'none', color: 'inherit' }}
-            >
-              <h3 className="card-title">{l.label}</h3>
-              <p className="card-text">{l.text}</p>
-            </a>
-          </li>
+      <div className="comm reveal-stagger">
+        {LINKS.map((l) => (
+          <a
+            className="comm-item"
+            key={l.label}
+            href={l.href}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span className="comm-label">{l.label}</span>
+            <span className="comm-text">{l.text}</span>
+          </a>
         ))}
-      </ul>
+      </div>
     </section>
   )
 }

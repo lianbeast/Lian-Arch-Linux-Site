@@ -1,45 +1,138 @@
 # Product
 
-> Source of truth for design and engineering decisions on this site. Edit when the project's intent, audience, or principles shift — not for one-off changes.
+> Source of truth for design and engineering decisions on this site. Edit when the
+> project's intent, audience, or principles shift — not for one-off changes.
+>
+> **This file must match the shipped code.** It previously described a 2D canvas
+> backdrop, a three-family type stack and a nine-section page, none of which
+> existed. When something here and something in `src/` disagree, one of them is a
+> bug — fix it in the same commit.
 
 ## Register
-**Brand.** Single-page scroll landing surface. No app shell, no forms, no dashboard chrome. The site IS the product — first impression, atmosphere, conviction.
+**Brand.** Single-page scroll landing surface. No app shell, no forms, no
+dashboard chrome. The site IS the product — first impression, atmosphere, conviction.
 
 ## Users
-**Curious developers** — competent, technically literate, allergic to marketing varnish. Browsing to evaluate whether Arch Linux is for them, or already converted and just looking. Sketch the user as someone who installs from the wiki and reads mailing lists for fun.
+**Curious developers** — competent, technically literate, allergic to marketing
+varnish. Browsing to evaluate whether Arch Linux is for them, or already converted
+and just looking. Someone who installs from the wiki and reads mailing lists for fun.
 
 ## Product Purpose
-Convince a developer in 60 seconds that Arch Linux is the Linux for someone who already knows what Linux is. Sell sovereignty, not features — the rest of the site is a footnote to that thesis.
+Convince a developer in 60 seconds that Arch Linux is the Linux for someone who
+already knows what Linux is. Sell sovereignty, not features — the rest of the page
+is a footnote to that thesis.
 
 ## Brand Personality
 **Diabolic. Sovereign. Uncompromising.**
-Not "edgy for fun." The voice of a system that knows what it is and refuses to soften itself to be liked. Trust the reader. Talk like a senior engineer in a channel they didn't invite you to. Decorate only with conviction, never with reassurance.
+
+Not "edgy for fun." The voice of a system that knows what it is and refuses to
+soften itself to be liked. Trust the reader. Talk like a senior engineer in a
+channel they did not invite you to. Decorate only with conviction, never with
+reassurance.
+
+## Design Thesis
+**A man page you can scroll.**
+
+The site is a technical document, not a landing page. That single decision
+resolves most of the layout questions below: documents use rules instead of
+cards, running headers instead of eyebrows, and type instead of ornament.
 
 ## Anti-references
-- A WebGL/Three.js demo that exists to show off a shader and then has nothing to say. The page conveys atmosphere with a lightweight 2D canvas backdrop, not a GPU scene.
-- SaaS landing templates (gradient hero, big stats row, "trusted by 10,000+ teams").
-- Brochure sites (alternating image/text cards, eyebrow kickers on every section, friendly icons).
-- Any surface a competent dev would describe as "trying too hard."
+These are things this site must not become. Every one of them was previously
+violated somewhere in the build; they are listed here so it does not happen again.
+
+- **Eyebrow kickers on every section.** A decorative uppercase label above every
+  headline, carrying no information. Section labels must carry information or go.
+- **A card grid as the default layout.** Eight differently-named classes that
+  render the same rounded glass rectangle is one component and eleven missed
+  layout decisions.
+- **Glow and gradient as the default.** Emphasis applied to everything is
+  emphasis applied to nothing. There is no glow on this site.
+- **Cyan-on-black neon.** The single most recognizable AI-generated palette.
+- **Glassmorphism over an opaque ground.** Blurring a solid background produces a
+  more expensive solid background.
+- **Motion as ornament.** Marquee loops, floating icons, drifting gradients and
+  sheen sweeps that answer to no moment in the narrative.
+- **A WebGL/Three.js demo that exists to show off a shader.** There is no GPU
+  work on this page — the backdrop is Canvas 2D with a hand-written projection,
+  no shader and no 3D library. It is thin monochrome line work, with the Arch
+  mark and a few nodes picked out in brand blue, and it recedes to 45% once the
+  reader is into the document so the type stays the contrast anchor.
+  This was an **owner-approved reversal** of an earlier all-static decision. If
+  the scene ever competes with the content, the opacity is wrong, not the design.
+- **SaaS landing templates.** Gradient hero, big stats row, "trusted by 10,000+ teams".
+- **Unverifiable numbers.** This audience fact-checks.
 
 ## Design Principles
-Derived from the success metric: **the visitor walks away wowed and shares it.**
 
-1. **The argument comes first.** Every section earns its place by carrying a claim. Visuals exist to make the claim land, not to fill the page.
-2. **Motion is atmosphere, not ornament.** A 2D particle backdrop, scroll-progress bar, and reveal-on-scroll signal momentum. Scene-bound, never decorative. Everything that moves answers to a moment in the narrative.
-3. **Authority through restraint.** No filter, no padding, no analogies aimed at non-technical readers. Talk to the curious dev on their level.
-4. **Section choreography.** Each section is a beat (intro → about → history → features → terminal → architectures → download → usecases → community). Transitions are deliberate scroll beats, not crossfades.
-5. **Type carries the voice.** Display type does the heavy lifting; body copy is small, dense, monospace where it counts. Headlines are sentences, not tags.
+1. **The argument comes first.** Every section earns its place by carrying a
+   claim. The reader must learn what this is before they learn anything else.
+2. **Rules, not boxes.** Structure comes from hairlines and spacing. Cards are a
+   last resort, not a first instinct.
+3. **One idea, stated loudly.** The PKGBUILD hero carries the thesis
+   (`depends=('you')`). Everything else is quieter around it.
+4. **Type carries the voice.** Two families. Display type does the heavy lifting;
+   mono handles every label, meta string and code fragment.
+5. **Motion answers to state.** Two tiers, and they are not interchangeable:
+   - **Scroll-linked** (`animation-timeline`, zero JS, compositor thread) for
+     ambient and structural things. The hairline rules draw themselves in as
+     each section arrives; the hero backdrop drifts and fades as it leaves.
+     Continuous — it tracks scroll position rather than firing once.
+   - **Scroll-triggered** (`IntersectionObserver`) for content. Arrives once and
+     stays put. Re-animating content on every pass is a theme demo, not a
+     document.
 
-## Accessibility & Inclusion
-**Out of scope for this demo.** Per project owner, a11y work (contrast checks beyond what's already there, full keyboard/ARIA coverage, AAA contrast, captions, etc.) is deferred. Skip-link, reduced-motion guard, focus-visible styles, and semantic landmarks already in `index.html` remain as a baseline; do not expand them.
+   **No pinning, no horizontal hijack, no scroll-jacking.** Those are the
+   techniques that make a page feel like it is fighting the reader. Everything
+   scroll-driven sits behind `@supports` with the *finished* state as the base
+   style, so a browser without scroll-driven animations gets the static design
+   rather than a half-drawn one. `prefers-reduced-motion` is handled globally in
+   one place and kills every transition on the site.
+6. **Honest data or no data.** No fabricated timestamps, no invented mirror
+   latencies, no hardcoded release versions, no numbers we cannot source.
 
-## References
-- **archlinux.org** — the current real site. Borrow its self-possession and dark, mechanical voice. The point isn't to clone it; it's to be in conversation with it.
+## Accessibility
+**In scope, and treated as a shipping requirement.** (This was previously marked
+out of scope for the demo. A production surface does not get that exemption.)
+
+Currently implemented:
+- One `<h1>` on the page, in the hero. One `<main id="main-content">`. One skip link.
+- Semantic landmarks: `nav`, `main`, `footer`, `section` with `aria-labelledby`.
+- Every interactive control is a real `<button>` or `<a>` with a visible
+  `:focus-visible` ring. No focus is ever removed.
+- The terminal output is a `role="log"` live region, scoped so it does not wrap
+  the input.
+- `prefers-reduced-motion` is honoured globally, and the terminal swaps its
+  animated `pacman -Syu` for static output rather than silently doing nothing.
+- Reveal-on-scroll is a progressive enhancement: if `IntersectionObserver` is
+  missing, content renders visible. A `<noscript>` rule does the same without JS.
+- Every section is wrapped in an error boundary, so one broken subtree degrades
+  to a readable message instead of a blank page.
 
 ## Stack & Constraints
-- React 19 + Vite (Rolldown).
-- Backdrop is a fixed 2D canvas (`BgCanvas`), 30 particles, DPR-capped, pauses on tab hidden and under reduced-motion.
-- Sticky nav uses `IntersectionObserver` for active-section tracking; a top scroll-progress bar fills on scroll; sections reveal-in via `IntersectionObserver`.
-- In-page interactive terminal (`Terminal.jsx`) parses input locally — no network, no state leaves the browser.
-- Self-hosted fonts (Michroma / Rajdhani / JetBrains Mono) bundled in `public/fonts/`; `index.html` references them via `%BASE_URL%` so the GitHub Pages subpath deploy resolves.
-- `single-font:35` (single display family) and `dark-glow:38` (deep-navy + neon accent) are committed brand tokens — flagged by design detectors as expected; suppressed at project config level, not defects.
+- React 19 + Vite 8 (Rolldown). Two runtime dependencies: `react`, `react-dom`.
+- **No WebGL, no three.js, no GPU scene.** No shader, no 3D library, and the
+  runtime dependency count is `react` + `react-dom`, unchanged.
+  - `Backdrop.jsx` draws a fixed, **site-wide** landscape on a 2D canvas: a
+    flowing wireframe terrain receding to a horizon, drifting nodes, and the Arch
+    "A" as a translucent slab. Hand-written projection — Canvas 2D, not WebGL.
+  - One rAF loop, stopped when the tab is hidden. Detail tiers by viewport width.
+  - Reduced motion and touch devices get a **single static frame** — the full
+    atmosphere with nothing moving — rather than a hidden scene.
+  - It recedes to 45% once the reader is a viewport into the document, so body
+    copy is never fighting moving geometry.
+  - See `docs/backdrop.md`.
+- **Two font families**, self-hosted in `public/fonts/`, zero CDN:
+  - Space Grotesk (400/500/600) — display and body
+  - JetBrains Mono (variable) — every label, meta string and code fragment
+- `index.html` references fonts via `%BASE_URL%` so the GitHub Pages subpath
+  deploy resolves. Only the two faces that paint above the fold are preloaded.
+- Package search calls the Arch index through a CORS proxy. The base URL is
+  `VITE_PKG_API` (see `.env.example`) so it can be replaced with a proxy you
+  control. It is the only external runtime dependency on the site.
+- Colour tokens: `--bg` `#0b0c0e`, `--ink` `#e7e8ea`, `--brand` `#1793D1`,
+  `--signal` `#7ec699` (terminal output only). Four roles, no fifth.
+
+## References
+- **archlinux.org** — the current real site. Borrow its self-possession and dark,
+  mechanical voice. The point is not to clone it; it is to be in conversation with it.

@@ -1,56 +1,34 @@
-const cases = [
-  {
-    num: '01',
-    title: 'Personal workstation',
-    text: 'Keep one system current for years. Roll updates weekly. Skip nothing. Accumulate nothing.',
-  },
-  {
-    num: '02',
-    title: 'Development machine',
-    text: 'Current compilers, current libs, current tooling. Reproducible builds, no version rot.',
-  },
-  {
-    num: '03',
-    title: 'Server',
-    text: 'Light, fast to boot, trivial to snapshot. Deploy one box or a thousand, keep them identical.',
-  },
-  {
-    num: '04',
-    title: 'Embedded / SBC',
-    text: 'ARM builds for Pi, Pine, and similar boards. Minimal base, maximal control.',
-  },
-  {
-    num: '05',
-    title: 'Security & forensics',
-    text: 'Custom live images, minimal services, total auditability. A clean base is a safe base.',
-  },
-  {
-    num: '06',
-    title: 'Learning',
-    text: 'Reading the wiki, building a system, hitting the Arch User Repository. Learning by doing.',
-  },
+/**
+ * Use cases as a table, not six identical cards.
+ *
+ * Same content, one column of labels and one of descriptions — which is what a
+ * list of things that share a shape should have been all along.
+ */
+const CASES = [
+  ['Personal workstation', 'Keep one system current for years. Roll updates weekly, skip nothing, accumulate nothing.'],
+  ['Development machine', 'Current compilers, current libraries, current tooling. Reproducible builds with no version rot.'],
+  ['Server', 'Light, fast to boot, trivial to snapshot. Deploy one box or a thousand and keep them identical.'],
+  ['Embedded / SBC', 'ARM and RISC-V builds for Pi, Pine and similar boards. Minimal base, maximal control.'],
+  ['Security & forensics', 'Custom live images, minimal services, total auditability. A clean base is a safe base.'],
+  ['Learning', 'Read the wiki, build a system, hit the AUR. Learning by doing, because there is no other way.'],
 ]
 
 export default function UseCases() {
   return (
-    <section id="usecases" className="section" aria-label="Use cases">
-      <div className="section-header reveal">
-        <p className="section-tag">Use cases</p>
-        <h2 className="section-title">Arch is not opinionated about your workload</h2>
-        <p className="section-lead">
-          Developers, sysadmins, students, tinkerers — the same base works for all
-          of them.
-        </p>
-      </div>
-      <div className="usecase-grid reveal-stagger" aria-label="Use case grid">
-        {cases.map((c) => (
-          <article key={c.num} className="usecase-card">
-            <span className="usecase-num" aria-hidden="true">
-              {c.num}
-            </span>
-            <h3 className="usecase-title">{c.title}</h3>
-            <p className="usecase-text">{c.text}</p>
-          </article>
+    <section id="usecases" className="sec" aria-labelledby="usecases-title">
+      <header className="sec-head">
+        <p className="sec-name">use cases</p>
+        <h2 id="usecases-title" className="sec-title">
+          Arch is not opinionated about your workload
+        </h2>
+      </header>
+
+      <div className="cases reveal">
+        {CASES.map(([title, text]) => (
+          <div className="case-row" key={title}>
+            <h3 className="case-k">{title}</h3>
+            <p className="case-v">{text}</p>
+          </div>
         ))}
       </div>
     </section>

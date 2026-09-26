@@ -1,59 +1,39 @@
-import { PackageIcon, TerminalIcon, BookIcon } from '../ui/Icons.jsx'
-
-const cards = [
-  {
-    icon: <PackageIcon size={28} color="currentColor" />,
-    title: 'Rolling release',
-    text: 'No versions. No upgrade cycles. Pull what is current, rebuild what broke. The distribution is the upstream.',
-  },
-  {
-    icon: <TerminalIcon size={28} color="currentColor" />,
-    title: 'Pacman + AUR',
-    text: 'One tool for repos. Another for community packages. Together: 80,000+ packages, no waiting for a vendor.',
-  },
-  {
-    icon: <BookIcon size={28} color="currentColor" />,
-    title: 'The wiki',
-    text: 'Detailed, current, written by users. The Arch Wiki is the most-cited Linux reference on the internet.',
-  },
-]
-
-const stats = [
-  { value: '80,000+', label: 'AUR packages' },
-  { value: '6', label: 'Architectures' },
-  { value: '1,000+', label: 'Contributors' },
-  { value: '20+', label: 'Years rolling' },
+/**
+ * About is an argument, not a feature list.
+ *
+ * It used to be three identical glass cards plus a stats bar. It is now one
+ * paragraph set large, and the numbers run as a single line of text — because
+ * a manifesto does not need a grid, and emphasis you apply to everything is
+ * emphasis you have not applied.
+ */
+const FACTS = [
+  ['80,000+', 'AUR packages'],
+  ['2002', 'first release'],
+  ['4', 'architectures'],
+  ['100%', 'plain-text config'],
 ]
 
 export default function About() {
   return (
-    <section id="about" className="section" aria-label="About Arch Linux">
-      <div className="section-header reveal">
-        <p className="section-tag">About</p>
-        <h2 className="section-title">
-          A distro that gets out of your way
+    <section id="about" className="sec" aria-labelledby="about-title">
+      <header className="sec-head">
+        <p className="sec-name">about</p>
+        <h2 id="about-title" className="sec-title">
+          Arch is not a product. It is a base.
         </h2>
-        <p className="section-lead">
-          Arch is not a product. It is a base. You decide what goes on top.
-        </p>
-      </div>
-      <div className="grid-3 reveal-stagger">
-        {cards.map((c) => (
-          <article key={c.title} className="card">
-            <span className="card-icon" aria-hidden="true">
-              {c.icon}
-            </span>
-            <h3 className="card-title">{c.title}</h3>
-            <p className="card-text">{c.text}</p>
-          </article>
-        ))}
-      </div>
-      <div className="stats-bar reveal">
-        {stats.map((s) => (
-          <div key={s.label} className="stat">
-            <span className="stat-value">{s.value}</span>
-            <span className="stat-label">{s.label}</span>
-          </div>
+      </header>
+
+      <p className="manifesto reveal">
+        Nothing is installed that you did not ask for. Nothing runs that you did
+        not enable. <strong>The system is the sum of your decisions</strong>, and
+        every one of them is legible.
+      </p>
+
+      <div className="facts reveal">
+        {FACTS.map(([value, label]) => (
+          <p className="fact" key={label}>
+            <b>{value}</b> {label}
+          </p>
         ))}
       </div>
     </section>

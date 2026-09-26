@@ -1,55 +1,55 @@
-import { PackageIcon, TerminalIcon, CpuIcon, BookIcon } from '../ui/Icons.jsx'
-
-const features = [
+/**
+ * Four load-bearing pieces, as a table of contents rather than a card grid.
+ *
+ * Each row carries the actual command, because this audience trusts artifacts
+ * and not adjectives. The rows are separated by rules, not by boxes.
+ */
+const FEATURES = [
   {
-    icon: <TerminalIcon size={28} color="currentColor" />,
+    n: '01',
     title: 'Pacman',
-    tag: 'Native',
-    desc: 'Fast, surgical, dependency-aware. -Syu keeps the system current; -R leaves nothing behind; -Ss finds anything in the repos.',
+    cmd: 'pacman -Syu',
+    text: 'Fast, surgical, dependency-aware. -Syu keeps the system current, -R leaves nothing behind, -Ss finds anything in the repos.',
   },
   {
-    icon: <PackageIcon size={28} color="currentColor" />,
-    title: 'AUR',
-    tag: 'Community',
-    desc: '80,000+ community-built packages. If it runs on Linux, someone in the Arch world has packaged it for you.',
+    n: '02',
+    title: 'The AUR',
+    cmd: 'makepkg -si',
+    text: '80,000+ community build recipes. Every one is a PKGBUILD — plain text you can read before you run it, so trust is earned by inspection rather than by branding.',
   },
   {
-    icon: <CpuIcon size={28} color="currentColor" />,
-    title: 'Rolling Release',
-    tag: 'Continuous',
-    desc: 'One install, one stream. No version migrations. No "upgrade every three years". You install Arch once.',
+    n: '03',
+    title: 'Rolling release',
+    cmd: 'pacman -Q',
+    text: 'One install, one stream. No version migrations and no upgrade every three years. You install Arch once and keep it current.',
   },
   {
-    icon: <BookIcon size={28} color="currentColor" />,
-    title: 'Minimal Base',
-    tag: 'Composable',
-    desc: 'A clean install is essentially nothing. You choose your display server, your init, your shell, your tools. Every choice stays yours.',
+    n: '04',
+    title: 'Minimal base',
+    cmd: 'pacstrap /mnt base linux',
+    text: 'A clean install is essentially nothing. You choose the display server, the init, the shell, the tools. Every choice stays yours.',
   },
 ]
 
 export default function Features() {
   return (
-    <section id="features" className="section" aria-label="Features">
-      <div className="section-header reveal">
-        <p className="section-tag">Features</p>
-        <h2 className="section-title">
-          Everything you need. Nothing you didn't ask for
+    <section id="features" className="sec" aria-labelledby="features-title">
+      <header className="sec-head">
+        <p className="sec-name">features</p>
+        <h2 id="features-title" className="sec-title">
+          Everything you need. Nothing you did not ask for.
         </h2>
-        <p className="section-lead">
-          Four load-bearing pieces, designed to compose into any system you can describe.
-        </p>
-      </div>
-      <div className="features reveal-stagger">
-        {features.map((f) => (
-          <article key={f.title} className="feature-row">
-            <span className="feature-icon" aria-hidden="true">
-              {f.icon}
-            </span>
-            <div className="feature-text">
-              <h3 className="feature-title">{f.title}</h3>
-              <p className="feature-desc">{f.desc}</p>
-            </div>
-            <span className="feature-tag">{f.tag}</span>
+      </header>
+
+      <div className="rows reveal-stagger">
+        {FEATURES.map((f) => (
+          <article className="row" key={f.n}>
+            <span className="row-num">{f.n}</span>
+            <h3 className="row-h">
+              {f.title}
+              <span className="cmd">{f.cmd}</span>
+            </h3>
+            <p className="row-p">{f.text}</p>
           </article>
         ))}
       </div>

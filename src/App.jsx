@@ -1,57 +1,65 @@
-import { useState, useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { SECTIONS, NAV_LINKS } from './utils/constants'
 import { ArchLinuxIcon } from './components/ui/Icons'
-import BootHero from './components/sections/BootHero'
-// Hero variants — to try one, import it and swap the render below:
-//   02 TopoHero  03 SpecHero  04 RaceHero  05 TilingHero  06 GardenHero
-//   (src/components/sections/<Name>.jsx)
+import ErrorBoundary from './components/ui/ErrorBoundary'
+import Backdrop from './components/ui/Backdrop'
+
+import SpecHero from './components/sections/SpecHero'
 import About from './components/sections/About'
 import History from './components/sections/History'
 import Features from './components/sections/Features'
 import Terminal from './components/sections/Terminal'
-import Architectures from './components/sections/Architectures'
-import Download from './components/sections/Download'
 import PackageSearch from './components/sections/PackageSearch'
-import Faq from './components/sections/Faq'
-
+import Download from './components/sections/Download'
+import Architectures from './components/sections/Architectures'
 import UseCases from './components/sections/UseCases'
+import Faq from './components/sections/Faq'
 import Community from './components/sections/Community'
 import Footer from './components/sections/Footer'
 
+const REDUCED_MOTION = typeof window !== 'undefined' &&
+  window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
 
+/**
+ * Reveal-on-scroll, as a progressive enhancement.
+ *
+ * If IntersectionObserver is missing, every element is revealed immediately.
+ * Content that is invisible without JavaScript is a bug, not a design.
+ */
 function useReveal() {
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('revealed')
-            observer.unobserve(entry.target)
-          }
-        })
-      },
-      { threshold: 0.12, rootMargin: '0px 0px -10% 0px' }
-    )
+    const targets = document.querySelectorAll('.reveal, .reveal-stagger')
 
-    document.querySelectorAll('.reveal, .reveal-stagger').forEach((el) => observer.observe(el))
+    if (!('IntersectionObserver' in window)) {
+      targets.forEach((el) => el.classList.add('revealed'))
+      return
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return
+        entry.target.classList.add('revealed')
+        observer.unobserve(entry.target)
+      })
+    }, { threshold: 0.12, rootMargin: '0px 0px -10% 0px' })
+
+    targets.forEach((el) => observer.observe(el))
     return () => observer.disconnect()
   }, [])
 }
 
+/** Highlights the nav item for whichever section currently owns the viewport. */
 function useActiveSection() {
-  const [activeSection, setActiveSection] = useState(0)
+  const [active, setActive] = useState(SECTIONS[0])
+
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const idx = SECTIONS.indexOf(entry.target.id)
-            if (idx >= 0) setActiveSection(idx)
-          }
-        })
-      },
-      { threshold: 0.4, rootMargin: '-20% 0px -60% 0px' }
-    )
+    if (!('IntersectionObserver' in window)) return
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) setActive(entry.target.id)
+      })
+    }, { threshold: 0.4, rootMargin: '-20% 0px -60% 0px' })
 
     SECTIONS.forEach((id) => {
       const el = document.getElementById(id)
@@ -60,30 +68,58 @@ function useActiveSection() {
     return () => observer.disconnect()
   }, [])
 
-  return { activeSection }
+  return active
 }
 
-const REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+/** Read position through the document, for the hairline progress bar. */
+function useScrollProgress() {
+  const [progress, setProgress] = useState(0)
 
-function Navbar({ activeSection }) {
-  const [mobileOpen, setMobileOpen] = useState(false)
-  const navRef = useRef(null)
-  const pillRef = useRef(null)
+  useEffect(() => {
+    let frame = 0
 
-  // Scroll-aware navbar hide/show
+    const measure = () => {
+      const max = document.documentElement.scrollHeight - window.innerHeight
+      setProgress(max > 0 ? (window.scrollY / max) * 100 : 0)
+    }
+
+    // Coalesce bursts of scroll events into one measurement per frame.
+    const onScroll = () => {
+      if (frame) return
+      frame = requestAnimationFrame(() => { measure(); frame = 0 })
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true })
+    // Deferred rather than called inline: a synchronous setState in an effect
+    // body cascades a render on mount for no reason.
+    frame = requestAnimationFrame(() => { measure(); frame = 0 })
+
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      if (frame) cancelAnimationFrame(frame)
+    }
+  }, [])
+
+  return progress
+}
+
+function Navbar({ active }) {
+  const [open, setOpen] = useState(false)
   const [hidden, setHidden] = useState(false)
   const lastY = useRef(0)
   const ticking = useRef(false)
+
+  /* Hide the bar scrolling down, bring it back scrolling up. */
   useEffect(() => {
     const onScroll = () => {
       if (ticking.current) return
       ticking.current = true
       requestAnimationFrame(() => {
         const y = window.scrollY
-        const diff = y - lastY.current
+        const delta = y - lastY.current
         if (y < 64) setHidden(false)
-        else if (diff > 10) setHidden(true)
-        else if (diff < -10) setHidden(false)
+        else if (delta > 10) setHidden(true)
+        else if (delta < -10) setHidden(false)
         lastY.current = y
         ticking.current = false
       })
@@ -92,193 +128,154 @@ function Navbar({ activeSection }) {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  // Animate pill to active link
+  /* Escape closes the mobile menu. */
   useEffect(() => {
-    if (REDUCED_MOTION || !navRef.current || !pillRef.current) return
-    const activeLink = navRef.current.querySelector('.nav-link.active')
-    if (!activeLink) { pillRef.current.style.opacity = '0'; pillRef.current.style.transform = 'translateX(0) scaleX(0)'; return }
-    const container = navRef.current.getBoundingClientRect()
-    const link = activeLink.getBoundingClientRect()
-    const scale = link.width / container.width
-    const translate = link.left - container.left
-    pillRef.current.style.transform = `translateX(${translate}px) scaleX(${scale})`
-    pillRef.current.style.opacity = '1'
-  }, [activeSection])
+    if (!open) return
+    const onKey = (e) => { if (e.key === 'Escape') setOpen(false) }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [open])
 
-  // Magnetic hover effect (desktop only)
+  /* Crossing into the desktop breakpoint drops the mobile menu. */
   useEffect(() => {
-    if (REDUCED_MOTION || window.innerWidth < 768) return
-    const links = navRef.current?.querySelectorAll('.nav-link')
-    if (!links) return
-    const cleanups = []
-    links.forEach(link => {
-      const onMove = (e) => {
-        const r = link.getBoundingClientRect()
-        const x = (e.clientX - r.left - r.width / 2) * 0.18
-        const y = (e.clientY - r.top - r.height / 2) * 0.18
-        link.style.transform = `translate(${x}px, ${y}px)`
-      }
-      const onLeave = () => { link.style.transform = '' }
-      link.addEventListener('mousemove', onMove)
-      link.addEventListener('mouseleave', onLeave)
-      cleanups.push(() => { link.removeEventListener('mousemove', onMove); link.removeEventListener('mouseleave', onLeave) })
+    const mq = window.matchMedia('(min-width: 821px)')
+    const onChange = (e) => { if (e.matches) setOpen(false) }
+    mq.addEventListener('change', onChange)
+    return () => mq.removeEventListener('change', onChange)
+  }, [])
+
+  const go = (id) => {
+    document.getElementById(id)?.scrollIntoView({
+      behavior: REDUCED_MOTION ? 'auto' : 'smooth',
     })
-    return () => cleanups.forEach(fn => fn())
-  }, [])
-
-  // Close mobile menu on resize to desktop
-  useEffect(() => {
-    const mq = window.matchMedia('(min-width: 769px)')
-    const handler = (e) => { if (e.matches) setMobileOpen(false) }
-    mq.addEventListener('change', handler)
-    return () => mq.removeEventListener('change', handler)
-  }, [])
-
-  // Close mobile menu on Escape
-  useEffect(() => {
-    if (!mobileOpen) return
-    const handler = (e) => { if (e.key === 'Escape') setMobileOpen(false) }
-    window.addEventListener('keydown', handler)
-    return () => window.removeEventListener('keydown', handler)
-  }, [mobileOpen])
+    setOpen(false)
+  }
 
   return (
-    <nav className={`nav${hidden ? ' nav--hidden' : ''}`} role="navigation" aria-label="Main navigation">
-      <div className="nav-glow-line" aria-hidden="true" />
+    <nav className={`nav${hidden ? ' nav--hidden' : ''}`} aria-label="Main">
       <div className="nav-inner">
-        <a href="#home" className="nav-brand" aria-label="Arch Linux Home">
-          <span className="nav-brand-icon">
-            <ArchLinuxIcon size={20} color="var(--primary)" />
-          </span>
-          Arch Linux
+        <a className="nav-brand" href="#home" onClick={(e) => { e.preventDefault(); go('home') }}>
+          <ArchLinuxIcon size={18} color="var(--brand)" />
+          <span>arch</span>
         </a>
+
         <button
-          className="nav-hamburger"
-          aria-expanded={mobileOpen}
+          type="button"
+          className="nav-toggle"
+          aria-expanded={open}
           aria-controls="nav-menu"
-          aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
-          onClick={() => setMobileOpen(o => !o)}
+          aria-label={open ? 'Close menu' : 'Open menu'}
+          onClick={() => setOpen((o) => !o)}
         >
-          <span className="hamburger-line" />
-          <span className="hamburger-line" />
-          <span className="hamburger-line" />
+          <span /><span /><span />
         </button>
-        <ul ref={navRef} id="nav-menu" className={`nav-links${mobileOpen ? ' open' : ''}`} role="menubar">
-          {!REDUCED_MOTION && <span ref={pillRef} className="nav-active-pill" />}
-          {NAV_LINKS.map((link, i) => {
-            const activeSectionId = SECTIONS[activeSection]
-            const isActive = activeSectionId === link.id
-            return (
-              <li key={link.id} role="none" style={{ '--i': i }}>
-                <button
-                  role="menuitem"
-                  className={`nav-link ${isActive ? 'active' : ''}`}
-                  onClick={() => {
-                    const el = document.getElementById(link.id)
-                    if (el) el.scrollIntoView({ behavior: 'smooth' })
-                    setMobileOpen(false)
-                  }}
-                  aria-current={isActive ? 'page' : undefined}
-                >
-                  {link.label}
-                </button>
-              </li>
-            )
-          })}
-          <li role="none" className="nav-cta-mobile-item">
-            <button
-              role="menuitem"
-              className="nav-cta-mobile btn btn-primary"
-              onClick={() => {
-                const el = document.getElementById('download')
-                if (el) el.scrollIntoView({ behavior: 'smooth' })
-                setMobileOpen(false)
-              }}
-            >
-              Download
-            </button>
-          </li>
+
+        <ul id="nav-menu" className={`nav-links${open ? ' open' : ''}`}>
+          {NAV_LINKS.map((link) => (
+            <li key={link.id}>
+              <button
+                type="button"
+                className="nav-link"
+                aria-current={active === link.id ? 'true' : undefined}
+                onClick={() => go(link.id)}
+              >
+                {link.label}
+              </button>
+            </li>
+          ))}
         </ul>
-        <button
-          className="nav-cta btn btn-primary"
-          onClick={() => {
-            const el = document.getElementById('download')
-            if (el) el.scrollIntoView({ behavior: 'smooth' })
-            setMobileOpen(false)
-          }}
+
+        <a
+          className="btn btn-solid nav-cta"
+          href="#download"
+          onClick={(e) => { e.preventDefault(); go('download') }}
         >
           Download
-        </button>
+        </a>
       </div>
     </nav>
   )
 }
 
-function ScrollProgress() {
-  const fillRef = useRef(null)
-  const readoutRef = useRef(null)
-  const frameRef = useRef(0)
+/** Appears once the reader is deep enough that scrolling back is a chore. */
+function BackToTop() {
+  const [visible, setVisible] = useState(false)
 
   useEffect(() => {
-    const update = () => {
-      frameRef.current = 0
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight
-      const progress = docHeight > 0
-        ? Math.min(100, Math.max(0, (window.scrollY / docHeight) * 100))
-        : 0
-      const blocks = Math.round(progress / 5)
-      if (fillRef.current) fillRef.current.style.transform = `scaleX(${progress / 100})`
-      if (readoutRef.current) {
-        readoutRef.current.style.opacity = progress > 1 && progress < 99 ? '1' : '0'
-        readoutRef.current.textContent =
-          `arch-linux-site ${String(Math.round(progress)).padStart(2, ' ')}% [${'#'.repeat(blocks)}${'·'.repeat(20 - blocks)}]`
-      }
-    }
+    let frame = 0
+    const measure = () => setVisible(window.scrollY > window.innerHeight * 1.5)
     const onScroll = () => {
-      if (!frameRef.current) frameRef.current = requestAnimationFrame(update)
+      if (frame) return
+      frame = requestAnimationFrame(() => { measure(); frame = 0 })
     }
+
     window.addEventListener('scroll', onScroll, { passive: true })
-    window.addEventListener('resize', onScroll, { passive: true })
-    update()
+    // Deferred, not called inline: a synchronous setState in an effect body
+    // cascades a render on mount for no reason.
+    frame = requestAnimationFrame(() => { measure(); frame = 0 })
+
     return () => {
       window.removeEventListener('scroll', onScroll)
-      window.removeEventListener('resize', onScroll)
-      if (frameRef.current) cancelAnimationFrame(frameRef.current)
+      if (frame) cancelAnimationFrame(frame)
     }
   }, [])
 
   return (
-    <div className="scroll-progress" aria-hidden="true">
-      <div ref={fillRef} className="scroll-progress-fill" />
-      <div ref={readoutRef} className="pacman-readout" />
-    </div>
+    <button
+      type="button"
+      className={`to-top${visible ? ' is-visible' : ''}`}
+      // Hidden from assistive tech and out of the tab order while it is not
+      // on screen — an invisible control that steals focus is a bug.
+      aria-hidden={!visible}
+      tabIndex={visible ? 0 : -1}
+      aria-label="Back to top"
+      onClick={() => window.scrollTo({
+        top: 0,
+        behavior: REDUCED_MOTION ? 'auto' : 'smooth',
+      })}
+    >
+      ↑
+    </button>
   )
 }
 
 export default function App() {
-  const { activeSection } = useActiveSection()
-
+  const active = useActiveSection()
+  const progress = useScrollProgress()
   useReveal()
 
   return (
     <>
-      <a href="#main-content" className="skip-link">Skip to main content</a>
-      <ScrollProgress />
-      <Navbar activeSection={activeSection} />
+      <a className="skip-link" href="#main-content">Skip to content</a>
+
+      {/* Fixed behind everything, at z-index 0. `main`, `.nav`, `.foot` and the
+          fixed controls all sit above it. */}
+      <Backdrop />
+
+      <div className="progress" aria-hidden="true">
+        <div className="progress-bar" style={{ transform: `scaleX(${progress / 100})` }} />
+      </div>
+
+      <Navbar active={active} />
+      <BackToTop />
+
+      {/* One boundary per section: a single broken subtree degrades to a
+          readable message instead of taking the whole page down with it. */}
       <main id="main-content">
-        <BootHero />
-        <About />
-        <History />
-        <Features />
-        <Terminal />
-        <Architectures />
-        <Download />
-        <PackageSearch />
-        <Faq />
-        <UseCases />
-        <Community />
+        <ErrorBoundary><SpecHero /></ErrorBoundary>
+        <ErrorBoundary><About /></ErrorBoundary>
+        <ErrorBoundary><History /></ErrorBoundary>
+        <ErrorBoundary><Features /></ErrorBoundary>
+        <ErrorBoundary><Terminal /></ErrorBoundary>
+        <ErrorBoundary><PackageSearch /></ErrorBoundary>
+        <ErrorBoundary><Download /></ErrorBoundary>
+        <ErrorBoundary><Architectures /></ErrorBoundary>
+        <ErrorBoundary><UseCases /></ErrorBoundary>
+        <ErrorBoundary><Faq /></ErrorBoundary>
+        <ErrorBoundary><Community /></ErrorBoundary>
       </main>
-      <Footer />
+
+      <ErrorBoundary><Footer /></ErrorBoundary>
     </>
   )
 }

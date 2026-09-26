@@ -1,4 +1,4 @@
-const events = [
+const EVENTS = [
   {
     year: '2002',
     title: 'Arch is born',
@@ -15,11 +15,6 @@ const events = [
     text: 'Arch adopts systemd as the default init. Controversial then, universal since.',
   },
   {
-    year: '2017',
-    title: 'Rolling, always',
-    text: 'Partial upgrades become supported and recommended. Users stop holding packages back.',
-  },
-  {
     year: '2021',
     title: 'archinstall',
     text: 'An official guided installer lands. The hard way stays. The easier way is now there too.',
@@ -33,23 +28,26 @@ const events = [
 
 export default function History() {
   return (
-    <section id="history" className="section" aria-label="History">
-      <div className="section-header reveal">
-        <p className="section-tag">History</p>
-        <h2 className="section-title">
+    <section id="history" className="sec" aria-labelledby="history-title">
+      <header className="sec-head">
+        <p className="sec-name">history</p>
+        <h2 id="history-title" className="sec-title">
           Twenty-something years of deliberate choices
         </h2>
-        <p className="section-lead">
-          No marketing pivots. No acquisitions. Arch has always been built by
-          the people who use it.
+        <p className="sec-lead">
+          No marketing pivots. No acquisitions. Arch has always been built by the
+          people who use it.
         </p>
-      </div>
-      <ol className="timeline reveal-stagger" aria-label="Arch Linux history">
-        {events.map((e) => (
-          <li key={e.year} className="timeline-item">
-            <span className="timeline-year">{e.year}</span>
-            <h3 className="timeline-title">{e.title}</h3>
-            <p className="timeline-text">{e.text}</p>
+      </header>
+
+      <ol className="timeline reveal-stagger" aria-label="Arch Linux release history">
+        {EVENTS.map((e) => (
+          <li className="tl-item" key={e.year}>
+            <span className="tl-year">{e.year}</span>
+            <div>
+              <h3 className="tl-title">{e.title}</h3>
+              <p className="tl-text">{e.text}</p>
+            </div>
           </li>
         ))}
       </ol>

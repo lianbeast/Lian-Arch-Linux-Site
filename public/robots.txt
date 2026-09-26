@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://lianbeast.github.io/Lian-Arch-Linux-Site/sitemap.xml

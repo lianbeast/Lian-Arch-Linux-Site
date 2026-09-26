@@ -1,13 +1,20 @@
-import { useState } from 'react'
-
-const faqs = [
+/**
+ * Native <details>, uncontrolled.
+ *
+ * The previous version passed `open={i === openIdx}` alongside an onToggle that
+ * wrote back to state. That makes React and the browser fight over the same
+ * attribute — it mostly worked, and failed in ways that are miserable to debug.
+ * `defaultOpen` on the first item is the whole feature, and the browser owns
+ * the rest.
+ */
+const FAQS = [
   {
     q: 'Is Arch hard to install?',
-    a: 'There are two paths. archinstall gives you a guided installer with a menu. The manual path is harder — but it is a feature: you end up knowing exactly what is on your machine and why. The wiki walks you through both, step by step.',
+    a: 'There are two paths. archinstall gives you a guided installer with a menu. The manual path is harder, but that is the point: you end up knowing exactly what is on your machine and why. The wiki walks through both, step by step.',
   },
   {
     q: 'Will it break?',
-    a: 'A rolling distro updated regularly is stable. Breakage comes from partial upgrades and ignoring the output of pacman. Read what your updates print, never mix stale packages with fresh ones, and Arch stays boring — in the good way.',
+    a: 'A rolling distribution updated regularly is stable. Breakage comes from partial upgrades and from ignoring what pacman prints. Read your update output, never mix stale packages with fresh ones, and Arch stays boring in the good way.',
   },
   {
     q: 'Arch or Ubuntu?',
@@ -15,45 +22,37 @@ const faqs = [
   },
   {
     q: 'Do I really need the wiki?',
-    a: 'Yes — and that is the deal. The Arch Wiki is the most complete, most current Linux documentation anywhere. Half its readers do not even run Arch. If reading docs feels like a cost, Arch will feel like a cost. If it feels like leverage, you are home.',
+    a: 'Yes, and that is the deal. The Arch Wiki is the most complete and most current Linux documentation anywhere — a large share of its readers do not even run Arch. If reading docs feels like a cost, Arch will feel like a cost. If it feels like leverage, you are home.',
   },
   {
     q: 'Can I game on it?',
-    a: 'Yes. Steam, Lutris, native titles, Proton for everything else. Arch gets new graphics drivers before nearly anyone, and the wiki gaming page is the reference the rest of the internet links to.',
+    a: 'Yes. Steam, Lutris, native titles, Proton for everything else. Arch tends to get new graphics drivers before most distributions, and the wiki gaming page is the reference the rest of the internet links to.',
   },
   {
     q: 'What is the AUR, and is it safe?',
-    a: 'A community repository of build recipes. Every package is a PKGBUILD — plain text you can read before you run it. Nothing is hidden; trust is earned by transparency and reputation, not branding. 80,000+ packages, maintained by people who use them.',
+    a: 'A community repository of build recipes. Every package is a PKGBUILD — plain text you can read before you run it. Nothing is hidden; trust is earned by inspection and reputation rather than branding. 80,000+ packages, maintained by the people who use them.',
   },
 ]
 
 export default function Faq() {
-  const [openIdx, setOpenIdx] = useState(0)
-
   return (
-    <section id="faq" className="section" aria-label="Frequently asked questions">
-      <div className="section-header reveal">
-        <p className="section-tag">FAQ</p>
-        <h2 className="section-title">Questions people actually ask</h2>
-        <p className="section-lead">
-          Straight answers. The wiki has the long ones.
-        </p>
-      </div>
-      <div className="faq-list reveal-stagger">
-        {faqs.map((f, i) => (
-          <details
-            key={f.q}
-            className="faq-item"
-            open={i === openIdx}
-            onToggle={(e) => {
-              if (e.currentTarget.open) setOpenIdx(i)
-            }}
-          >
-            <summary className="faq-question">
-              {f.q}
-              <span className="faq-chevron" aria-hidden="true">▾</span>
+    <section id="faq" className="sec" aria-labelledby="faq-title">
+      <header className="sec-head">
+        <p className="sec-name">faq</p>
+        <h2 id="faq-title" className="sec-title">
+          Questions people actually ask
+        </h2>
+        <p className="sec-lead">Straight answers. The wiki has the long ones.</p>
+      </header>
+
+      <div className="faq reveal-stagger">
+        {FAQS.map((f, i) => (
+          <details className="faq-item" key={f.q} open={i === 0 || undefined}>
+            <summary className="faq-q">
+              <span>{f.q}</span>
+              <span className="faq-mark" aria-hidden="true">+</span>
             </summary>
-            <p className="faq-answer">{f.a}</p>
+            <p className="faq-a">{f.a}</p>
           </details>
         ))}
       </div>

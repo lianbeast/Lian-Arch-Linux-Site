@@ -1,121 +1,134 @@
-import { useState } from 'react'
-import { ArrowRightIcon } from '../ui/Icons.jsx'
+import { useEffect, useRef, useState } from 'react'
 
-const INSTALL_CMDS = [
+/**
+ * Download options, as a list rather than four clickable cards.
+ *
+ * The old version wrapped an <a> inside a <button>, which is invalid HTML and
+ * breaks keyboard activation, and toggled an "active" class that did nothing.
+ * These are plain rows with one real link each.
+ *
+ * No version numbers are printed. A hardcoded release date is stale within a
+ * month and this audience checks — so the copy describes the images and the
+ * link goes to the canonical page, which is always current.
+ */
+const IMAGES = [
   {
-    id: 'dd',
-    label: 'Write ISO to USB (replace sdX with your drive):',
-    cmd: 'sudo dd bs=4M if=archlinux-2026.08.01-x86_64.iso of=/dev/sdX status=progress oflag=sync',
+    name: 'Latest release',
+    text: 'The current ISO, built from the latest package snapshot. Boots to a live environment.',
+    href: 'https://archlinux.org/download/',
+    cta: 'Download',
+  },
+  {
+    name: 'Netboot',
+    text: 'A minimal image that pulls the rest over the network. For fast or repeated installs.',
+    href: 'https://archlinux.org/download/',
+    cta: 'Download',
+  },
+  {
+    name: 'archinstall',
+    text: 'The same image with the official guided installer. The manual path stays available.',
+    href: 'https://wiki.archlinux.org/title/Archinstall',
+    cta: 'Read the docs',
+  },
+  {
+    name: 'Containers & bootstrap',
+    text: 'Tarballs and container images for CI, image builds, and throwaway environments.',
+    href: 'https://wiki.archlinux.org/title/Docker',
+    cta: 'Read the docs',
+  },
+]
+
+const COMMANDS = [
+  {
+    id: 'write',
+    label: 'Write the ISO to a USB stick — replace sdX with your device:',
+    value: 'sudo dd bs=4M if=archlinux-x86_64.iso of=/dev/sdX status=progress oflag=sync',
   },
   {
     id: 'verify',
     label: 'Verify the download before you trust it:',
-    cmd: 'sha256sum -c archlinux-2026.08.01-x86_64.iso.sha256',
+    value: 'sha256sum -c archlinux-x86_64.iso.sha256',
   },
 ]
 
-function CopyButton({ cmd }) {
+function CopyButton({ value }) {
   const [copied, setCopied] = useState(false)
+  const timer = useRef(null)
+
+  // Clear a pending reset on unmount, or the timeout fires into a dead component.
+  useEffect(() => () => clearTimeout(timer.current), [])
+
   const copy = async () => {
     try {
-      await navigator.clipboard.writeText(cmd)
+      await navigator.clipboard.writeText(value)
       setCopied(true)
-      setTimeout(() => setCopied(false), 1500)
+      clearTimeout(timer.current)
+      timer.current = setTimeout(() => setCopied(false), 1600)
     } catch {
-      // clipboard blocked (http, permissions) — user can still select manually
+      // Clipboard is unavailable over plain HTTP or when permission is denied.
+      // The command stays selectable by hand, so this is a deliberate no-op.
     }
   }
+
   return (
-    <button type="button" className="cmd-copy" onClick={copy} aria-label="Copy command">
-      {copied ? 'Copied!' : 'Copy'}
+    <button type="button" className="cmd-copy" onClick={copy}>
+      {copied ? 'copied' : 'copy'}
     </button>
   )
 }
 
-const isos = [
-  {
-    label: 'Latest ISO',
-    version: '2026.08.01',
-    text: 'The current release, built from the latest snapshot.',
-    active: true,
-  },
-  {
-    label: 'Netboot',
-    version: '2026.08.01',
-    text: 'Minimal environment for network installation.',
-    active: false,
-  },
-  {
-    label: 'archinstall ISO',
-    version: '2026.08.01',
-    text: 'Guided installer ISO for a faster setup.',
-    active: false,
-  },
-  {
-    label: 'Container & bootstrap',
-    version: '2026.08.01',
-    text: 'Tarballs and container images for advanced users.',
-    active: false,
-  },
-]
-
 export default function Download() {
   return (
-    <section id="download" className="section" aria-label="Download">
-      <div className="section-header reveal">
-        <p className="section-tag">Download</p>
-        <h2 className="section-title">Choose your flavor</h2>
-        <p className="section-lead">
-          Official images, netboot, and container bases. Verify with PGP.
+    <section id="download" className="sec" aria-labelledby="download-title">
+      <header className="sec-head">
+        <p className="sec-name">download</p>
+        <h2 id="download-title" className="sec-title">
+          Choose your image
+        </h2>
+        <p className="sec-lead">
+          Official images, netboot, and container bases. Verify the signature
+          before you install anything.
         </p>
-      </div>
-      <div className="version-grid reveal-stagger" aria-label="Download options">
-        {isos.map((iso) => (
-          <button
-            key={iso.label}
-            type="button"
-            className={`version-card ${iso.active ? 'active' : ''}`}
-            role="button"
-            aria-pressed={iso.active}
-            onClick={(e) => {
-              const btn = e.currentTarget
-              const active = btn.classList.toggle('active')
-              btn.setAttribute('aria-pressed', active)
-            }}
-          >
-            <div className="version-header">
-              <h3 className="version-title">{iso.label}</h3>
-              <span className="version-tag">{iso.version}</span>
-            </div>
-            <p className="version-text">{iso.text}</p>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '0.5rem' }}>
-              <a
-                href="https://archlinux.org/download/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn-primary"
-                style={{ padding: '0.6rem 1.25rem', fontSize: '0.75rem' }}
-              >
-                Download
-                <ArrowRightIcon size={14} color="currentColor" />
-              </a>
-            </div>
-          </button>
+      </header>
+
+      <div className="dl-list reveal-stagger">
+        {IMAGES.map((img) => (
+          <article className="dl-item" key={img.name}>
+            <h3 className="dl-name">{img.name}</h3>
+            <a
+              className="btn btn-line dl-go"
+              href={img.href}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {img.cta}
+            </a>
+            <p className="dl-text">{img.text}</p>
+          </article>
         ))}
       </div>
-      <div className="install-cmds reveal">
-        <h3 className="install-cmds-title">Put it on a USB stick</h3>
-        {INSTALL_CMDS.map((c) => (
-          <div key={c.id} className="install-cmd-row">
-            <p className="install-cmd-label">{c.label}</p>
-            <div className="install-cmd">
-              <code>{c.cmd}</code>
-              <CopyButton cmd={c.cmd} />
+
+      <div className="cmds reveal">
+        <h3 className="cmds-h">Put it on a USB stick</h3>
+        {COMMANDS.map((c) => (
+          <div className="cmd-row" key={c.id}>
+            <p className="cmd-label">{c.label}</p>
+            <div className="cmd-box">
+              <code>{c.value}</code>
+              <CopyButton value={c.value} />
             </div>
           </div>
         ))}
-        <p className="install-cmd-note">
-          Or skip the terminal entirely: <a href="https://wiki.archlinux.org/title/USB_flash_installation_medium" target="_blank" rel="noopener noreferrer">the wiki lists GUI tools too</a>.
+        <p className="cmd-note">
+          Substitute the real filename from your download. Prefer a GUI?{' '}
+          <a
+            href="https://wiki.archlinux.org/title/USB_flash_installation_medium"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            The wiki lists those too
+          </a>
+          .
         </p>
       </div>
     </section>
