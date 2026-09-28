@@ -87,6 +87,12 @@ violated somewhere in the build; they are listed here so it does not happen agai
      sixty times a second to move a 2px bar, and reading `scrollHeight` per frame
      forces a layout flush on top of that.
 
+   - **Load-triggered** (one-shot CSS `@keyframes` on first paint) for the hero
+     entrance — the PKGBUILD sheet and margin notes rise line by line, like a spec
+     being written. It is the only motion that fires on load rather than on
+     scroll, and it sits behind `prefers-reduced-motion: no-preference`, so a
+     reader who asked for none gets the finished layout with nothing hidden.
+
    **No pinning, no horizontal hijack, no scroll-jacking.** Those are the
    techniques that make a page feel like it is fighting the reader. Everything
    scroll-driven sits behind `@supports` with the *finished* state as the base
@@ -95,6 +101,12 @@ violated somewhere in the build; they are listed here so it does not happen agai
    one place and kills every transition on the site.
 6. **Honest data or no data.** No fabricated timestamps, no invented mirror
    latencies, no hardcoded release versions, no numbers we cannot source.
+
+7. **A running index, not an eyebrow.** Each section name carries its position in
+   the document (`01 — about` … `10 — community`) via a CSS `counter()` over
+   `.sec`, so the number tracks DOM order and cannot drift from the section list in
+   `constants.js`. It is information, not decoration — the banned eyebrow kicker
+   carries no information and goes.
 
 ## Accessibility
 **In scope, and treated as a shipping requirement.** (This was previously marked

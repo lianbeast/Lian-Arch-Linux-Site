@@ -289,12 +289,13 @@ button { font: inherit; color: inherit; }
      - `.hero` (900px) — carries the view timeline and an absolutely positioned
        backdrop. Adding containment there risks both for no gain, since a
        full-bleed section's width *is* the viewport width. */
-main { position: relative; z-index: var(--z-content); }
+main { position: relative; z-index: var(--z-content); counter-reset: sec; }
 
 .sec {
   max-width: var(--w);
   margin: 0 auto;
   padding: var(--s-sec) var(--pad);
+  counter-increment: sec;
 }
 
 /* Document-style section header: a rule, a mono name, then the claim. */
@@ -308,6 +309,15 @@ main { position: relative; z-index: var(--z-content); }
   font-size: var(--t-micro);
   color: var(--ink-3);
   margin-bottom: var(--s-3);
+}
+/* Running document index. A CSS counter over .sec, so the number always
+   matches DOM order and can never drift from the section list in constants.js.
+   It carries real information (position in the document), so it is a running
+   header, not the banned eyebrow kicker. */
+.sec-name::before {
+  content: counter(sec, decimal-leading-zero) "\2014\00A0";
+  color: var(--brand-ink);
+  font-weight: 500;
 }
 .sec-title {
   font-family: var(--font-display);
@@ -597,6 +607,83 @@ main { position: relative; z-index: var(--z-content); }
     padding-top: var(--s-5);
   }
 }
+
+/* ===== HERO ENTRANCE & CUES =====
+   First-paint motion. The hero content was previously static — only the ambient
+   backdrop drifted, so the strongest moment of the page had no motion hook. This
+   is a one-shot, load-triggered rise (not scroll-triggered, not perpetual), so it
+   answers to state the way PRODUCT.md asks. Pure CSS, no JS, compositor-only.
+   Everything sits inside no-preference so a reader who asked for no motion gets
+   the finished layout with nothing hidden. */
+@keyframes hero-rise { to { opacity: 1; transform: none; } }
+
+/* The hero's two columns rise line by line, like a spec being written. The
+   headline block (the 6th child) carries the name, lead and CTAs as one unit. */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-code > *,
+  .hero-notes > * {
+    opacity: 0;
+    transform: translateY(8px);
+    animation: hero-rise 0.5s var(--ease) both;
+  }
+  .hero-code > *:nth-child(1)  { animation-delay: 0.10s; }
+  .hero-code > *:nth-child(2)  { animation-delay: 0.14s; }
+  .hero-code > *:nth-child(3)  { animation-delay: 0.18s; }
+  .hero-code > *:nth-child(4)  { animation-delay: 0.22s; }
+  .hero-code > *:nth-child(5)  { animation-delay: 0.26s; }
+  .hero-code > *:nth-child(6)  { animation-delay: 0.30s; }
+  .hero-code > *:nth-child(7)  { animation-delay: 0.34s; }
+  .hero-code > *:nth-child(8)  { animation-delay: 0.38s; }
+  .hero-code > *:nth-child(9)  { animation-delay: 0.42s; }
+  .hero-code > *:nth-child(10) { animation-delay: 0.46s; }
+  .hero-code > *:nth-child(11) { animation-delay: 0.50s; }
+  .hero-code > *:nth-child(12) { animation-delay: 0.54s; }
+  .hero-code > *:nth-child(13) { animation-delay: 0.58s; }
+  .hero-code > *:nth-child(14) { animation-delay: 0.62s; }
+  .hero-code > *:nth-child(15) { animation-delay: 0.66s; }
+  .hero-code > *:nth-child(16) { animation-delay: 0.70s; }
+  .hero-code > *:nth-child(17) { animation-delay: 0.74s; }
+  .hero-code > *:nth-child(18) { animation-delay: 0.78s; }
+  .hero-notes > *:nth-child(1)  { animation-delay: 0.92s; }
+  .hero-notes > *:nth-child(2)  { animation-delay: 1.00s; }
+  .hero-notes > *:nth-child(3)  { animation-delay: 1.08s; }
+  /* The scroll cue lands last, after the reader has taken in the spec. */
+  .hero-cue {
+    opacity: 0;
+    animation: hero-rise 0.5s var(--ease) both 1.20s;
+  }
+}
+
+/* Scroll cue: a document-style running footer in the hero. Functional wayfinding
+   on an eleven-section page, not ornament — it tells the reader what to do next.
+   Static; no perpetual motion. */
+.hero-cue {
+  position: relative;
+  z-index: 1;
+  max-width: var(--w);
+  margin: 0 auto;
+  padding: var(--s-5) var(--pad) var(--s-6);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  color: var(--ink-3);
+}
+.hero-cue-rule { flex: 0 0 2.5rem; height: 1px; background: var(--rule-2); }
+.hero-cue-arrow { color: var(--brand-ink); }
+
+/* A one-line pointer from the hero to the interactive terminal, so the best WOW
+   on the page is discoverable without reordering the argument (PRODUCT.md keeps
+   the section order intact). */
+.hero-hint {
+  margin-top: var(--s-4);
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  color: var(--ink-3);
+}
+.hero-hint a { color: var(--brand-ink); text-decoration: none; }
+.hero-hint a:hover { color: var(--brand-ink); text-decoration: underline; }
 
 /* ===== MANIFESTO ===== */
 .manifesto {

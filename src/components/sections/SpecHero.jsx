@@ -56,6 +56,11 @@ export default function SpecHero() {
                 Read the wiki
               </a>
             </div>
+
+            <p className="hero-hint">
+              ↓ the same commands run live in{' '}
+              <a href="#terminal">the terminal</a> below.
+            </p>
           </div>
 
           <span className="ln" aria-hidden="true">4</span>
@@ -96,6 +101,12 @@ export default function SpecHero() {
             </div>
           ))}
         </aside>
+      </div>
+
+      <div className="hero-cue" aria-hidden="true">
+        <span className="hero-cue-rule" />
+        <span>scroll — the argument continues</span>
+        <span className="hero-cue-arrow">↓</span>
       </div>
     </section>
   )
