@@ -90,7 +90,10 @@ comfortably above the crests.
 ### The Arch mark
 
 `ARCH_OUTLINE` is the outline of the Arch "A", normalised to a `[-1, 1]` box with
-y pointing up. It is derived from the same path as `public/favicon.svg`.
+y pointing up. It is taken from the path in `src/components/ui/Icons.jsx` — the
+mark the nav and footer actually render. (`public/favicon.svg` draws the same
+shape with a slightly narrower notch, ±0.587 rather than ±0.618; at favicon size
+that is invisible, and the in-page mark is the one worth matching.)
 
 Two copies are drawn at `z ± 0.07` and joined at each vertex, which is what makes
 it read as a solid rather than two overlapping drawings. The glow is three passes
@@ -99,6 +102,18 @@ of increasing width and decreasing alpha — cheaper and far more controllable t
 
 It **oscillates** (±19° yaw) rather than rotating. A full turn would read as a
 loading spinner.
+
+**It is deliberately faint, and it was not always.** At the original distance
+(`logoZ = 5.1 × aspect`) the mark measured roughly 238px across on a 1440×900
+desktop, centred at about (720, 625) — which is inside the hero's left column,
+where the PKGBUILD lines live. At the original crisp-pass alpha of 0.72 it drew a
+bright brand-blue outline straight through `pkgname`, `pkgver` and `arch=(...)`,
+with `depends=('you')` immediately below.
+
+It now sits further back (`logoZ = 7.2 × aspect`: roughly 169px across, and
+higher toward the horizon) with pass alphas of 0.028 / 0.06 / 0.30. `PRODUCT.md`
+settles the argument: *"If the scene ever competes with the content, the opacity
+is wrong, not the design."* Translucent means translucent.
 
 ---
 
@@ -127,6 +142,8 @@ loading spinner.
 | `DEPTH_RANGE` (22) | How far the terrain reaches |
 | `DRIFT` (0.55) | Node travel speed |
 | `POINTER_PAN` (16) | Maximum camera pan, in px |
+| `logoZ` (7.2 × aspect) | How far away the Arch mark sits. Smaller = nearer, larger on screen, and more likely to land behind hero copy |
+| `passes` in `drawArch` (0.028 / 0.06 / 0.30) | Mark opacity. Raise only after checking it against the hero text |
 | `.backdrop-canvas` opacity in the recede keyframe (0.45) | How far it fades once you are into the document |
 
 **These are reasoned, not seen.** I cannot render, so treat the first four as
@@ -149,22 +166,41 @@ scene, so the atmosphere survives. The brief asked for exactly that.
 
 ### Readability
 
-This is the part I departed from the brief on. A fixed animated scene behind a
-long text document is a genuine readability risk, so **the canvas and atmosphere
-fade to 45% once you are one viewport down**, via a scroll-linked animation. The
-hero gets the full landscape; body copy gets a quiet one.
+A fixed animated scene behind a long text document is a genuine readability risk,
+so **the canvas and atmosphere fade to 45% once you are one viewport down**, via a
+scroll-linked animation. The hero gets the full landscape; body copy gets a quiet
+one.
 
-If text contrast is still uncomfortable, that opacity value is the knob.
+The hero is the one place the scene runs at full strength, which is why the mark
+is as faint as it is. If text contrast is still uncomfortable, that opacity value
+is the knob, followed by the pass alphas in `drawArch`.
 
 ---
 
 ## 5. What I could not verify
 
-I cannot render a browser, so none of the following is confirmed:
+Nothing here has been rendered in a browser. The environment has no working shell,
+so there is no build and no screenshot, and every number below is arithmetic
+rather than observation.
 
-- [ ] **Framing.** Is the horizon in the right place? Is the logo the right size and distance?
-- [ ] **Whether it is subtle enough.** The brief's stated goal is "something is moving back there", not "look at this animation". Watch it for 30 seconds — if you notice it, it is too strong.
-- [ ] **Text contrast** on every section, especially the terminal and the package list.
+**The mark's distance and opacity have been cut since the first pass**, because
+the arithmetic said it was landing on top of the hero's PKGBUILD lines (see §2).
+That fix is reasoned, not seen. Check these first:
+
+- [ ] **Does the hero still read cleanly?** The mark's footprint still overlaps the
+      right-hand third of the code sheet at 1440×900. It should now be faint
+      enough to sit *behind* the text rather than through it. If not, drop the
+      crisp pass below 0.30 before touching anything else.
+- [ ] **Is the mark still visible at all?** It was cut hard. It should read as a
+      distant monument, not a smudge. If it has vanished, raise `passes[2]` and
+      bring `logoZ` in slightly.
+- [ ] **Framing.** Is the horizon in the right place? Is the mark the right size
+      and distance?
+- [ ] **Whether it is subtle enough.** The brief's stated goal is "something is
+      moving back there", not "look at this animation". Watch it for 30 seconds —
+      if you notice it, it is still too strong.
+- [ ] **Text contrast** on every section, especially the terminal and the package
+      list, and measured over the backdrop rather than against flat `--bg`.
 - [ ] **Frame rate** on a mid-range laptop.
-- [ ] **Whether the grid reads as a plane or a curtain.** If it looks flat, lower `PERSP`.
-- [ ] **Whether the logo reads as integrated or pasted on.** If pasted, it is too bright or too large — the pass alphas in `drawArch` and the `size` constant.
+- [ ] **Whether the grid reads as a plane or a curtain.** If it looks flat, lower
+      `PERSP`.

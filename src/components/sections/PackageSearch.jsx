@@ -13,6 +13,9 @@ import { useEffect, useState } from 'react'
  *   - every failure mode maps to a message the reader can act on
  *   - transient failures retry with backoff; client errors never retry
  *   - the section degrades to a link rather than an empty box
+ *
+ * The proxy sees every query the reader types. If this page matters, run your
+ * own.
  */
 
 const DEFAULT_API =
@@ -23,6 +26,13 @@ const TIMEOUT_MS = 8000
 const MAX_ATTEMPTS = 3
 const RETRY_DELAY_MS = 400
 const DEBOUNCE_MS = 250
+
+/* The index returns every match, and a broad term like "linux" matches
+   hundreds. Cap what gets rendered, and say so, rather than quietly truncating. */
+const MAX_RESULTS = 25
+
+/* A one-character query matches most of the archive and answers nothing. */
+const MIN_QUERY = 2
 
 const MESSAGES = {
   busy: 'The package index is busy right now. Try again in a moment.',
@@ -81,25 +91,47 @@ async function search(query, signal) {
 /** `arch` comes back as an array, and occasionally holds more than one value. */
 const archList = (value) => (Array.isArray(value) ? value : [value]).filter(Boolean)
 
-/* The two states that are derived rather than stored. Hoisted so they are
+/**
+ * One line of prose describing whatever just happened.
+ *
+ * A plain function rather than a chain of assignments to a mutable variable:
+ * every branch returns, so nothing is left uninitialised and there is no dead
+ * initialiser for the linter to flag.
+ */
+function statusFor(view, q) {
+  if (view.status === 'idle') return 'Type above. Exact package names work best.'
+  if (view.status === 'short') return `Keep typing. ${MIN_QUERY} characters minimum.`
+  if (view.status === 'loading') return 'querying the package index…'
+  if (view.status === 'error') return view.error
+  if (view.results.length === 0) {
+    return `No exact-name match for "${q}". The AUR has 80,000 more. Try the wiki.`
+  }
+  if (view.total > view.results.length) {
+    return `Showing the first ${view.results.length} of ${view.total} matches for "${q}".`
+  }
+  return `${view.total} ${view.total === 1 ? 'match' : 'matches'} for "${q}".`
+}
+
+/* The three states that are derived rather than stored. Hoisted so they are
    stable identities across renders. */
-const IDLE = { status: 'idle', results: [], error: '' }
-const LOADING = { status: 'loading', results: [], error: '' }
+const IDLE = { status: 'idle', results: [], total: 0, error: '' }
+const LOADING = { status: 'loading', results: [], total: 0, error: '' }
+const TOO_SHORT = { status: 'short', results: [], total: 0, error: '' }
 
 export default function PackageSearch() {
   const [query, setQuery] = useState('')
   /* `forQuery` pins a result set to the query that produced it. That is what
      lets a settled result be told apart from a pending keystroke without
      storing a separate loading flag. */
-  const [state, setState] = useState({ forQuery: '', status: 'idle', results: [], error: '' })
+  const [state, setState] = useState({ forQuery: '', ...IDLE })
 
   const q = query.trim()
 
   useEffect(() => {
-    // Nothing to fetch. Deliberately no setState here: an empty box is derived
-    // below rather than synchronised into state from inside an effect, which
-    // would cause a cascading render on every keystroke that clears the field.
-    if (!q) return
+    // Nothing to fetch. Deliberately no setState here: an empty or too-short
+    // box is derived below rather than synchronised into state from inside an
+    // effect, which would cause a cascading render on every keystroke.
+    if (q.length < MIN_QUERY) return
 
     let cancelled = false
     let timedOut = false
@@ -113,10 +145,12 @@ export default function PackageSearch() {
       try {
         const data = await search(q, ctrl.signal)
         if (cancelled) return
+        const all = Array.isArray(data.results) ? data.results : []
         setState({
           forQuery: q,
           status: 'done',
-          results: Array.isArray(data.results) ? data.results : [],
+          results: all.slice(0, MAX_RESULTS),
+          total: all.length,
           error: '',
         })
       } catch (err) {
@@ -124,11 +158,17 @@ export default function PackageSearch() {
         if (err.name === 'AbortError') {
           // Superseded by a newer keystroke — stay quiet. A real timeout speaks.
           if (timedOut) {
-            setState({ forQuery: q, status: 'error', results: [], error: MESSAGES.timeout })
+            setState({
+              forQuery: q,
+              status: 'error',
+              results: [],
+              total: 0,
+              error: MESSAGES.timeout,
+            })
           }
           return
         }
-        setState({ forQuery: q, status: 'error', results: [], error: err.message })
+        setState({ forQuery: q, status: 'error', results: [], total: 0, error: err.message })
       } finally {
         clearTimeout(timer)
       }
@@ -143,9 +183,25 @@ export default function PackageSearch() {
     }
   }, [q])
 
-  /* Derived view: an empty box is idle, and a query whose results have not
-     arrived yet reads as loading — including during the debounce window. */
-  const view = !q ? IDLE : state.forQuery === q ? state : LOADING
+  /* Derived view: an empty box is idle, a query below the minimum is its own
+     state, and a query whose results have not arrived yet reads as loading —
+     including during the debounce window. */
+  const view = !q
+    ? IDLE
+    : q.length < MIN_QUERY
+      ? TOO_SHORT
+      : state.forQuery === q
+        ? state
+        : LOADING
+
+  /**
+   * Rendered into a single persistent live region rather than a fresh element
+   * per state: a `role="status"` node mounted with its text already inside it
+   * is announced unreliably, whereas changing the text of one that is already
+   * on the page is not. The result list itself is deliberately NOT a live
+   * region — twenty-five packages read aloud is not a useful announcement.
+   */
+  const status = statusFor(view, q)
 
   return (
     <section id="packages" className="sec" aria-labelledby="packages-title">
@@ -168,34 +224,23 @@ export default function PackageSearch() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           aria-label="Search Arch Linux packages"
+          aria-describedby="pkg-status"
         />
       </div>
 
-      <div className="reveal" aria-live="polite">
-        {view.status === 'idle' && (
-          <p className="pkg-state">Type above. Exact package names work best.</p>
-        )}
-
-        {view.status === 'loading' && (
-          <p className="pkg-state">querying the package index…</p>
-        )}
-
-        {view.status === 'error' && (
-          <p className="pkg-state">
-            {view.error}{' '}
-            <a href="https://archlinux.org/packages/" target="_blank" rel="noopener noreferrer">
-              Search archlinux.org instead
-            </a>
-            .
-          </p>
-        )}
-
-        {view.status === 'done' && view.results.length === 0 && (
-          <p className="pkg-state">
-            No exact-name match for <code>{q}</code>. The AUR has 80,000 more —
-            try the wiki.
-          </p>
-        )}
+      <div className="reveal">
+        <p className="pkg-state" id="pkg-status" role="status">
+          {status}
+          {view.status === 'error' && (
+            <>
+              {' '}
+              <a href="https://archlinux.org/packages/" target="_blank" rel="noopener noreferrer">
+                Search archlinux.org instead
+              </a>
+              .
+            </>
+          )}
+        </p>
 
         {view.status === 'done' && view.results.length > 0 && (
           <ul className="pkg-list">

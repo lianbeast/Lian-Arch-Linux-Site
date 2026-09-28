@@ -81,6 +81,11 @@ violated somewhere in the build; they are listed here so it does not happen agai
    - **Scroll-triggered** (`IntersectionObserver`) for content. Arrives once and
      stays put. Re-animating content on every pass is a theme demo, not a
      document.
+   - **Scroll-read** (one rAF loop, written straight to the DOM) for the progress
+     bar. It is the one value that changes every frame, so it never touches
+     component state — holding it at the root re-renders the entire document
+     sixty times a second to move a 2px bar, and reading `scrollHeight` per frame
+     forces a layout flush on top of that.
 
    **No pinning, no horizontal hijack, no scroll-jacking.** Those are the
    techniques that make a page feel like it is fighting the reader. Everything
@@ -98,10 +103,20 @@ out of scope for the demo. A production surface does not get that exemption.)
 Currently implemented:
 - One `<h1>` on the page, in the hero. One `<main id="main-content">`. One skip link.
 - Semantic landmarks: `nav`, `main`, `footer`, `section` with `aria-labelledby`.
-- Every interactive control is a real `<button>` or `<a>` with a visible
-  `:focus-visible` ring. No focus is ever removed.
+- Native controls throughout: `<button>` for actions, `<a>` for navigation,
+  `<input>` for the terminal and the package search, `<details>` for the FAQ.
+- One focus treatment on `:focus-visible`, and nothing removes it. The terminal
+  input previously set `outline: 0`, which matched the global rule on specificity
+  and beat it on source order, leaving keyboard users with no indicator at all.
+  It now tunes `outline-offset` and nothing else.
+- Text clears WCAG AA against the ground. `--ink-3` is the floor and measures
+  5.04:1; it used to be 4.14:1, on text that is almost all 11px.
 - The terminal output is a `role="log"` live region, scoped so it does not wrap
-  the input.
+  the input. It goes quiet while a scripted command plays and announces one
+  summary instead — the animated upgrade would otherwise fire roughly 130
+  announcements in four seconds. Progress bars are `aria-hidden`.
+- The package search reports into a single persistent `role="status"` line, not a
+  live region wrapped around the result list.
 - `prefers-reduced-motion` is honoured globally, and the terminal swaps its
   animated `pacman -Syu` for static output rather than silently doing nothing.
 - Reveal-on-scroll is a progressive enhancement: if `IntersectionObserver` is
@@ -131,7 +146,8 @@ Currently implemented:
   `VITE_PKG_API` (see `.env.example`) so it can be replaced with a proxy you
   control. It is the only external runtime dependency on the site.
 - Colour tokens: `--bg` `#0b0c0e`, `--ink` `#e7e8ea`, `--brand` `#1793D1`,
-  `--signal` `#7ec699` (terminal output only). Four roles, no fifth.
+  `--signal` `#7ec699` (terminal output only). Four roles and no fifth *hue* —
+  the rest of `:root` is shades of those four, not new colours.
 
 ## References
 - **archlinux.org** — the current real site. Borrow its self-possession and dark,

@@ -1,65 +1,74 @@
 #!/usr/bin/env bash
 #
-# Removes the code and assets that the rewrite orphaned.
+# Removes the files the rewrite orphaned.
 #
-# These files are not imported by anything and not referenced by index.html, so
-# they do not reach the production bundle — but they are still in the repo, and
-# dead code in the repo is how the next person ends up confused about which
-# hero is the real one.
+# Nothing here reaches the production bundle. Dead files in the repo are still
+# worth removing, because a dead file is how the next person ends up confused
+# about which asset is real.
+#
+# Every target is checked before it goes: the script searches the source tree for
+# a reference and skips anything it finds. If it cannot complete that search it
+# skips too, rather than deleting on a guess. Safe to run more than once, and
+# safe to run once the files are already gone.
 #
 # Run from anywhere:  bash scripts/cleanup-dead-code.sh
-#
+
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-echo "Removing five unused hero variants..."
-rm -f src/components/sections/BootHero.jsx
-rm -f src/components/sections/TopoHero.jsx
-rm -f src/components/sections/RaceHero.jsx
-rm -f src/components/sections/TilingHero.jsx
-rm -f src/components/sections/GardenHero.jsx
+# Where a real reference would live. The markdown docs are deliberately excluded:
+# a file named in prose is not a file the app loads, and including them would
+# make this script refuse to clean up anything the docs happen to mention.
+SEARCH_PATHS=(src index.html vite.config.js package.json public)
 
-echo "Removing the three.js backdrop (replaced by ArchContours.jsx)..."
-rm -f src/components/ui/ArchMesh.jsx
+removed=0
+kept=0
 
-echo "Removing the reduced-motion helper (now inlined at each call site)..."
-rm -f src/utils/reducedMotion.js
+# remove <path> <what it was>
+remove() {
+  local path="$1" what="$2"
+  local name hits status
+  name="$(basename "$path")"
 
-echo "Removing font files no longer referenced by index.html..."
-rm -f public/fonts/Inter-Regular.woff2
-rm -f public/fonts/Inter-Medium.woff2
-rm -f public/fonts/Inter-SemiBold.woff2
-rm -f public/fonts/Inter-Bold.woff2
-rm -f public/fonts/Rajdhani-Regular.woff2
-rm -f public/fonts/Rajdhani-Medium.woff2
-rm -f public/fonts/Rajdhani-SemiBold.woff2
-rm -f public/fonts/Rajdhani-Bold.woff2
-rm -f public/fonts/Michroma-Regular.woff2
-rm -f public/fonts/Michroma-Regular.ttf
-rm -f public/fonts/JetBrainsMono-Regular.ttf
+  if [ ! -e "$path" ]; then
+    return 0
+  fi
 
-echo "Removing stale planning docs..."
-rm -rf docs/superpowers
-rm -f branding_plan.md
-rm -f docs/hero-backdrop.md
+  set +e
+  hits=$(grep -rlFI --exclude="$name" -- "$name" "${SEARCH_PATHS[@]}" 2>/dev/null)
+  status=$?
+  set -e
 
-echo "Removing the generated hero clip (replaced by a live renderer)..."
-# A pre-rendered clip cannot rotate continuously — it has to loop, and every
-# loop shows a seam. Keeping this in public/ would ship a ~700 kB file nothing
-# references, because everything in public/ is copied verbatim.
-rm -f public/An_elegant__soothing_3D_animat_*.mp4
-rm -f public/hero-mesh.mp4
+  if [ "$status" -eq 2 ]; then
+    echo "  skipping $path - could not search for references"
+    kept=$((kept + 1))
+    return 0
+  fi
 
-echo "Removing the hero-scoped backdrop (superseded by the site-wide Backdrop)..."
-# HeroBackdrop + HeroMesh drew a rotating ridge inside the hero. Backdrop.jsx
-# now draws the whole landscape for the entire document, so all three of these
-# are unreachable.
-rm -f src/components/ui/HeroBackdrop.jsx
-rm -f src/components/ui/HeroMesh.jsx
-rm -f src/components/ui/ArchContours.jsx
+  if [ -n "$hits" ]; then
+    echo "  keeping  $path - still referenced by: $(echo "$hits" | tr '\n' ' ')"
+    kept=$((kept + 1))
+    return 0
+  fi
+
+  echo "  removing $path - $what"
+  rm -rf -- "$path"
+  removed=$((removed + 1))
+}
+
+echo "Orphaned assets:"
+remove "demo.mp4"                             "abandoned generated hero clip, superseded by the live renderer"
+remove "public/fonts/SpaceGrotesk-Bold.woff2" "no @font-face declares weight 700 and nothing uses bold"
 
 echo
-echo "Done. Remaining steps (this script does not run package managers):"
-echo "  1. npm install          # drop three, @react-three/*, @anthropic-ai/claude-code"
-echo "  2. npm run lint"
-echo "  3. npm run build"
+echo "Done. Removed $removed, kept $kept."
+
+if [ "$kept" -ne 0 ]; then
+  echo
+  echo "Something still points at a file this script expected to be dead. Check"
+  echo "that reference before removing the file by hand."
+fi
+
+echo
+echo "Next:"
+echo "  npm install && npm run lint && npm run build"

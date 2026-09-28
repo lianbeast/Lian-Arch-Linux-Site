@@ -22,11 +22,11 @@ landing page, and most layout decisions follow from that. Concretely:
   of a claim.
 - **Rules, not cards.** Section structure comes from hairlines. There is no card
   component, no glassmorphism, and no glow anywhere on the site.
-- **Two fonts, four colours.** Space Grotesk for display and body; JetBrains Mono
-  for every label, meta string and code fragment. `--bg`, `--ink`, `--brand`,
-  `--signal`, and nothing else.
-- **No GPU work.** The backdrop is eight SVG paths computed from a two-peak ridge
-  function (`src/components/ui/ArchContours.jsx`). No WebGL, no three.js.
+- **Two fonts, one accent.** Space Grotesk for display and body; JetBrains Mono
+  for every label, meta string and code fragment. Brand blue for links and active
+  states, one green for terminal output, and nothing else.
+- **No GPU work.** The backdrop is a 2D canvas with a hand-written projection
+  (`src/components/ui/Backdrop.jsx`) — no WebGL, no three.js, no shader.
 
 ## Demo
 
@@ -43,14 +43,12 @@ full upgrade. Every response is generated locally — nothing is fetched.
 | Feature | Notes |
 |---|---|
 | PKGBUILD hero | Headline and thesis in one artifact. `SpecHero.jsx` |
-| SVG contour backdrop | Pure SVG, no GPU, nothing to animate |
 | Interactive terminal | Ghost autocomplete, tab completion, arrow-key history, animated `pacman -Syu`. Fully local — no network |
 | Live package search | Queries the official Arch index. See **Configuration** below |
 | Sticky nav + active tracking | `IntersectionObserver`, debounced with `requestAnimationFrame` |
-| Scroll progress | A hairline bar. That is the whole feature |
+| Scroll progress | A hairline bar. Written straight to the DOM, never through React state |
 | Reveal on scroll | Progressive enhancement — content renders visible if the API is missing |
-| Backdrop | Canvas 2D, hand-projected — no WebGL, no 3D library |
-| Animated backdrop | Fixed site-wide 3D landscape. One rAF loop, paused when the tab is hidden, static frame under reduced motion |
+| Animated backdrop | A fixed, site-wide landscape on a 2D canvas with a hand-written projection. No WebGL, no 3D library. One rAF loop, paused when the tab is hidden, static frame under reduced motion |
 | Scroll-driven motion | Native CSS `animation-timeline`: section rules draw themselves in, the backdrop recedes as you read. Zero JS, compositor thread |
 | Error boundaries | One per section, so a broken subtree degrades instead of blanking the page |
 | Reduced motion | Handled globally in `index.css`, plus a static terminal fallback |
@@ -106,7 +104,7 @@ src/
 │   │   ├── Community.jsx       # Where to go
 │   │   └── Footer.jsx
 │   └── ui/
-│       ├── ArchContours.jsx    # SVG backdrop
+│       ├── Backdrop.jsx        # The animated canvas landscape
 │       ├── ErrorBoundary.jsx
 │       └── Icons.jsx           # The Arch mark, and only that
 └── utils/
@@ -119,7 +117,7 @@ src/
 |---|---|
 | UI | React 19 |
 | Build | Vite 8 (Rolldown) |
-| Backdrop | Inline SVG (no canvas, no WebGL) |
+| Backdrop | Canvas 2D, hand-written projection — no WebGL, no 3D library |
 | Layout | CSS Grid; component breakpoints via `@container`, not `@media` |
 | Fonts | Space Grotesk + JetBrains Mono, self-hosted |
 | Lint | ESLint 10, flat config |
@@ -127,28 +125,48 @@ src/
 
 ## Maintenance
 
-**First run after a fresh clone of the rewrite:** execute the cleanup script. It
-removes the five unused hero variants, the three.js backdrop, eleven orphaned font
-files and two stale planning documents that are no longer referenced by anything.
-They do not reach the bundle, but they do reach the reader.
+**One command sweeps the leftovers.** The rewrite orphaned a handful of files that
+nothing imports and nothing references — a generated video clip, a font weight the
+site never uses, and two directories of agent tooling. They do not reach the
+bundle, but they do reach the reader, and a dead file is how the next person ends
+up confused about which asset is real.
 
 ```bash
 bash scripts/cleanup-dead-code.sh
-npm install     # also drops three, @react-three/*, @anthropic-ai/claude-code
+npm install
 ```
 
-Then rebuild the lockfile and confirm the dependency tree is down to two runtime
-packages:
+Then confirm the dependency tree is down to two runtime packages:
 
 ```bash
 npm ls --depth=0
 ```
+
+The script only removes files that are provably unreferenced. It prints each one
+before it goes, and it is safe to run more than once.
 
 **`demo.gif` must live in `public/`.** The Open Graph and Twitter card tags
 reference it by absolute URL, which requires a stable, unhashed path. If it sits
 in the repo root, Vite fingerprints it into `dist/assets/demo-<hash>.gif` and the
 social preview image 404s. `public/` files are copied verbatim, so the path stays
 predictable.
+
+**`demo.gif` is a screenshot, and it goes stale.** It is the social preview card
+*and* the inline demo above, so it is the first thing anyone sees when this link
+is shared. The file currently in the repo predates the rewrite: it shows the old
+cyan-on-black hero, the pill nav and the "A distro that gets out of your way"
+headline. None of those exist any more, and cyan-on-black is the one palette
+`PRODUCT.md` names outright. **Re-shoot it before the next release.**
+
+1. `npm run dev`
+2. Record the terminal running `pacman -Syu`, then `neofetch`.
+3. Export at ~1000px wide, keep it under ~1 MB, drop it at `public/demo.gif`.
+
+Social crawlers use the first frame, so make the first frame the thing you want
+seen — right now that frame is the hero, which is why `og:image:alt` describes
+the page rather than a command. Twitter/X frequently ignores animated images for
+`summary_large_image`, so a static PNG for `og:image` is worth considering, with
+the GIF kept for this README.
 
 **The backdrop is drawn live, not played back.** `Backdrop.jsx` renders a fixed,
 site-wide landscape on a 2D canvas — a flowing wireframe terrain, drifting nodes,

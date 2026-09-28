@@ -67,8 +67,11 @@ const fogAt = (z, zNear, zFar) =>
 
 /* ---- the Arch mark ---------------------------------------------------- */
 /* Outline of the Arch "A", normalised to a [-1, 1] box with y pointing up.
-   Derived from the same path as public/favicon.svg — if the mark changes there
-   it should change here, or the backdrop stops matching the logo. */
+   Taken from the path in src/components/ui/Icons.jsx — the mark the nav and the
+   footer actually render — so the backdrop matches what the reader sees on the
+   page. (public/favicon.svg draws the same shape with a slightly narrower notch,
+   ±0.587 rather than ±0.618. At favicon size that is invisible, and the in-page
+   mark is the one worth matching.) */
 const ARCH_OUTLINE = [
   [0, 1],
   [-1, -1],
@@ -117,9 +120,12 @@ function buildScene(w, h, detail) {
     z *= ratio
   }
 
-  /* Logo distance chosen so it occupies a stable fraction of the frame at any
-     aspect ratio. */
-  const logoZ = 5.1 * (w / h)
+  /* Logo distance, chosen so it occupies a stable fraction of the frame at any
+     aspect ratio. Pushed back from the original 5.1: at that distance the mark
+     measured roughly 238px across on a 1440x900 desktop and landed squarely
+     behind the hero's PKGBUILD lines. It is a backdrop, not a foreground
+     object. See the note on the pass alphas in drawArch. */
+  const logoZ = 7.2 * (w / h)
 
   return { w, h, focal, cx, cy, zNear, zFar, halfNear, rowZ, logoZ, detail }
 }
@@ -213,11 +219,17 @@ function drawArch(ctx, sc, t, panX, panY, ambient, colors) {
 
   /* Glow, sparingly: three passes of increasing width and decreasing alpha.
      Cheaper and far more controllable than shadowBlur, which would cost a full
-     blur kernel per frame. */
+     blur kernel per frame.
+
+     The alphas are deliberately faint. These were 0.05 / 0.11 / 0.72, which put
+     a bright brand-blue outline straight through the hero's pkgname, pkgver and
+     arch lines at full scene opacity. PRODUCT.md settles the argument: "If the
+     scene ever competes with the content, the opacity is wrong, not the
+     design." Translucent means translucent. */
   const passes = [
-    { w: 6, a: 0.05 },
-    { w: 2.5, a: 0.11 },
-    { w: 1, a: 0.72 },
+    { w: 6, a: 0.028 },
+    { w: 2.5, a: 0.06 },
+    { w: 1, a: 0.30 },
   ]
   ctx.strokeStyle = colors.brand
   for (const p of passes) {
@@ -229,7 +241,7 @@ function drawArch(ctx, sc, t, panX, panY, ambient, colors) {
   }
 
   /* Slab connectors — what makes it read as a solid rather than two drawings. */
-  ctx.globalAlpha = 0.26 * ambient
+  ctx.globalAlpha = 0.14 * ambient
   ctx.lineWidth = 1
   ctx.beginPath()
   for (let i = 0; i < ARCH_OUTLINE.length; i++) {
@@ -246,7 +258,7 @@ function drawArch(ctx, sc, t, panX, panY, ambient, colors) {
   ctx.translate(base[0], base[1])
   ctx.scale(1, 0.26)
   const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, r)
-  grad.addColorStop(0, `rgba(23, 147, 209, ${0.20 * ambient})`)
+  grad.addColorStop(0, `rgba(23, 147, 209, ${0.10 * ambient})`)
   grad.addColorStop(1, 'rgba(23, 147, 209, 0)')
   ctx.fillStyle = grad
   ctx.beginPath()

@@ -12,10 +12,13 @@
   --bg-raise: #111317;
   --bg-sink: #08090a;
 
-  /* Ink — warm off-white, never pure #fff */
+  /* Ink — warm off-white, never pure #fff.
+     --ink-3 is the floor for anything a reader is meant to read: it measures
+     5.04:1 against --bg, which clears WCAG AA (4.5:1). It used to be #6d747d,
+     which came in at 4.14:1 — a fail, on text that is almost all 11px. */
   --ink: #e7e8ea;
   --ink-2: #a2a8af;
-  --ink-3: #6d747d;
+  --ink-3: #7b828b;
   --ink-inv: #0b0c0e;
 
   /* Brand — the real Arch blue. Used as ink, never as light. */
@@ -706,7 +709,10 @@ main { position: relative; z-index: var(--z-content); }
   overflow: hidden;
   font-family: var(--font-mono);
   font-size: 0.8125rem;
+  transition: border-color var(--fast) ease;
 }
+/* A second, non-colour-only cue that the shell holds focus. */
+.term:focus-within { border-color: var(--rule-brand); }
 .term-bar {
   display: flex;
   align-items: center;
@@ -742,15 +748,19 @@ main { position: relative; z-index: var(--z-content); }
   pointer-events: none;
   white-space: pre;
 }
+/* The focus ring is deliberately NOT removed here. An earlier version set
+   `outline: 0`, which matched the global :focus-visible rule on specificity and
+   won on source order — leaving keyboard users with no focus indicator at all.
+   Only the offset is tuned, so the ring sits inside the terminal frame. */
 .term-input {
   background: transparent;
   border: 0;
-  outline: 0;
   width: 100%;
   min-width: 0;
   font: inherit;
   color: var(--ink);
   caret-color: var(--brand);
+  outline-offset: 2px;
 }
 .term-cursor {
   display: inline-block;
@@ -918,11 +928,6 @@ main { position: relative; z-index: var(--z-content); }
   font-size: var(--t-body);
   font-weight: 500;
   color: var(--ink);
-}
-.dl-ver {
-  font-family: var(--font-mono);
-  font-size: var(--t-micro);
-  color: var(--ink-3);
 }
 .dl-text {
   grid-column: 1 / 2;

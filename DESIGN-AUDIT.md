@@ -1,5 +1,30 @@
 # Design Audit — Why This Reads as AI-Generated
 
+> **Historical. This audit describes a site that no longer exists.**
+>
+> It was written before the rewrite, and every defect in it has since been fixed.
+> Keep it as a record of what was wrong and why. Do not work from the "fix, in
+> priority order" section at the bottom — all of it landed.
+>
+> | Then | Now |
+> |---|---|
+> | `BootHero` shipped, `SpecHero` unreachable | `SpecHero` is the hero; the other five variants are deleted |
+> | `ArchMesh` / three.js WebGL hero | Gone. `Backdrop.jsx` is Canvas 2D; `three` is out of the lockfile |
+> | Five font families, 13 `@font-face` blocks | Two: Space Grotesk + JetBrains Mono |
+> | Seven competing hues | One accent (brand blue), plus one terminal green |
+> | Eight identical glass card classes | No cards, no `backdrop-filter`, no glow. Rules instead |
+> | `.section-tag` eyebrow on all eleven sections | Replaced by `.sec-name`, a mono word on a rule |
+> | Marquee, float, ping, sheen, nav aurora | All removed |
+> | Two skip links, two `<h1>`s | One of each |
+> | `--z-skip-link` typo | Fixed; the token is `--z-skip` |
+> | `6 architectures` vs 4 shipped | Both say 4 |
+> | Hardcoded kernel versions in the hero | `pkgver=rolling` |
+> | CTA `# pacman -S freedom` | The button says `Download` |
+>
+> For how the site behaves now, read `PRODUCT.md` (the design contract) and
+> `README.md`. For the review that prompted this round of fixes, see
+> `WEBSITE-REVIEW.md`.
+
 > Scope: the shipped site (`src/`, `index.html`, `public/`), audited against its own
 > stated intent (`PRODUCT.md`, `README.md`, `opendesign/…/brand/*`).
 > Method: static read of all 21 JSX files, the 2,381-line stylesheet, and the docs.

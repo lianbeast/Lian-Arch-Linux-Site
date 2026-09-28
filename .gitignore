@@ -35,6 +35,8 @@ lerna-debug.log*
 .impeccable/
 .utim_tmp/
 .utim/
+.serena/
+.opencode/
 
 # ── Python (stray tooling files) ─────────────────────────────
 .python-version

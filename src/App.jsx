@@ -71,36 +71,72 @@ function useActiveSection() {
   return active
 }
 
-/** Read position through the document, for the hairline progress bar. */
-function useScrollProgress() {
-  const [progress, setProgress] = useState(0)
+/**
+ * Read position through the document, for the hairline progress bar.
+ *
+ * Deliberately self-contained. This value changes every frame, so it must never
+ * live in a component that renders the rest of the page — a scroll listener at
+ * the root would reconcile the whole tree sixty times a second to move a 2px
+ * bar. The bar is written straight to the DOM instead of through state, because
+ * a 60Hz value is not something React should be scheduling renders for.
+ *
+ * `scrollHeight` is read once and refreshed on resize. Reading it forces a
+ * style/layout flush, and doing that every frame is the classic way to turn a
+ * cheap scroll handler into a janky one.
+ */
+function ScrollProgress() {
+  const barRef = useRef(null)
 
   useEffect(() => {
+    const bar = barRef.current
+    if (!bar) return
+
     let frame = 0
+    let max = 0
 
     const measure = () => {
-      const max = document.documentElement.scrollHeight - window.innerHeight
-      setProgress(max > 0 ? (window.scrollY / max) * 100 : 0)
+      max = document.documentElement.scrollHeight - window.innerHeight
     }
 
-    // Coalesce bursts of scroll events into one measurement per frame.
-    const onScroll = () => {
-      if (frame) return
-      frame = requestAnimationFrame(() => { measure(); frame = 0 })
+    const draw = () => {
+      frame = 0
+      const p = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0
+      bar.style.transform = `scaleX(${p})`
     }
 
-    window.addEventListener('scroll', onScroll, { passive: true })
-    // Deferred rather than called inline: a synchronous setState in an effect
-    // body cascades a render on mount for no reason.
-    frame = requestAnimationFrame(() => { measure(); frame = 0 })
+    // Coalesce bursts of scroll events into one write per frame.
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(draw)
+    }
+
+    // The document grows as sections reveal and as results arrive, so the
+    // divisor has to be re-measured — just not on every frame.
+    const ro = typeof ResizeObserver !== 'undefined'
+      ? new ResizeObserver(() => { measure(); schedule() })
+      : null
+    ro?.observe(document.body)
+
+    const onResize = () => { measure(); schedule() }
+
+    window.addEventListener('scroll', schedule, { passive: true })
+    window.addEventListener('resize', onResize, { passive: true })
+
+    measure()
+    draw()
 
     return () => {
-      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('scroll', schedule)
+      window.removeEventListener('resize', onResize)
+      ro?.disconnect()
       if (frame) cancelAnimationFrame(frame)
     }
   }, [])
 
-  return progress
+  return (
+    <div className="progress" aria-hidden="true">
+      <div className="progress-bar" ref={barRef} />
+    </div>
+  )
 }
 
 function Navbar({ active }) {
@@ -241,7 +277,6 @@ function BackToTop() {
 
 export default function App() {
   const active = useActiveSection()
-  const progress = useScrollProgress()
   useReveal()
 
   return (
@@ -252,9 +287,7 @@ export default function App() {
           fixed controls all sit above it. */}
       <Backdrop />
 
-      <div className="progress" aria-hidden="true">
-        <div className="progress-bar" style={{ transform: `scaleX(${progress / 100})` }} />
-      </div>
+      <ScrollProgress />
 
       <Navbar active={active} />
       <BackToTop />

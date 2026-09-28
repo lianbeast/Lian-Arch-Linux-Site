@@ -4,8 +4,11 @@
  * The previous version passed `open={i === openIdx}` alongside an onToggle that
  * wrote back to state. That makes React and the browser fight over the same
  * attribute — it mostly worked, and failed in ways that are miserable to debug.
- * `defaultOpen` on the first item is the whole feature, and the browser owns
- * the rest.
+ *
+ * So `open` is set on the first item and never changes afterwards. React
+ * compares the prop against the previous render, sees no change, and leaves the
+ * DOM alone, which lets the browser own the toggle from then on. (There is no
+ * React `defaultOpen` for <details>; a stable `open` prop is the equivalent.)
  */
 const FAQS = [
   {

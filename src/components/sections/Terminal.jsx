@@ -141,11 +141,16 @@ const BAR_WIDTH = 16
 const REDUCED = typeof window !== 'undefined' &&
   window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
 
+/* Announced once when the animated upgrade lands, in place of the ~130 live
+   region updates the animation itself would otherwise produce. */
+const SYU_SUMMARY = 'Upgrade complete. Three packages upgraded, nothing held back.'
+
 export default function Terminal() {
   const [lines, setLines] = useState([])
   const [input, setInput] = useState('')
   const [history, setHistory] = useState([])
   const [animating, setAnimating] = useState(false)
+  const [liveMessage, setLiveMessage] = useState('')
 
   const bodyRef = useRef(null)
   const inputRef = useRef(null)
@@ -174,9 +179,24 @@ export default function Terminal() {
     el.scrollTo({ top: el.scrollHeight, behavior: REDUCED ? 'auto' : 'smooth' })
   }, [lines])
 
-  const runScript = (script) => {
+  /**
+   * Close out a scripted run.
+   *
+   * The line-by-line output is deliberately NOT announced while the script is
+   * playing — the log goes quiet (see the `aria-live` binding below) and this
+   * single summary is announced instead. A live region that fires ~130 times in
+   * four seconds is not communication, it is noise.
+   */
+  const finishScript = (summary) => {
+    animatingRef.current = false
+    setAnimating(false)
+    setLiveMessage(summary)
+  }
+
+  const runScript = (script, summary) => {
     animatingRef.current = true
     setAnimating(true)
+    setLiveMessage('')
     setLines((prev) => [...prev, { ...script[0], key: nextKey() }])
 
     let t = script[0]?.delay ?? 100
@@ -193,19 +213,15 @@ export default function Terminal() {
         } else {
           setLines((prev) => [...prev, { ...step, key: nextKey() }])
         }
-        if (i === script.length - 2) {
-          animatingRef.current = false
-          setAnimating(false)
-        }
+        if (i === script.length - 2) finishScript(summary)
       }, t))
       t += step.delay ?? 80
     })
 
-    /* Safety net: if the script ends on a bar line the check above never fires. */
-    timersRef.current.push(setTimeout(() => {
-      animatingRef.current = false
-      setAnimating(false)
-    }, t + 800))
+    /* Safety net: if the script ends on a bar line the check above never fires.
+       Calling this twice is harmless — the second call sets an identical string,
+       so React bails out and nothing is announced a second time. */
+    timersRef.current.push(setTimeout(() => finishScript(summary), t + 800))
   }
 
   const renderSearch = (hits, term) => {
@@ -229,6 +245,7 @@ export default function Terminal() {
     histIdxRef.current = -1
     draftRef.current = ''
     setInput('')
+    setLiveMessage('')
 
     if (cmd === 'clear') {
       clearTimers()
@@ -240,8 +257,11 @@ export default function Terminal() {
 
     if (cmd === 'pacman -Syu') {
       setLines((prev) => [...prev, prompt])
+      /* Reduced motion appends the whole transcript at once, so it is announced
+         as a batch and needs no separate summary. The animated path is the one
+         that has to be summarised. */
       if (REDUCED) appendLines(SYU_STATIC)
-      else runScript(SYU_SCRIPT)
+      else runScript(SYU_SCRIPT, SYU_SUMMARY)
       return
     }
 
@@ -318,8 +338,10 @@ export default function Terminal() {
     if (l.kind === 'bar') {
       const filled = '#'.repeat(l.progress || 0).padEnd(BAR_WIDTH, ' ')
       const pct = Math.round(((l.progress || 0) / BAR_WIDTH) * 100)
+      /* Decorative: a progress bar that is re-rendered sixteen times per package
+         has nothing to say to a screen reader. */
       return (
-        <div className="term-line term-out-dim">
+        <div className="term-line term-out-dim" aria-hidden="true">
           {` ${l.label.padEnd(18, ' ')} [${filled}] ${pct}%`}
         </div>
       )
@@ -352,8 +374,14 @@ export default function Terminal() {
           onClick={() => inputRef.current?.focus()}
         >
           {/* The live region wraps only the output. Putting it around the
-              input too would make every keystroke a potential announcement. */}
-          <div role="log" aria-live="polite" aria-label="Terminal output">
+              input too would make every keystroke a potential announcement.
+              It also goes quiet while a scripted command plays, so the reader
+              gets one summary instead of a hundred partial lines. */}
+          <div
+            role="log"
+            aria-live={animating ? 'off' : 'polite'}
+            aria-label="Terminal output"
+          >
             {lines.map((l) => <div key={l.key}>{renderLine(l)}</div>)}
           </div>
 
@@ -384,6 +412,10 @@ export default function Terminal() {
             <span className="term-cursor" aria-hidden="true" />
           </div>
         </div>
+
+        {/* Deliberately outside the log: this is the only thing a screen reader
+            hears for a scripted command, so it must not be suppressed with it. */}
+        <p className="sr-only" role="status">{liveMessage}</p>
 
         <div className="term-chips" role="group" aria-label="Quick commands">
           {CHIPS.map((c) => (
