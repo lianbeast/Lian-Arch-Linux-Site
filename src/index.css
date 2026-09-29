@@ -38,6 +38,7 @@
   --font-display: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
   --font-body: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-agave: 'Agave', ui-monospace, SFMono-Regular, Menlo, monospace;
 
   /* Scale — real contrast between steps */
   --t-micro: 0.6875rem;
