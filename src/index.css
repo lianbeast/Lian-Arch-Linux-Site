@@ -40,6 +40,16 @@
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   --font-agave: 'Agave', ui-monospace, SFMono-Regular, Menlo, monospace;
 
+  /* Terminal UI colors */
+  --color-cmd-bg: #0b0c0e;
+  --color-cmd-fg: #e7e8ea;
+  --color-cmd-prompt: #87cdde;
+  --color-cmd-input: #a2a8af;
+  --color-cmd-output: #94a3b8;
+  --color-cmd-success: #22c55e;
+  --color-cmd-error: #ef4444;
+  --color-cmd-warn: #fbbf24;
+
   /* Scale — real contrast between steps */
   --t-micro: 0.6875rem;
   --t-small: 0.8125rem;
