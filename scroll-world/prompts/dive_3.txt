@@ -1,0 +1,2 @@
+Single continuous cinematic camera move, no cuts. Begin high and far, glide forward into the Pacman Action, smoothly continue forward and
+gently approach the next scene, ending with a slight pause before the view transitions.
