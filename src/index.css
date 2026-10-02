@@ -819,6 +819,7 @@ main { position: relative; z-index: var(--z-content); counter-reset: sec; }
   border-bottom: 1px solid var(--rule);
   font-size: var(--t-micro);
   color: var(--ink-3);
+  font-family: var(--font-agave);
 }
 .term-bar span:last-child { margin-left: 0.4rem; }
 
@@ -829,6 +830,7 @@ main { position: relative; z-index: var(--z-content); counter-reset: sec; }
   color: var(--ink-2);
   line-height: 1.75;
   cursor: text;
+  font-family: var(--font-agave);
 }
 .term-line { white-space: pre-wrap; word-break: break-word; }
 .term-out { color: var(--ink-2); }
@@ -856,6 +858,7 @@ main { position: relative; z-index: var(--z-content); counter-reset: sec; }
   width: 100%;
   min-width: 0;
   font: inherit;
+  font-family: var(--font-agave);
   color: var(--ink);
   caret-color: var(--brand);
   outline-offset: 2px;
@@ -876,6 +879,7 @@ main { position: relative; z-index: var(--z-content); counter-reset: sec; }
   gap: 0.4rem;
   padding: 0.75rem 0.9rem 0.9rem;
   border-top: 1px solid var(--rule);
+  font-family: var(--font-agave);
 }
 .chip {
   font-family: var(--font-mono);
@@ -1061,7 +1065,7 @@ main { position: relative; z-index: var(--z-content); counter-reset: sec; }
   overflow-x: auto;
 }
 .cmd-box code {
-  font-family: var(--font-mono);
+  font-family: var(--font-agave);
   font-size: var(--t-small);
   color: var(--ink);
   white-space: pre;
@@ -1073,7 +1077,7 @@ main { position: relative; z-index: var(--z-content); counter-reset: sec; }
   border: 1px solid var(--rule-2);
   border-radius: var(--r);
   color: var(--ink-2);
-  font-family: var(--font-mono);
+  font-family: var(--font-agave);
   font-size: var(--t-micro);
   padding: 0.3rem 0.65rem;
   cursor: pointer;
