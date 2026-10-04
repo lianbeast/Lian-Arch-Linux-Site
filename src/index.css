@@ -14,8 +14,7 @@
 
   /* Ink — warm off-white, never pure #fff.
      --ink-3 is the floor for anything a reader is meant to read: it measures
-     5.04:1 against --bg, which clears WCAG AA (4.5:1). It used to be #6d747d,
-     which came in at 4.14:1 — a fail, on text that is almost all 11px. */
+     5.04:1 against --bg, which clears WCAG AA (4.5:1). */
   --ink: #e7e8ea;
   --ink-2: #a2a8af;
   --ink-3: #7b828b;
@@ -135,7 +134,7 @@ button { font: inherit; color: inherit; }
   top: 0;
   left: var(--pad);
   transform: translateY(-150%);
-  padding: 0.7rem 1.1rem;
+  padding: 0.85rem 1.1rem;
   background: var(--brand);
   color: var(--ink-inv);
   font-family: var(--font-mono);
@@ -144,6 +143,7 @@ button { font: inherit; color: inherit; }
   border-radius: 0 0 var(--r) var(--r);
   z-index: var(--z-skip);
   transition: transform var(--fast) var(--ease);
+  min-height: 44px;
 }
 .skip-link:focus { transform: translateY(0); }
 
@@ -247,7 +247,9 @@ button { font: inherit; color: inherit; }
   background: none;
   border: 0;
   cursor: pointer;
-  padding: 0.5rem;
+  padding: 0.75rem;
+  min-height: 44px;
+  min-width: 44px;
 }
 .nav-toggle span {
   width: 20px;
@@ -285,6 +287,13 @@ button { font: inherit; color: inherit; }
     border-radius: 0;
   }
   .nav-links li:last-child .nav-link { border-bottom: 0; }
+  .nav-brand {
+    min-height: 44px;
+    padding: 0.75rem 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
 }
 
 /* Ensure nav toggle has visible focus state when menu is open */
@@ -419,8 +428,8 @@ main { position: relative; z-index: var(--z-content); counter-reset: sec; }
   right: clamp(1rem, 3vw, 2rem);
   bottom: clamp(1rem, 3vw, 2rem);
   z-index: var(--z-nav);
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   display: grid;
   place-items: center;
   background: var(--bg-raise);
@@ -703,8 +712,8 @@ main { position: relative; z-index: var(--z-content); counter-reset: sec; }
   font-size: var(--t-micro);
   color: var(--ink-3);
 }
-.hero-hint a { color: var(--brand-ink); text-decoration: none; }
-.hero-hint a:hover { color: var(--brand-ink); text-decoration: underline; }
+.hero-hint a { color: var(--brand-ink); text-decoration: underline; text-underline-offset: 2px; }
+.hero-hint a:hover { color: var(--brand-ink); }
 
 /* ===== MANIFESTO ===== */
 .manifesto {
@@ -872,6 +881,8 @@ main { position: relative; z-index: var(--z-content); counter-reset: sec; }
   color: var(--ink);
   caret-color: var(--brand);
   outline-offset: 2px;
+  min-height: 44px;
+  padding: 0.5rem 0;
 }
 .term-cursor {
   display: inline-block;
@@ -898,7 +909,8 @@ main { position: relative; z-index: var(--z-content); counter-reset: sec; }
   background: transparent;
   border: 1px solid var(--rule-2);
   border-radius: var(--r);
-  padding: 0.35rem 0.6rem;
+  padding: 0.5rem 0.75rem;
+  min-height: 44px;
   cursor: pointer;
   transition: border-color var(--fast) ease, color var(--fast) ease;
 }
@@ -919,6 +931,7 @@ main { position: relative; z-index: var(--z-content); counter-reset: sec; }
   color: var(--ink);
   font-family: var(--font-mono);
   font-size: var(--t-small);
+  min-height: 44px;
 }
 .pkg-input::placeholder { color: var(--ink-3); }
 .pkg-input:focus { border-color: var(--rule-brand); }
@@ -1089,7 +1102,8 @@ main { position: relative; z-index: var(--z-content); counter-reset: sec; }
   color: var(--ink-2);
   font-family: var(--font-agave);
   font-size: var(--t-micro);
-  padding: 0.3rem 0.65rem;
+  padding: 0.5rem 0.75rem;
+  min-height: 44px;
   cursor: pointer;
   transition: border-color var(--fast) ease, color var(--fast) ease;
 }
@@ -1202,6 +1216,10 @@ main { position: relative; z-index: var(--z-content); counter-reset: sec; }
   font-size: var(--t-micro);
   color: var(--ink-3);
   text-decoration: none;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 0;
 }
 .foot-links a:hover { color: var(--brand-ink); }
 
