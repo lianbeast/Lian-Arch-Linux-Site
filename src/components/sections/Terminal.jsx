@@ -158,6 +158,7 @@ export default function Terminal() {
   const draftRef = useRef('')
   const timersRef = useRef([])
   const animatingRef = useRef(false)
+  const barRefsRef = useRef(new Map()) // lineKey -> {el, label, progress}
 
   const knownCommands = useMemo(() => Object.keys(BASE_COMMANDS), [])
 
@@ -204,10 +205,18 @@ export default function Terminal() {
       timersRef.current.push(setTimeout(() => {
         if (step.kind === 'bar') {
           const lineKey = nextKey()
+          // Add bar line to React state (initial)
           setLines((prev) => [...prev, { kind: 'bar', label: step.label, progress: 0, key: lineKey }])
+          // Schedule progress updates via direct DOM manipulation (no React re-renders)
           for (let p = 1; p <= BAR_WIDTH; p++) {
             timersRef.current.push(setTimeout(() => {
-              setLines((prev) => prev.map((l) => (l.key === lineKey ? { ...l, progress: p } : l)))
+              const barRefs = barRefsRef.current
+              if (barRefs.has(lineKey)) {
+                const { el, label } = barRefs.get(lineKey)
+                const filled = '#'.repeat(p).padEnd(BAR_WIDTH, ' ')
+                const pct = Math.round((p / BAR_WIDTH) * 100)
+                el.textContent = ` ${label.padEnd(18, ' ')} [${filled}] ${pct}%`
+              }
             }, (600 / BAR_WIDTH) * p))
           }
         } else {
@@ -339,9 +348,17 @@ export default function Terminal() {
       const filled = '#'.repeat(l.progress || 0).padEnd(BAR_WIDTH, ' ')
       const pct = Math.round(((l.progress || 0) / BAR_WIDTH) * 100)
       /* Decorative: a progress bar that is re-rendered sixteen times per package
-         has nothing to say to a screen reader. */
+         has nothing to say to a screen reader. We capture the DOM ref to update
+         it directly during animation, avoiding React re-renders. */
       return (
-        <div className="term-line term-out-dim" aria-hidden="true">
+        <div
+          ref={(el) => {
+            if (el) barRefsRef.current.set(l.key, { el, label: l.label })
+            else barRefsRef.current.delete(l.key)
+          }}
+          className="term-line term-out-dim"
+          aria-hidden="true"
+        >
           {` ${l.label.padEnd(18, ' ')} [${filled}] ${pct}%`}
         </div>
       )

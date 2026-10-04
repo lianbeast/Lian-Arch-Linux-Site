@@ -397,6 +397,12 @@ export default function Backdrop() {
       /* Clamp dt so a pause never lurches the scene forward on resume. */
       const dt = last ? Math.min((t - last) / 1000, 0.05) : 0
       last = t
+
+      /* Yield to main thread if user input is pending — prevents jank during
+         interaction (scrolling, typing, clicking). scheduler.yield() is the
+         modern way; isInputPending() is the widely supported fallback. */
+      if (navigator.scheduling?.isInputPending?.()) return
+
       step(dt)
       paint()
     }

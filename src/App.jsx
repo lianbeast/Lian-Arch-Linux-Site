@@ -80,9 +80,9 @@ function useActiveSection() {
  * bar. The bar is written straight to the DOM instead of through state, because
  * a 60Hz value is not something React should be scheduling renders for.
  *
- * `scrollHeight` is read once and refreshed on resize. Reading it forces a
- * style/layout flush, and doing that every frame is the classic way to turn a
- * cheap scroll handler into a janky one.
+ * scrollHeight is read ONCE on mount and refreshed ONLY on resize (via ResizeObserver).
+ * The scroll handler only reads scrollY (cheap, no layout flush) and uses the
+ * cached max. This avoids the classic layout-thrashing anti-pattern.
  */
 function ScrollProgress() {
   const barRef = useRef(null)
@@ -110,7 +110,7 @@ function ScrollProgress() {
     }
 
     // The document grows as sections reveal and as results arrive, so the
-    // divisor has to be re-measured — just not on every frame.
+    // divisor has to be re-measured — but ONLY on resize, not every frame.
     const ro = typeof ResizeObserver !== 'undefined'
       ? new ResizeObserver(() => { measure(); schedule() })
       : null
