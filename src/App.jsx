@@ -324,6 +324,19 @@ export default function App() {
 
       <ScrollProgress />
 
+      {/* Film grain texture — fixed overlay, 4% opacity, mix-blend-mode overlay.
+          Borrowed from the Debian site's register. Purely decorative. */}
+      <div className="grain" aria-hidden="true" />
+
+      {/* HUD corner frame — four brand-bracket corners, like a CRT or terminal.
+          Purely decorative, zero JS. */}
+      <div className="hud" aria-hidden="true">
+        <div className="hud-corner top-left" />
+        <div className="hud-corner top-right" />
+        <div className="hud-corner bottom-left" />
+        <div className="hud-corner bottom-right" />
+      </div>
+
       <Navbar active={active} />
       <BackToTop />
       <Tweaks />

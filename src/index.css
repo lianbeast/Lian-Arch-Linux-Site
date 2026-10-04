@@ -7,10 +7,11 @@
 :root {
   color-scheme: dark;
 
-  /* Ground — warmer near-black. Not blue-black, not pure black. */
-  --bg: #0a0b0d;
-  --bg-raise: #121418;
-  --bg-sink: #070809;
+  /* Ground — deeper, near-pure black. Borrowed from the Debian site's
+     register: the page reads as a CRT on a powered-off monitor. */
+  --bg: #050507;
+  --bg-raise: #0a0a0e;
+  --bg-sink: #030304;
 
   /* Ink — warmer off-white scale. --ink-3 is 5.04:1 on --bg (WCAG AA).
      --ink-2 is the minimum for body copy that must be read.
@@ -20,7 +21,7 @@
   --ink-2: #b8bdc8;
   --ink-3: #8c929c;
   --ink-muted: #6b707a;
-  --ink-inv: #0a0b0d;
+  --ink-inv: #050507;
 
   /* Brand — the real Arch blue. The ONLY saturated hue on the page. */
   --brand: #1793d1;
@@ -39,6 +40,18 @@
   --mesh-1: rgba(23, 147, 209, 0.06);
   --mesh-2: rgba(100, 180, 220, 0.04);
 
+  /* Easing — panel transitions get a spring-ish curve, borrowed from the
+     Debian site's register. Scroll-linked and entrance motion stay linear. */
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-panel: cubic-bezier(0.32, 0.72, 0, 1);
+  --fast: 140ms;
+  --slow: 350ms;
+
+  /* Shadow — barely there, structural not decorative */
+  --shadow-1: 0 1px 2px rgba(0,0,0,0.3);
+  --shadow-2: 0 4px 8px rgba(0,0,0,0.25);
+  --shadow-brand: 0 0 0 2px var(--brand);
+
   /* Type */
   --font-display: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
   --font-body: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
@@ -46,7 +59,7 @@
   --font-agave: 'Agave', ui-monospace, SFMono-Regular, Menlo, monospace;
 
   /* Terminal UI colors */
-  --color-cmd-bg: #0a0b0d;
+  --color-cmd-bg: #050507;
   --color-cmd-fg: #f0f1f2;
   --color-cmd-prompt: #87cdde;
   --color-cmd-input: #a8adb6;
@@ -55,14 +68,15 @@
   --color-cmd-error: #ef4444;
   --color-cmd-warn: #fbbf24;
 
-  /* Scale — real contrast between steps */
+  /* Scale — heavier display type, borrowed from the Debian site's register.
+     The contrast between steps is the point: this is a document, not a blog. */
   --t-micro: 0.6875rem;
   --t-small: 0.8125rem;
   --t-body: 1rem;
   --t-lead: 1.125rem;
-  --t-h3: 1.375rem;
-  --t-h2: clamp(1.75rem, 3.2vw, 2.6rem);
-  --t-h1: clamp(2.75rem, 7.5vw, 5.5rem);
+  --t-h3: clamp(1.5rem, 2.4vw, 2rem);
+  --t-h2: clamp(2rem, 3.8vw, 3.2rem);
+  --t-h1: clamp(3rem, 8vw, 6.5rem);
 
   /* Space — 8pt base, Linear-aligned */
   --s-0: 0.25rem;  /* 4px  */
@@ -85,22 +99,12 @@
   --r: 3px;
   --r-lg: 6px;
 
-  /* Motion — snappy, purposeful. No springs, no bounces. */
-  --ease: cubic-bezier(0.22, 1, 0.36, 1);
-  --ease-panel: cubic-bezier(0.16, 1, 0.3, 1);
-  --fast: 140ms;
-  --slow: 350ms;
-
-  /* Shadow — barely there, structural not decorative */
-  --shadow-1: 0 1px 2px rgba(0,0,0,0.3);
-  --shadow-2: 0 4px 8px rgba(0,0,0,0.25);
-  --shadow-brand: 0 0 0 2px var(--brand);
-
   /* Z */
   --z-content: 1;
   --z-nav: 100;
   --z-progress: 110;
   --z-skip: 9000;
+  --z-hud: 9999;
 }
 
 /* ===== RESET ===== */
@@ -212,6 +216,29 @@ button { font: inherit; color: inherit; }
   transform: scaleX(0);
   transition: transform 90ms linear;
 }
+
+/* ===== HUD CORNER OVERLAY =====
+   Fixed viewport frame — four corner brackets, like a CRT or terminal HUD.
+   Purely decorative, zero JS, zero content. It is the single most visible
+   difference between this page and a flat render: the ground stops looking
+   like a rectangle. Borrowed from the Debian site's register. */
+.hud {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-nav);
+  pointer-events: none;
+}
+.hud-corner {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  border: 1px solid var(--rule-brand);
+  opacity: 0.5;
+}
+.hud-corner.top-left { top: 16px; left: 16px; border-right: none; border-bottom: none; }
+.hud-corner.top-right { top: 16px; right: 16px; border-left: none; border-bottom: none; }
+.hud-corner.bottom-left { bottom: 16px; left: 16px; border-right: none; border-top: none; }
+.hud-corner.bottom-right { bottom: 16px; right: 16px; border-left: none; border-top: none; }
 
 /* ===== NAV ===== */
 .nav {
@@ -389,6 +416,8 @@ main { position: relative; z-index: var(--z-content); counter-reset: sec; }
   font-size: var(--t-micro);
   color: var(--ink-2);
   margin-bottom: var(--s-3);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
 }
 /* Running document index. A CSS counter over .sec, so the number always
    matches DOM order and can never drift from the section list in constants.js.
@@ -402,9 +431,9 @@ main { position: relative; z-index: var(--z-content); counter-reset: sec; }
 .sec-title {
   font-family: var(--font-display);
   font-size: var(--t-h2);
-  font-weight: 500;
-  line-height: 1.12;
-  letter-spacing: -0.025em;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
   color: var(--ink);
   max-width: 22ch;
   text-wrap: balance;
@@ -565,8 +594,22 @@ main { position: relative; z-index: var(--z-content); counter-reset: sec; }
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(180deg, var(--bg) 0%, rgba(11, 12, 14, 0.6) 24%, transparent 54%),
-    linear-gradient(0deg, rgba(11, 12, 14, 0.78) 0%, transparent 32%);
+    linear-gradient(180deg, var(--bg) 0%, rgba(5, 5, 7, 0.6) 24%, transparent 54%),
+    linear-gradient(0deg, rgba(5, 5, 7, 0.78) 0%, transparent 32%);
+}
+
+/* Film grain — fixed overlay only. A static SVG noise filter at 4% opacity,
+   applied over the whole document. It is the single most visible difference
+   between this page and a flat render: the ground stops looking like a
+   rectangle. Borrowed from the Debian site's register. */
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-nav);
+  pointer-events: none;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
 }
 
 /* Full strength in the hero, fading as the reader moves into the document, so
@@ -638,7 +681,7 @@ main { position: relative; z-index: var(--z-content); counter-reset: sec; }
 .hero-title {
   font-family: var(--font-display);
   font-size: var(--t-h1);
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.02;
   letter-spacing: -0.035em;
   color: var(--ink);
@@ -834,7 +877,7 @@ main { position: relative; z-index: var(--z-content); counter-reset: sec; }
 .row-h {
   font-family: var(--font-display);
   font-size: var(--t-h3);
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: -0.015em;
   color: var(--ink);
 }
