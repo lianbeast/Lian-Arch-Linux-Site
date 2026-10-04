@@ -262,7 +262,7 @@ export default function Terminal() {
       return
     }
 
-    const prompt = { kind: 'cmd', text: cmd }
+    const prompt = { kind: 'cmd', text: cmd, key: nextKey() }
 
     if (cmd === 'pacman -Syu') {
       setLines((prev) => [...prev, prompt])
@@ -306,8 +306,11 @@ export default function Terminal() {
       return
     }
     if (e.key === 'Tab') {
-      e.preventDefault()
-      if (ghost) setInput((prev) => prev + ghost)
+      if (ghost) {
+        e.preventDefault()
+        setInput((prev) => prev + ghost)
+      }
+      // If no ghost, allow default tab navigation to proceed
       return
     }
     if (e.key === 'ArrowUp') {
