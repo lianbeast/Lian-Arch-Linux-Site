@@ -17,6 +17,41 @@ import Faq from './components/sections/Faq'
 import Community from './components/sections/Community'
 import Footer from './components/sections/Footer'
 
+/** Compact mode toggle — persists to localStorage. */
+function Tweaks() {
+  const [compact, setCompact] = useState(false)
+
+  useEffect(() => {
+    const saved = localStorage.getItem('arch-compact')
+    if (saved === 'true') {
+      setCompact(true)
+      document.body.dataset.compact = 'true'
+    }
+  }, [])
+
+  const toggle = () => {
+    const next = !compact
+    setCompact(next)
+    localStorage.setItem('arch-compact', next)
+    document.body.dataset.compact = next ? 'true' : 'false'
+  }
+
+  return (
+    <div className="tweaks" role="group" aria-label="Display tweaks">
+      <span className="tweaks-label">Compact</span>
+      <label className="tweaks-toggle">
+        <input
+          type="checkbox"
+          checked={compact}
+          onChange={toggle}
+          aria-label="Toggle compact mode"
+        />
+        <span aria-hidden="true" />
+      </label>
+    </div>
+  )
+}
+
 const REDUCED_MOTION = typeof window !== 'undefined' &&
   window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
 
@@ -291,6 +326,7 @@ export default function App() {
 
       <Navbar active={active} />
       <BackToTop />
+      <Tweaks />
 
       {/* One boundary per section: a single broken subtree degrades to a
           readable message instead of taking the whole page down with it. */}

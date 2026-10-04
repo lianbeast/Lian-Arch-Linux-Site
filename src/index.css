@@ -1,26 +1,28 @@
 /* ============================================================
    ARCH LINUX — DESIGN SYSTEM
-   A man page you can scroll. Restrained, type-led, no ornament.
+   A man page you can scroll. Warm dark tool aesthetic — Linear precision + Arch sovereignty.
    ============================================================ */
 
 /* ===== TOKENS ===== */
 :root {
   color-scheme: dark;
 
-  /* Ground — near-black, faintly cool neutral. Deliberately not blue-black. */
-  --bg: #0b0c0e;
-  --bg-raise: #111317;
-  --bg-sink: #08090a;
+  /* Ground — warmer near-black. Not blue-black, not pure black. */
+  --bg: #0a0b0d;
+  --bg-raise: #121418;
+  --bg-sink: #070809;
 
-  /* Ink — warm off-white, never pure #fff.
-     --ink-3 is the floor for anything a reader is meant to read: it measures
-     5.04:1 against --bg, which clears WCAG AA (4.5:1). */
-  --ink: #e7e8ea;
-  --ink-2: #a2a8af;
-  --ink-3: #7b828b;
-  --ink-inv: #0b0c0e;
+  /* Ink — warmer off-white scale. --ink-3 is 5.04:1 on --bg (WCAG AA).
+     --ink-2 is the minimum for body copy that must be read.
+     --ink-muted is for decorative/metadata text (line numbers, labels) that
+     is NOT meant to be read — it can fail contrast without violating AA. */
+  --ink: #f0f1f2;
+  --ink-2: #b8bdc8;
+  --ink-3: #8c929c;
+  --ink-muted: #6b707a;
+  --ink-inv: #0a0b0d;
 
-  /* Brand — the real Arch blue. Used as ink, never as light. */
+  /* Brand — the real Arch blue. The ONLY saturated hue on the page. */
   --brand: #1793d1;
   --brand-ink: #6cc0e8;
   --brand-wash: rgba(23, 147, 209, 0.09);
@@ -28,10 +30,14 @@
   /* Signal — terminal success output only. Never decorative. */
   --signal: #7ec699;
 
-  /* Rules — the primary structural device on this site */
+  /* Rules — hairline borders, the primary structural device */
   --rule: #1f2328;
   --rule-2: #2c3138;
   --rule-brand: rgba(23, 147, 209, 0.4);
+
+  /* Gradient mesh (hero only) — extremely controlled, brand blue family only */
+  --mesh-1: rgba(23, 147, 209, 0.06);
+  --mesh-2: rgba(100, 180, 220, 0.04);
 
   /* Type */
   --font-display: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
@@ -40,10 +46,10 @@
   --font-agave: 'Agave', ui-monospace, SFMono-Regular, Menlo, monospace;
 
   /* Terminal UI colors */
-  --color-cmd-bg: #0b0c0e;
-  --color-cmd-fg: #e7e8ea;
+  --color-cmd-bg: #0a0b0d;
+  --color-cmd-fg: #f0f1f2;
   --color-cmd-prompt: #87cdde;
-  --color-cmd-input: #a2a8af;
+  --color-cmd-input: #a8adb6;
   --color-cmd-output: #94a3b8;
   --color-cmd-success: #22c55e;
   --color-cmd-error: #ef4444;
@@ -58,15 +64,16 @@
   --t-h2: clamp(1.75rem, 3.2vw, 2.6rem);
   --t-h1: clamp(2.75rem, 7.5vw, 5.5rem);
 
-  /* Space */
-  --s-1: 0.5rem;
-  --s-2: 0.75rem;
-  --s-3: 1rem;
-  --s-4: 1.5rem;
-  --s-5: 2rem;
-  --s-6: 3rem;
-  --s-7: 4.5rem;
-  --s-8: 7rem;
+  /* Space — 8pt base, Linear-aligned */
+  --s-0: 0.25rem;  /* 4px  */
+  --s-1: 0.5rem;   /* 8px  */
+  --s-2: 0.75rem;  /* 12px */
+  --s-3: 1rem;     /* 16px */
+  --s-4: 1.5rem;   /* 24px */
+  --s-5: 2.5rem;   /* 40px */
+  --s-6: 4rem;     /* 64px */
+  --s-7: 6rem;     /* 96px */
+  --s-8: 8rem;     /* 128px */
   --s-sec: clamp(5rem, 11vh, 9rem);
 
   /* Layout */
@@ -74,14 +81,20 @@
   --w-text: 60ch;
   --pad: clamp(1.25rem, 5vw, 2.5rem);
 
-  /* Geometry — austere. Nothing pill-shaped, nothing glassy. */
+  /* Geometry — sharp, tool-like. Never above 6px. */
   --r: 3px;
   --r-lg: 6px;
 
-  /* Motion */
+  /* Motion — snappy, purposeful. No springs, no bounces. */
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-panel: cubic-bezier(0.16, 1, 0.3, 1);
   --fast: 140ms;
-  --slow: 320ms;
+  --slow: 350ms;
+
+  /* Shadow — barely there, structural not decorative */
+  --shadow-1: 0 1px 2px rgba(0,0,0,0.3);
+  --shadow-2: 0 4px 8px rgba(0,0,0,0.25);
+  --shadow-brand: 0 0 0 2px var(--brand);
 
   /* Z */
   --z-content: 1;
@@ -100,11 +113,46 @@ body {
   color: var(--ink);
   font-family: var(--font-body);
   font-size: var(--t-body);
-  line-height: 1.6;
+  line-height: 1.65;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+/* Inline code styling — brand ink on raised surface.
+   Use a class rather than :not(.language-*) which lightningcss doesn't support. */
+.code-inline,
+code:not(.hljs) {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  background: var(--bg-raise);
+  color: var(--brand-ink);
+  padding: 0 0.25em;
+  border-radius: 2px;
+}
+
+/* Compact mode — Bloomberg-terminal density for power users */
+body[data-compact="true"] {
+  --s-sec: clamp(3rem, 7vh, 5rem);
+  --pad: clamp(1rem, 3vw, 1.5rem);
+  --t-body: 0.875rem;
+  --t-lead: 1rem;
+  --t-h2: clamp(1.5rem, 2.8vw, 2.2rem);
+  --t-h1: clamp(2.25rem, 6vw, 4rem);
+  --t-h3: 1.125rem;
+  --t-small: 0.75rem;
+  --t-micro: 0.625rem;
+  line-height: 1.55;
+}
+body[data-compact="true"] .term-body { height: 280px; }
+body[data-compact="true"] .row { padding: var(--s-2) 0; }
+body[data-compact="true"] .tl-item { padding: var(--s-2) 0; }
+body[data-compact="true"] .case-row { padding: var(--s-2) 0; }
+body[data-compact="true"] .dl-item { padding: var(--s-2) 0; }
+body[data-compact="true"] .faq-q { padding: var(--s-2) 0; }
+body[data-compact="true"] .comm-item { padding: var(--s-2) 0; }
+body[data-compact="true"] .pkg-item { padding: var(--s-2) 0; }
+body[data-compact="true"] .plat-item { max-width: 18ch; }
 
 img, svg, canvas { display: block; max-width: 100%; }
 h1, h2, h3, p, ol, ul, figure { margin: 0; }
@@ -172,7 +220,8 @@ button { font: inherit; color: inherit; }
   z-index: var(--z-nav);
   background: var(--bg);
   border-bottom: 1px solid var(--rule);
-  transition: transform var(--slow) var(--ease);
+  transition: transform var(--slow) var(--ease-panel);
+  box-shadow: var(--shadow-1);
 }
 .nav--hidden { transform: translateY(-100%); }
 
@@ -213,7 +262,7 @@ button { font: inherit; color: inherit; }
   font-size: var(--t-small);
   color: var(--ink-3);
   border-radius: var(--r);
-  transition: color var(--fast) ease;
+  transition: color var(--fast) var(--ease);
 }
 .nav-link:hover { color: var(--ink); }
 .nav-link[aria-current='true'] { color: var(--brand-ink); }
@@ -255,7 +304,7 @@ button { font: inherit; color: inherit; }
   width: 20px;
   height: 2px;
   background: var(--ink);
-  transition: transform var(--fast) var(--ease), opacity var(--fast) ease;
+  transition: transform var(--fast) var(--ease), opacity var(--fast) var(--ease);
 }
 .nav-toggle[aria-expanded='true'] span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
 .nav-toggle[aria-expanded='true'] span:nth-child(2) { opacity: 0; }
@@ -276,6 +325,7 @@ button { font: inherit; color: inherit; }
     border-bottom: 1px solid var(--rule);
     padding: 0.5rem var(--pad) 1rem;
     display: none;
+    box-shadow: var(--shadow-2);
   }
   .nav-links.open { display: flex; }
   .nav-link {
@@ -337,7 +387,7 @@ main { position: relative; z-index: var(--z-content); counter-reset: sec; }
 .sec-name {
   font-family: var(--font-mono);
   font-size: var(--t-micro);
-  color: var(--ink-3);
+  color: var(--ink-2);
   margin-bottom: var(--s-3);
 }
 /* Running document index. A CSS counter over .sec, so the number always
@@ -404,7 +454,7 @@ main { position: relative; z-index: var(--z-content); counter-reset: sec; }
   border-radius: var(--r);
   border: 1px solid transparent;
   cursor: pointer;
-  transition: background var(--fast) ease, border-color var(--fast) ease, color var(--fast) ease;
+  transition: background var(--fast) var(--ease), border-color var(--fast) var(--ease), color var(--fast) var(--ease), box-shadow var(--fast) var(--ease);
 }
 .btn-solid {
   background: var(--brand);
@@ -412,12 +462,15 @@ main { position: relative; z-index: var(--z-content); counter-reset: sec; }
   font-weight: 500;
 }
 .btn-solid:hover { background: var(--brand-ink); }
+.btn-solid:focus-visible { box-shadow: var(--shadow-brand); }
+
 .btn-line {
   border-color: var(--rule-2);
   color: var(--ink-2);
   background: transparent;
 }
 .btn-line:hover { border-color: var(--rule-brand); color: var(--ink); }
+.btn-line:focus-visible { box-shadow: var(--shadow-brand); }
 
 /* ===== BACK TO TOP =====
    This page is long. Getting back to the nav without a keyboard is a real need,
@@ -460,6 +513,18 @@ main { position: relative; z-index: var(--z-content); counter-reset: sec; }
   overflow: hidden;
 }
 
+/* Hero gradient mesh — single controlled atmosphere, brand blue only */
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 100%, var(--mesh-1), transparent 65%),
+    radial-gradient(ellipse 60% 40% at 15% 85%, var(--mesh-2), transparent 65%);
+  z-index: 0;
+}
+
 /* ===== SITE BACKDROP =====
    A fixed 3D digital landscape behind the whole document. Three stacked layers:
    atmospheric gradients at the bottom, the canvas scene over them, then a
@@ -476,14 +541,14 @@ main { position: relative; z-index: var(--z-content); counter-reset: sec; }
   pointer-events: none;
 }
 
-/* Atmospheric depth. Very low alpha — these should be felt, not seen. */
+/* Atmospheric depth. Very low alpha — these should be felt, not seen.
+   Single controlled gradient mesh in hero only — brand blue family. */
 .backdrop-atmosphere {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse 70% 45% at 50% 94%, rgba(23, 147, 209, 0.11), transparent 70%),
-    radial-gradient(ellipse 45% 30% at 20% 80%, rgba(11, 95, 136, 0.09), transparent 70%),
-    radial-gradient(ellipse 50% 32% at 80% 86%, rgba(0, 164, 228, 0.055), transparent 70%);
+    radial-gradient(ellipse 70% 45% at 50% 94%, var(--mesh-1), transparent 70%),
+    radial-gradient(ellipse 45% 30% at 20% 80%, var(--mesh-2), transparent 70%);
 }
 
 .backdrop-canvas {
@@ -546,8 +611,8 @@ main { position: relative; z-index: var(--z-content); counter-reset: sec; }
 }
 .hero-code .ln {
   text-align: right;
-  color: var(--ink-3);
-  opacity: 0.55;
+  color: var(--ink-muted);
+  opacity: 0.7;
   user-select: none;
   font-size: 0.85em;
   line-height: 2.2;
@@ -566,7 +631,7 @@ main { position: relative; z-index: var(--z-content); counter-reset: sec; }
 }
 
 .k { color: var(--brand-ink); }
-.c { color: var(--ink-3); font-style: italic; }
+.c { color: var(--ink-muted); font-style: italic; }
 .v { color: var(--ink); }
 
 /* The headline lives inside the sheet, on its own line numbers. */
@@ -621,7 +686,7 @@ main { position: relative; z-index: var(--z-content); counter-reset: sec; }
   margin-top: 0.5rem;
   font-family: var(--font-mono);
   font-size: var(--t-micro);
-  color: var(--ink-3);
+  color: var(--ink-muted);
 }
 
 @media (max-width: 900px) {
@@ -698,7 +763,7 @@ main { position: relative; z-index: var(--z-content); counter-reset: sec; }
   gap: 0.75rem;
   font-family: var(--font-mono);
   font-size: var(--t-micro);
-  color: var(--ink-3);
+  color: var(--ink-2);
 }
 .hero-cue-rule { flex: 0 0 2.5rem; height: 1px; background: var(--rule-2); }
 .hero-cue-arrow { color: var(--brand-ink); }
@@ -826,10 +891,13 @@ main { position: relative; z-index: var(--z-content); counter-reset: sec; }
   overflow: hidden;
   font-family: var(--font-mono);
   font-size: 0.8125rem;
-  transition: border-color var(--fast) ease;
+  transition: border-color var(--fast) var(--ease), box-shadow var(--fast) var(--ease);
 }
 /* A second, non-colour-only cue that the shell holds focus. */
-.term:focus-within { border-color: var(--rule-brand); }
+.term:focus-within {
+  border-color: var(--rule-brand);
+  box-shadow: var(--shadow-brand);
+}
 .term-bar {
   display: flex;
   align-items: center;
@@ -837,7 +905,7 @@ main { position: relative; z-index: var(--z-content); counter-reset: sec; }
   padding: 0.6rem 0.9rem;
   border-bottom: 1px solid var(--rule);
   font-size: var(--t-micro);
-  color: var(--ink-3);
+  color: var(--ink-muted);
   font-family: var(--font-agave);
 }
 .term-bar span:last-child { margin-left: 0.4rem; }
@@ -912,9 +980,14 @@ main { position: relative; z-index: var(--z-content); counter-reset: sec; }
   padding: 0.5rem 0.75rem;
   min-height: 44px;
   cursor: pointer;
-  transition: border-color var(--fast) ease, color var(--fast) ease;
+  transition: border-color var(--fast) var(--ease), color var(--fast) var(--ease), background var(--fast) var(--ease);
 }
-.chip:hover { border-color: var(--rule-brand); color: var(--ink); }
+.chip:hover {
+  border-color: var(--rule-brand);
+  color: var(--ink);
+  background: var(--brand-wash);
+}
+.chip:focus-visible { box-shadow: var(--shadow-brand); }
 
 /* ===== PACKAGE SEARCH ===== */
 .pkg-box {
@@ -932,9 +1005,13 @@ main { position: relative; z-index: var(--z-content); counter-reset: sec; }
   font-family: var(--font-mono);
   font-size: var(--t-small);
   min-height: 44px;
+  transition: border-color var(--fast) var(--ease), box-shadow var(--fast) var(--ease);
 }
 .pkg-input::placeholder { color: var(--ink-3); }
-.pkg-input:focus { border-color: var(--rule-brand); }
+.pkg-input:focus {
+  border-color: var(--rule-brand);
+  box-shadow: var(--shadow-brand);
+}
 
 .pkg-state {
   font-family: var(--font-mono);
@@ -962,7 +1039,7 @@ main { position: relative; z-index: var(--z-content); counter-reset: sec; }
   font-family: var(--font-mono);
   font-size: var(--t-body);
   color: var(--ink);
-  transition: color var(--fast) ease;
+  transition: color var(--fast) var(--ease);
 }
 .pkg-repo {
   font-family: var(--font-mono);
@@ -1105,9 +1182,14 @@ main { position: relative; z-index: var(--z-content); counter-reset: sec; }
   padding: 0.5rem 0.75rem;
   min-height: 44px;
   cursor: pointer;
-  transition: border-color var(--fast) ease, color var(--fast) ease;
+  transition: border-color var(--fast) var(--ease), color var(--fast) var(--ease), background var(--fast) var(--ease);
 }
-.cmd-copy:hover { border-color: var(--rule-brand); color: var(--ink); }
+.cmd-copy:hover {
+  border-color: var(--rule-brand);
+  color: var(--ink);
+  background: var(--brand-wash);
+}
+.cmd-copy:focus-visible { box-shadow: var(--shadow-brand); }
 .cmd-note { font-size: var(--t-small); color: var(--ink-3); margin-top: var(--s-3); }
 .cmd-note a { color: var(--brand-ink); }
 
@@ -1207,14 +1289,14 @@ main { position: relative; z-index: var(--z-content); counter-reset: sec; }
 .foot-note {
   font-family: var(--font-mono);
   font-size: var(--t-micro);
-  color: var(--ink-3);
+  color: var(--ink-2);
   margin-top: 0.5rem;
 }
 .foot-links { display: flex; flex-wrap: wrap; gap: var(--s-4); }
 .foot-links a {
   font-family: var(--font-mono);
   font-size: var(--t-micro);
-  color: var(--ink-3);
+  color: var(--ink-2);
   text-decoration: none;
   min-height: 44px;
   display: inline-flex;
@@ -1316,11 +1398,61 @@ main { position: relative; z-index: var(--z-content); counter-reset: sec; }
   to { transform: scaleX(0); }
 }
 
-/* ===== REDUCED MOTION =====
-   Selective opt-out: disable decorative/ambient motion, preserve functional.
-   Functional motion = focus ring, cursor blink, reveal states (content visibility),
-   state transitions that communicate readiness/interactivity.
-   Decorative motion = backdrop drift, scroll-linked rule drawing, hero entrance. */
+/* ===== TWEAKS PANEL =====
+   Compact mode toggle for power users who want Bloomberg-terminal density.
+   Persisted to localStorage. */
+.tweaks {
+  position: fixed;
+  bottom: 1rem;
+  left: clamp(1rem, 3vw, 2rem);
+  z-index: var(--z-nav);
+  background: var(--bg-raise);
+  border: 1px solid var(--rule-2);
+  border-radius: var(--r-lg);
+  padding: var(--s-2) var(--s-3);
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  color: var(--ink-2);
+  box-shadow: var(--shadow-2);
+  transition: opacity var(--fast) var(--ease), transform var(--fast) var(--ease);
+}
+.tweaks:focus-within { border-color: var(--rule-brand); }
+.tweaks-label { color: var(--ink-3); margin-right: var(--s-2); }
+.tweaks-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-1);
+  cursor: pointer;
+}
+.tweaks-toggle input { position: absolute; opacity: 0; width: 0; height: 0; }
+.tweaks-toggle span {
+  display: inline-block;
+  width: 2.5rem;
+  height: 1.25rem;
+  background: var(--rule-2);
+  border-radius: 9999px;
+  position: relative;
+  transition: background var(--fast) var(--ease);
+}
+.tweaks-toggle span::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: calc(1.25rem - 4px);
+  height: calc(1.25rem - 4px);
+  background: var(--ink-3);
+  border-radius: 50%;
+  transition: transform var(--fast) var(--ease), background var(--fast) var(--ease);
+}
+.tweaks-toggle input:checked + span { background: var(--brand); }
+.tweaks-toggle input:checked + span::before {
+  transform: translateX(1.25rem);
+  background: var(--ink-inv);
+}
+.tweaks-toggle input:focus-visible + span { box-shadow: var(--shadow-brand); }
+.tweaks-toggle:hover span { background: var(--rule-brand); }
+.tweaks-toggle input:checked:hover + span { background: var(--brand-ink); }
 
 /* Default: functional motion always on */
 :focus-visible {
