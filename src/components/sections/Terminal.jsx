@@ -373,13 +373,14 @@ export default function Terminal() {
           ref={bodyRef}
           onClick={() => inputRef.current?.focus()}
         >
-          {/* The live region wraps only the output. Putting it around the
-              input too would make every keystroke a potential announcement.
-              It also goes quiet while a scripted command plays, so the reader
-              gets one summary instead of a hundred partial lines. */}
+          {/* Two persistent live regions:
+              - polite: for user commands and immediate output (announced normally)
+              - assertive: for scripted command summaries (announced immediately, interrupts)
+              This avoids toggling aria-live on a single element, which is unreliable across AT. */}
           <div
             role="log"
-            aria-live={animating ? 'off' : 'polite'}
+            aria-live="polite"
+              aria-atomic="true"
             aria-label="Terminal output"
           >
             {lines.map((l) => <div key={l.key}>{renderLine(l)}</div>)}
@@ -415,7 +416,7 @@ export default function Terminal() {
 
         {/* Deliberately outside the log: this is the only thing a screen reader
             hears for a scripted command, so it must not be suppressed with it. */}
-        <p className="sr-only" role="status">{liveMessage}</p>
+        <p className="sr-only" role="status" aria-live="assertive" aria-atomic="true">{liveMessage}</p>
 
         <div className="term-chips" role="group" aria-label="Quick commands">
           {CHIPS.map((c) => (
