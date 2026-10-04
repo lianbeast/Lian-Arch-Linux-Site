@@ -22,9 +22,9 @@ landing page, and most layout decisions follow from that. Concretely:
   of a claim.
 - **Rules, not cards.** Section structure comes from hairlines. There is no card
   component, no glassmorphism, and no glow anywhere on the site.
-- **Two fonts, one accent.** Space Grotesk for display and body; JetBrains Mono
-  for every label, meta string and code fragment. Brand blue for links and active
-  states, one green for terminal output, and nothing else.
+- **Three fonts.** Space Grotesk for display and body; JetBrains Mono for labels,
+  meta strings, and code fragments; Agave for terminal output only. Brand blue for
+  links and active states, one green for terminal output, and nothing else.
 - **No GPU work.** The backdrop is a 2D canvas with a hand-written projection
   (`src/components/ui/Backdrop.jsx`) — no WebGL, no three.js, no shader.
 
@@ -119,7 +119,7 @@ src/
 | Build | Vite 8 (Rolldown) |
 | Backdrop | Canvas 2D, hand-written projection — no WebGL, no 3D library |
 | Layout | CSS Grid; component breakpoints via `@container`, not `@media` |
-| Fonts | Space Grotesk + JetBrains Mono, self-hosted |
+| Fonts | Space Grotesk + JetBrains Mono + Agave, self-hosted |
 | Lint | ESLint 10, flat config |
 | Runtime deps | `react`, `react-dom` — that is all |
 

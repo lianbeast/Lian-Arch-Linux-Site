@@ -149,9 +149,10 @@ Currently implemented:
   - It recedes to 45% once the reader is a viewport into the document, so body
     copy is never fighting moving geometry.
   - See `docs/backdrop.md`.
-- **Two font families**, self-hosted in `public/fonts/`, zero CDN:
+- **Three font families**, self-hosted in `public/fonts/`, zero CDN:
   - Space Grotesk (400/500/600) — display and body
-  - JetBrains Mono (variable) — every label, meta string and code fragment
+  - JetBrains Mono (variable) — labels, meta strings, code fragments
+  - Agave (regular) — terminal output only
 - `index.html` references fonts via `%BASE_URL%` so the GitHub Pages subpath
   deploy resolves. Only the two faces that paint above the fold are preloaded.
 - Package search calls the Arch index through a CORS proxy. The base URL is
