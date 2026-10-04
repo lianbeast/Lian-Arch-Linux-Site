@@ -17,23 +17,23 @@ import Faq from './components/sections/Faq'
 import Community from './components/sections/Community'
 import Footer from './components/sections/Footer'
 
-/** Compact mode toggle — persists to localStorage. */
+/** Compact mode toggle — persists to localStorage.
+   State is initialized from localStorage via a lazy initializer, so no effect
+   needs to call setState — the effect only applies the value to the DOM. */
 function Tweaks() {
-  const [compact, setCompact] = useState(false)
+  const [compact, setCompact] = useState(
+    () => typeof localStorage !== 'undefined' &&
+      localStorage.getItem('arch-compact') === 'true'
+  )
 
   useEffect(() => {
-    const saved = localStorage.getItem('arch-compact')
-    if (saved === 'true') {
-      setCompact(true)
-      document.body.dataset.compact = 'true'
-    }
-  }, [])
+    document.body.dataset.compact = compact ? 'true' : 'false'
+  }, [compact])
 
   const toggle = () => {
     const next = !compact
     setCompact(next)
     localStorage.setItem('arch-compact', next)
-    document.body.dataset.compact = next ? 'true' : 'false'
   }
 
   return (
