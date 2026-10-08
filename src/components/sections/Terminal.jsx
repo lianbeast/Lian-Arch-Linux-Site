@@ -393,14 +393,14 @@ export default function Terminal() {
           ref={bodyRef}
           onClick={() => inputRef.current?.focus()}
         >
-          {/* Two persistent live regions:
-              - polite: for user commands and immediate output (announced normally)
-              - assertive: for scripted command summaries (announced immediately, interrupts)
-              This avoids toggling aria-live on a single element, which is unreliable across AT. */}
+          {/* The log goes quiet while a scripted command plays, so the animated
+              upgrade announces one summary (in the assertive region below)
+              instead of firing ~130 partial-line updates. It is deliberately NOT
+              aria-atomic: an ordinary appended line is announced on its own,
+              rather than re-reading the whole transcript. */}
           <div
             role="log"
-            aria-live="polite"
-              aria-atomic="true"
+            aria-live={animating ? 'off' : 'polite'}
             aria-label="Terminal output"
           >
             {lines.map((l) => <div key={l.key}>{renderLine(l)}</div>)}

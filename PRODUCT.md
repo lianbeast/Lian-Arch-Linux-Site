@@ -158,9 +158,11 @@ Currently implemented:
 - Package search calls the Arch index through a CORS proxy. The base URL is
   `VITE_PKG_API` (see `.env.example`) so it can be replaced with a proxy you
   control. It is the only external runtime dependency on the site.
-- Colour tokens: `--bg` `#0b0c0e`, `--ink` `#e7e8ea`, `--brand` `#1793D1`,
-  `--signal` `#7ec699` (terminal output only). Four roles and no fifth *hue* —
-  the rest of `:root` is shades of those four, not new colours.
+- Colour tokens: `--bg` `#050507`, `--ink` `#f0f1f2`, `--brand` `#1793D1`,
+  `--signal` `#7ec699` (terminal output only). `--ink-3` `#8c929c` is the readable
+  floor (clears WCAG AA on `--bg`); `--ink-muted` `#6b707a` is for decorative text
+  only (line numbers, labels) and may fail contrast by design. No fifth *hue* —
+  the rest of `:root` is shades of these, not new colours.
 
 ## References
 - **archlinux.org** — the current real site. Borrow its self-possession and dark,

@@ -3,7 +3,7 @@
 **A man page you can scroll.**
 
 A single-page landing surface for Arch Linux. The hero is a PKGBUILD. The backdrop
-is hand-computed SVG contours. Everything else is type, rules and spacing.
+is a hand-written Canvas-2D projection. Everything else is type, rules and spacing.
 
 **[Open the live site](https://lianbeast.github.io/Lian-Arch-Linux-Site/)** — deployed
 to GitHub Pages on every push to `main`.
@@ -145,15 +145,15 @@ npm ls --depth=0
 The script only removes files that are provably unreferenced. It prints each one
 before it goes, and it is safe to run more than once.
 
-**`demo.gif` must live in `public/`.** The Open Graph and Twitter card tags
-reference it by absolute URL, which requires a stable, unhashed path. If it sits
-in the repo root, Vite fingerprints it into `dist/assets/demo-<hash>.gif` and the
-social preview image 404s. `public/` files are copied verbatim, so the path stays
-predictable.
+**`demo.png` and `demo.gif` must live in `public/`.** The Open Graph and Twitter
+card tags reference `demo.png` by absolute URL, and this README embeds `demo.gif`;
+both need stable, unhashed paths. If they sit in the repo root, Vite fingerprints
+them into `dist/assets/…` and the references 404. `public/` files are copied
+verbatim, so the paths stay predictable.
 
-**`demo.gif` is a screenshot, and it goes stale.** It is the social preview card
-*and* the inline demo above, so it is the first thing anyone sees when this link
-is shared. The file currently in the repo predates the rewrite: it shows the old
+**`demo.gif` is a screenshot, and it goes stale.** It is the inline demo above
+(the social preview card is `demo.png`), so it is the first thing anyone sees
+when this link is shared. The file currently in the repo predates the rewrite: it shows the old
 cyan-on-black hero, the pill nav and the "A distro that gets out of your way"
 headline. None of those exist any more, and cyan-on-black is the one palette
 `PRODUCT.md` names outright. **Re-shoot it before the next release.**
