@@ -1,3 +1,5 @@
+import SectionHead from '../ui/SectionHead'
+
 /**
  * About is an argument, not a feature list.
  *
@@ -16,12 +18,11 @@ const FACTS = [
 export default function About() {
   return (
     <section id="about" className="sec" aria-labelledby="about-title">
-      <header className="sec-head">
-        <p className="sec-name">about</p>
-        <h2 id="about-title" className="sec-title">
-          Arch is not a product. It is a base.
-        </h2>
-      </header>
+      <SectionHead
+        name="about"
+        id="about-title"
+        title="Arch is not a product. It is a base."
+      />
 
       <p className="manifesto reveal">
         Nothing is installed that you did not ask for. Nothing runs that you did

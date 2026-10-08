@@ -1,3 +1,5 @@
+import SectionHead from '../ui/SectionHead'
+
 /**
  * Use cases as a table, not six identical cards.
  *
@@ -16,12 +18,11 @@ const CASES = [
 export default function UseCases() {
   return (
     <section id="usecases" className="sec" aria-labelledby="usecases-title">
-      <header className="sec-head">
-        <p className="sec-name">use cases</p>
-        <h2 id="usecases-title" className="sec-title">
-          Arch is not opinionated about your workload
-        </h2>
-      </header>
+      <SectionHead
+        name="use cases"
+        id="usecases-title"
+        title="Arch is not opinionated about your workload"
+      />
 
       <div className="cases reveal">
         {CASES.map(([title, text]) => (

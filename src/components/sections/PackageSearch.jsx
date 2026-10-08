@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import SectionHead from '../ui/SectionHead'
 
 /**
  * Live package search against the official Arch package index.
@@ -205,16 +206,12 @@ export default function PackageSearch() {
 
   return (
     <section id="packages" className="sec" aria-labelledby="packages-title">
-      <header className="sec-head">
-        <p className="sec-name">packages</p>
-        <h2 id="packages-title" className="sec-title">
-          Search the repos, live
-        </h2>
-        <p className="sec-lead">
-          Every official package, straight from the Arch index. This is what
-          <code className="k"> pacman -Ss</code> sees.
-        </p>
-      </header>
+      <SectionHead
+        name="packages"
+        id="packages-title"
+        title="Search the repos, live"
+        lead={<>Every official package, straight from the Arch index. This is what<code className="k"> pacman -Ss</code> sees.</>}
+      />
 
       <div className="pkg-box reveal">
         <input

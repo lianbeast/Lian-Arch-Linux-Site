@@ -1,3 +1,5 @@
+import SectionHead from '../ui/SectionHead'
+
 /**
  * Four architectures do not need four cards.
  *
@@ -15,16 +17,12 @@ const ARCHES = [
 export default function Architectures() {
   return (
     <section id="architectures" className="sec" aria-labelledby="platforms-title">
-      <header className="sec-head">
-        <p className="sec-name">platforms</p>
-        <h2 id="platforms-title" className="sec-title">
-          Build it for what you run
-        </h2>
-        <p className="sec-lead">
-          One officially supported target plus community ports. If it boots
-          Linux, someone has almost certainly made Arch run on it.
-        </p>
-      </header>
+      <SectionHead
+        name="platforms"
+        id="platforms-title"
+        title="Build it for what you run"
+        lead="One officially supported target plus community ports. If it boots Linux, someone has almost certainly made Arch run on it."
+      />
 
       <div className="plat reveal-stagger">
         {ARCHES.map((a) => (

@@ -4,6 +4,8 @@
  * Each row carries the actual command, because this audience trusts artifacts
  * and not adjectives. The rows are separated by rules, not by boxes.
  */
+import SectionHead from '../ui/SectionHead'
+
 const FEATURES = [
   {
     n: '01',
@@ -34,12 +36,11 @@ const FEATURES = [
 export default function Features() {
   return (
     <section id="features" className="sec" aria-labelledby="features-title">
-      <header className="sec-head">
-        <p className="sec-name">features</p>
-        <h2 id="features-title" className="sec-title">
-          Everything you need. Nothing you did not ask for.
-        </h2>
-      </header>
+      <SectionHead
+        name="features"
+        id="features-title"
+        title="Everything you need. Nothing you did not ask for."
+      />
 
       <div className="rows reveal-stagger">
         {FEATURES.map((f) => (

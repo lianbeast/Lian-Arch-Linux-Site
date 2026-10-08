@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import SectionHead from '../ui/SectionHead'
 
 /**
  * In-page shell. Everything is parsed locally — no network, no state leaves
@@ -372,16 +373,12 @@ export default function Terminal() {
 
   return (
     <section id="terminal" className="sec" aria-labelledby="terminal-title">
-      <header className="sec-head">
-        <p className="sec-name">terminal</p>
-        <h2 id="terminal-title" className="sec-title">
-          The terminal front door
-        </h2>
-        <p className="sec-lead">
-          Click the window, type a command, or pick a chip. Tab completes,
-          arrows walk history. Every response is generated locally.
-        </p>
-      </header>
+      <SectionHead
+        name="terminal"
+        id="terminal-title"
+        title="The terminal front door"
+        lead="Click the window, type a command, or pick a chip. Tab completes, arrows walk history. Every response is generated locally."
+      />
 
       <div className="term reveal">
         <div className="term-bar">

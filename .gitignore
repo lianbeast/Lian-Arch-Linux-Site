@@ -38,6 +38,9 @@ lerna-debug.log*
 .serena/
 .opencode/
 
+# ── Generated media (not part of the app build) ──────────────
+scroll-world/
+
 # ── Python (stray tooling files) ─────────────────────────────
 .python-version
 __pycache__/

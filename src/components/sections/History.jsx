@@ -1,3 +1,5 @@
+import SectionHead from '../ui/SectionHead'
+
 const EVENTS = [
   {
     year: '2002',
@@ -29,16 +31,12 @@ const EVENTS = [
 export default function History() {
   return (
     <section id="history" className="sec" aria-labelledby="history-title">
-      <header className="sec-head">
-        <p className="sec-name">history</p>
-        <h2 id="history-title" className="sec-title">
-          Twenty-something years of deliberate choices
-        </h2>
-        <p className="sec-lead">
-          No marketing pivots. No acquisitions. Arch has always been built by the
-          people who use it.
-        </p>
-      </header>
+      <SectionHead
+        name="history"
+        id="history-title"
+        title="Twenty-something years of deliberate choices"
+        lead="No marketing pivots. No acquisitions. Arch has always been built by the people who use it."
+      />
 
       <ol className="timeline reveal-stagger" aria-label="Arch Linux release history">
         {EVENTS.map((e) => (

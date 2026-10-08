@@ -1,3 +1,5 @@
+import SectionHead from '../ui/SectionHead'
+
 /**
  * The scrolling keyword marquee is gone.
  *
@@ -15,16 +17,12 @@ const LINKS = [
 export default function Community() {
   return (
     <section id="community" className="sec" aria-labelledby="community-title">
-      <header className="sec-head">
-        <p className="sec-name">community</p>
-        <h2 id="community-title" className="sec-title">
-          The number one question: is Arch worth it?
-        </h2>
-        <p className="sec-lead">
-          The community will not judge you for asking. They will judge you for
-          not reading the wiki first.
-        </p>
-      </header>
+      <SectionHead
+        name="community"
+        id="community-title"
+        title="The number one question: is Arch worth it?"
+        lead="The community will not judge you for asking. They will judge you for not reading the wiki first."
+      />
 
       <div className="comm reveal-stagger">
         {LINKS.map((l) => (

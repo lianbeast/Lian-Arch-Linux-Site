@@ -58,16 +58,6 @@
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   --font-agave: 'Agave', ui-monospace, SFMono-Regular, Menlo, monospace;
 
-  /* Terminal UI colors */
-  --color-cmd-bg: #050507;
-  --color-cmd-fg: #f0f1f2;
-  --color-cmd-prompt: #87cdde;
-  --color-cmd-input: #a8adb6;
-  --color-cmd-output: #94a3b8;
-  --color-cmd-success: #22c55e;
-  --color-cmd-error: #ef4444;
-  --color-cmd-warn: #fbbf24;
-
   /* Scale — heavier display type, borrowed from the Debian site's register.
      The contrast between steps is the point: this is a document, not a blog. */
   --t-micro: 0.6875rem;
@@ -104,7 +94,6 @@
   --z-nav: 100;
   --z-progress: 110;
   --z-skip: 9000;
-  --z-hud: 9999;
 }
 
 /* ===== RESET ===== */
@@ -292,7 +281,7 @@ button { font: inherit; color: inherit; }
   transition: color var(--fast) var(--ease);
 }
 .nav-link:hover { color: var(--ink); }
-.nav-link[aria-current='true'] { color: var(--brand-ink); }
+.nav-link[aria-current='location'] { color: var(--brand-ink); }
 
 /* The active marker is a drawn rule, matching the rest of the page — not a
    colour swap alone. Inset to match the button's own padding. */
@@ -308,7 +297,7 @@ button { font: inherit; color: inherit; }
   transform-origin: left center;
   transition: transform var(--fast) var(--ease);
 }
-.nav-link[aria-current='true']::after { transform: scaleX(1); }
+.nav-link[aria-current='location']::after { transform: scaleX(1); }
 
 .nav-cta {
   margin-left: var(--s-2);
@@ -416,8 +405,6 @@ main { position: relative; z-index: var(--z-content); counter-reset: sec; }
   font-size: var(--t-micro);
   color: var(--ink-2);
   margin-bottom: var(--s-3);
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
 }
 /* Running document index. A CSS counter over .sec, so the number always
    matches DOM order and can never drift from the section list in constants.js.
@@ -594,8 +581,8 @@ main { position: relative; z-index: var(--z-content); counter-reset: sec; }
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(180deg, var(--bg) 0%, rgba(5, 5, 7, 0.6) 24%, transparent 54%),
-    linear-gradient(0deg, rgba(5, 5, 7, 0.78) 0%, transparent 32%);
+    linear-gradient(180deg, var(--bg) 0%, color-mix(in srgb, var(--bg) 60%, transparent) 24%, transparent 54%),
+    linear-gradient(0deg, color-mix(in srgb, var(--bg) 78%, transparent) 0%, transparent 32%);
 }
 
 /* Film grain — fixed overlay only. A static SVG noise filter at 4% opacity,
@@ -674,7 +661,7 @@ main { position: relative; z-index: var(--z-content); counter-reset: sec; }
 }
 
 .k { color: var(--brand-ink); }
-.c { color: var(--ink-muted); font-style: italic; }
+.c { color: var(--ink-3); font-style: italic; }
 .v { color: var(--ink); }
 
 /* The headline lives inside the sheet, on its own line numbers. */
@@ -1452,7 +1439,7 @@ main { position: relative; z-index: var(--z-content); counter-reset: sec; }
   background: var(--bg-raise);
   border: 1px solid var(--rule-2);
   border-radius: var(--r-lg);
-  padding: var(--s-2) var(--s-3);
+  padding: var(--s-1) var(--s-3);
   font-family: var(--font-mono);
   font-size: var(--t-micro);
   color: var(--ink-2);
@@ -1460,16 +1447,19 @@ main { position: relative; z-index: var(--z-content); counter-reset: sec; }
   transition: opacity var(--fast) var(--ease), transform var(--fast) var(--ease);
 }
 .tweaks:focus-within { border-color: var(--rule-brand); }
-.tweaks-label { color: var(--ink-3); margin-right: var(--s-2); }
+.tweaks-label { color: var(--ink-3); }
+/* The whole label is the hit area, so it clears the 44px touch-target floor. */
 .tweaks-toggle {
   display: inline-flex;
   align-items: center;
-  gap: var(--s-1);
+  gap: var(--s-2);
+  min-height: 44px;
   cursor: pointer;
 }
 .tweaks-toggle input { position: absolute; opacity: 0; width: 0; height: 0; }
-.tweaks-toggle span {
+.tweaks-switch {
   display: inline-block;
+  flex: 0 0 auto;
   width: 2.5rem;
   height: 1.25rem;
   background: var(--rule-2);
@@ -1477,7 +1467,7 @@ main { position: relative; z-index: var(--z-content); counter-reset: sec; }
   position: relative;
   transition: background var(--fast) var(--ease);
 }
-.tweaks-toggle span::before {
+.tweaks-switch::before {
   content: '';
   position: absolute;
   top: 2px;
@@ -1488,14 +1478,14 @@ main { position: relative; z-index: var(--z-content); counter-reset: sec; }
   border-radius: 50%;
   transition: transform var(--fast) var(--ease), background var(--fast) var(--ease);
 }
-.tweaks-toggle input:checked + span { background: var(--brand); }
-.tweaks-toggle input:checked + span::before {
+.tweaks-toggle input:checked + .tweaks-switch { background: var(--brand); }
+.tweaks-toggle input:checked + .tweaks-switch::before {
   transform: translateX(1.25rem);
   background: var(--ink-inv);
 }
-.tweaks-toggle input:focus-visible + span { box-shadow: var(--shadow-brand); }
-.tweaks-toggle:hover span { background: var(--rule-brand); }
-.tweaks-toggle input:checked:hover + span { background: var(--brand-ink); }
+.tweaks-toggle input:focus-visible + .tweaks-switch { box-shadow: var(--shadow-brand); }
+.tweaks-toggle:hover .tweaks-switch { background: var(--rule-brand); }
+.tweaks-toggle input:checked:hover + .tweaks-switch { background: var(--brand-ink); }
 
 /* Functional motion (focus-ring transition, cursor blink, reveal end-state) and
    all decorative motion — the hero entrance, the scroll-linked backdrop and the

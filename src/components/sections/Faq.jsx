@@ -1,3 +1,5 @@
+import SectionHead from '../ui/SectionHead'
+
 /**
  * Native <details>, uncontrolled.
  *
@@ -40,13 +42,12 @@ const FAQS = [
 export default function Faq() {
   return (
     <section id="faq" className="sec" aria-labelledby="faq-title">
-      <header className="sec-head">
-        <p className="sec-name">faq</p>
-        <h2 id="faq-title" className="sec-title">
-          Questions people actually ask
-        </h2>
-        <p className="sec-lead">Straight answers. The wiki has the long ones.</p>
-      </header>
+      <SectionHead
+        name="faq"
+        id="faq-title"
+        title="Questions people actually ask"
+        lead="Straight answers. The wiki has the long ones."
+      />
 
       <div className="faq reveal-stagger">
         {FAQS.map((f, i) => (

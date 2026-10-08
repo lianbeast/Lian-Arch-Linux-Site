@@ -38,15 +38,10 @@ function Tweaks() {
 
   return (
     <div className="tweaks" role="group" aria-label="Display tweaks">
-      <span className="tweaks-label">Compact</span>
       <label className="tweaks-toggle">
-        <input
-          type="checkbox"
-          checked={compact}
-          onChange={toggle}
-          aria-label="Toggle compact mode"
-        />
-        <span aria-hidden="true" />
+        <span className="tweaks-label">Compact</span>
+        <input type="checkbox" checked={compact} onChange={toggle} />
+        <span className="tweaks-switch" aria-hidden="true" />
       </label>
     </div>
   )
@@ -247,7 +242,7 @@ function Navbar({ active }) {
               <button
                 type="button"
                 className="nav-link"
-                aria-current={active === link.id ? 'true' : undefined}
+                aria-current={active === link.id ? 'location' : undefined}
                 onClick={() => go(link.id)}
               >
                 {link.label}

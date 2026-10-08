@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import SectionHead from '../ui/SectionHead'
 
 /**
  * Download options, as a list rather than four clickable cards.
@@ -80,16 +81,12 @@ function CopyButton({ value }) {
 export default function Download() {
   return (
     <section id="download" className="sec" aria-labelledby="download-title">
-      <header className="sec-head">
-        <p className="sec-name">download</p>
-        <h2 id="download-title" className="sec-title">
-          Choose your image
-        </h2>
-        <p className="sec-lead">
-          Official images, netboot, and container bases. Verify the signature
-          before you install anything.
-        </p>
-      </header>
+      <SectionHead
+        name="download"
+        id="download-title"
+        title="Choose your image"
+        lead="Official images, netboot, and container bases. Verify the signature before you install anything."
+      />
 
       <div className="dl-list reveal-stagger">
         {IMAGES.map((img) => (
