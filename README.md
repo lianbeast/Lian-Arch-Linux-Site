@@ -106,7 +106,7 @@ src/
 │   └── ui/
 │       ├── Backdrop.jsx        # The animated canvas landscape
 │       ├── ErrorBoundary.jsx
-│       └── Icons.jsx           # The Arch mark, and only that
+│       └── Icons.jsx           # The official Arch mark
 └── utils/
     └── constants.js            # Section order — single source of truth
 ```
@@ -169,9 +169,10 @@ the page rather than a command. Twitter/X frequently ignores animated images for
 the GIF kept for this README.
 
 **The backdrop is drawn live, not played back.** `Backdrop.jsx` renders a fixed,
-site-wide landscape on a 2D canvas — a flowing wireframe terrain, drifting nodes,
-and the Arch "A" as a translucent slab — using a hand-written projection. No
-WebGL, no three.js, no shader; the dependency count is unchanged.
+site-wide landscape on a 2D canvas — a flowing wireframe terrain with drifting
+nodes above it — using a hand-written projection. No WebGL, no three.js, no
+shader; the dependency count is unchanged. It deliberately draws no logo or
+letterform: the official Arch logo is the only mark that represents the project.
 
 Two earlier versions were abandoned, and both are worth recording:
 

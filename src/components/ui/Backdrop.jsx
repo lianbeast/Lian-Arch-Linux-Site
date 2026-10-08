@@ -3,10 +3,14 @@ import { useEffect, useRef, useState } from 'react'
 /**
  * Site-wide animated backdrop — a dark 3D digital landscape.
  *
- * A flowing wireframe terrain receding to a horizon, sparse drifting nodes, and
- * the Arch "A" as a translucent slab floating over the surface. Drawn on a 2D
- * canvas with a hand-written projection: no three.js, no WebGL, no shader, and
- * the runtime dependency count stays at `react` + `react-dom`.
+ * A flowing wireframe terrain receding to a horizon, with sparse drifting nodes
+ * above it. Drawn on a 2D canvas with a hand-written projection: no three.js, no
+ * WebGL, no shader, and the runtime dependency count stays at `react` +
+ * `react-dom`.
+ *
+ * Deliberately mark-free. No Arch logo or letterform is drawn here: the official
+ * logo is the only mark that should represent the project, and a hand-drawn
+ * approximation in a decorative layer is neither accurate nor appropriate.
  *
  * Everything here is one component's worth of maths and one requestAnimationFrame
  * loop. It is decorative, so every budget decision favours the content:
@@ -31,8 +35,6 @@ const MAX_DPR = 2
 
 /* ---- motion ----------------------------------------------------------- */
 const WAVE_RATE = 0.30     // how fast the surface flows
-const TURN = 0.16          // logo yaw rate (an oscillation, never a spin)
-const FLOAT = 0.42         // logo bob rate
 const AMBIENT = 0.13       // ambient brightness cycle
 const DRIFT = 0.55         // node travel speed
 
@@ -64,22 +66,6 @@ function wave(x, z, t) {
 /** Atmospheric depth: near rows are bright, far rows dissolve into the horizon. */
 const fogAt = (z, zNear, zFar) =>
   Math.pow(Math.max(0, 1 - (z - zNear) / (zFar - zNear)), 0.7)
-
-/* ---- the Arch mark ---------------------------------------------------- */
-/* Outline of the Arch "A", normalised to a [-1, 1] box with y pointing up.
-   Taken from the path in src/components/ui/Icons.jsx — the mark the nav and the
-   footer actually render — so the backdrop matches what the reader sees on the
-   page. (public/favicon.svg draws the same shape with a slightly narrower notch,
-   ±0.587 rather than ±0.618. At favicon size that is invisible, and the in-page
-   mark is the one worth matching.) */
-const ARCH_OUTLINE = [
-  [0, 1],
-  [-1, -1],
-  [-0.618, -1],
-  [0, 0.218],
-  [0.618, -1],
-  [1, -1],
-]
 
 /* ---- shared buffers --------------------------------------------------- */
 /* Reused across frames. Module scope because there is one backdrop, and
@@ -120,14 +106,7 @@ function buildScene(w, h, detail) {
     z *= ratio
   }
 
-  /* Logo distance, chosen so it occupies a stable fraction of the frame at any
-     aspect ratio. Pushed back from the original 5.1: at that distance the mark
-     measured roughly 238px across on a 1440x900 desktop and landed squarely
-     behind the hero's PKGBUILD lines. It is a backdrop, not a foreground
-     object. See the note on the pass alphas in drawArch. */
-  const logoZ = 7.2 * (w / h)
-
-  return { w, h, focal, cx, cy, zNear, zFar, halfNear, rowZ, logoZ, detail }
+  return { w, h, focal, cx, cy, zNear, zFar, halfNear, rowZ, detail }
 }
 
 /* ---- draw ------------------------------------------------------------- */
@@ -177,94 +156,6 @@ function drawTerrain(ctx, sc, t, panX, panY, ambient, colors) {
       ctx.stroke()
     }
   }
-}
-
-function drawArch(ctx, sc, t, panX, panY, ambient, colors) {
-  const { focal, cx, cy, logoZ } = sc
-  const s = focal / logoZ
-  const ground = wave(0, logoZ, t)
-  const size = 1.5
-  const centreY = ground + size * 0.5 + 0.12 + Math.sin(t * FLOAT) * 0.05
-  /* An oscillation, not a rotation. The brief is explicit that it must not
-     spin, and a full turn would read as a loading spinner. */
-  const yaw = Math.sin(t * TURN) * 0.34
-  const cosY = Math.cos(yaw)
-  const sinY = Math.sin(yaw)
-  const half = size * 0.5
-  const thick = 0.07
-
-  const at = (lx, ly, lz) => {
-    const px = lx * half
-    const pz = lz
-    const rx = px * cosY - pz * sinY
-    const rz = px * sinY + pz * cosY
-    const wz = logoZ + rz
-    const ss = focal / wz
-    return [
-      cx + panX + rx * ss,
-      cy + panY - (centreY + ly * half - CAM_H) * ss,
-    ]
-  }
-
-  const front = ARCH_OUTLINE.map(([lx, ly]) => at(lx, ly, thick))
-  const back = ARCH_OUTLINE.map(([lx, ly]) => at(lx, ly, -thick))
-
-  const trace = (pts) => {
-    ctx.beginPath()
-    ctx.moveTo(pts[0][0], pts[0][1])
-    for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1])
-    ctx.closePath()
-    ctx.stroke()
-  }
-
-  /* Glow, sparingly: three passes of increasing width and decreasing alpha.
-     Cheaper and far more controllable than shadowBlur, which would cost a full
-     blur kernel per frame.
-
-     The alphas are deliberately faint. These were 0.05 / 0.11 / 0.72, which put
-     a bright brand-blue outline straight through the hero's pkgname, pkgver and
-     arch lines at full scene opacity. PRODUCT.md settles the argument: "If the
-     scene ever competes with the content, the opacity is wrong, not the
-     design." Translucent means translucent. */
-  const passes = [
-    { w: 6, a: 0.028 },
-    { w: 2.5, a: 0.06 },
-    { w: 1, a: 0.30 },
-  ]
-  ctx.strokeStyle = colors.brand
-  for (const p of passes) {
-    ctx.lineWidth = p.w
-    ctx.globalAlpha = p.a * ambient
-    trace(front)
-    ctx.globalAlpha = p.a * 0.45 * ambient
-    trace(back)
-  }
-
-  /* Slab connectors — what makes it read as a solid rather than two drawings. */
-  ctx.globalAlpha = 0.14 * ambient
-  ctx.lineWidth = 1
-  ctx.beginPath()
-  for (let i = 0; i < ARCH_OUTLINE.length; i++) {
-    ctx.moveTo(front[i][0], front[i][1])
-    ctx.lineTo(back[i][0], back[i][1])
-  }
-  ctx.stroke()
-
-  /* The pool of light it casts on the surface — the reflection cue, without
-     the cost of mirroring the terrain. */
-  const base = at(0, -1, 0)
-  const r = size * 1.5 * s
-  ctx.save()
-  ctx.translate(base[0], base[1])
-  ctx.scale(1, 0.26)
-  const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, r)
-  grad.addColorStop(0, `rgba(23, 147, 209, ${0.10 * ambient})`)
-  grad.addColorStop(1, 'rgba(23, 147, 209, 0)')
-  ctx.fillStyle = grad
-  ctx.beginPath()
-  ctx.arc(0, 0, r, 0, Math.PI * 2)
-  ctx.fill()
-  ctx.restore()
 }
 
 function drawNodes(ctx, sc, nodes, panX, panY, ambient, colors) {
@@ -372,7 +263,6 @@ export default function Backdrop() {
       const ambient = 0.82 + Math.sin(time * AMBIENT) * 0.14
 
       drawTerrain(ctx, sc, time, panX, panY, ambient, colors)
-      drawArch(ctx, sc, time, panX, panY, ambient, colors)
       drawNodes(ctx, sc, nodes, panX, panY, ambient, colors)
       ctx.globalAlpha = 1
     }

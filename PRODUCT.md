@@ -55,9 +55,9 @@ violated somewhere in the build; they are listed here so it does not happen agai
   sheen sweeps that answer to no moment in the narrative.
 - **A WebGL/Three.js demo that exists to show off a shader.** There is no GPU
   work on this page — the backdrop is Canvas 2D with a hand-written projection,
-  no shader and no 3D library. It is thin monochrome line work, with the Arch
-  mark and a few nodes picked out in brand blue, and it recedes to 45% once the
-  reader is into the document so the type stays the contrast anchor.
+  no shader and no 3D library. It is thin monochrome line work, with a few nodes
+  picked out in brand blue, and it recedes to 45% once the reader is into the
+  document so the type stays the contrast anchor.
   This was an **owner-approved reversal** of an earlier all-static decision. If
   the scene ever competes with the content, the opacity is wrong, not the design.
 - **SaaS landing templates.** Gradient hero, big stats row, "trusted by 10,000+ teams".
@@ -141,8 +141,10 @@ Currently implemented:
 - **No WebGL, no three.js, no GPU scene.** No shader, no 3D library, and the
   runtime dependency count is `react` + `react-dom`, unchanged.
   - `Backdrop.jsx` draws a fixed, **site-wide** landscape on a 2D canvas: a
-    flowing wireframe terrain receding to a horizon, drifting nodes, and the Arch
-    "A" as a translucent slab. Hand-written projection — Canvas 2D, not WebGL.
+    flowing wireframe terrain receding to a horizon, with drifting nodes above it.
+    Hand-written projection — Canvas 2D, not WebGL. It draws **no mark** — the
+    official Arch logo is the only mark that represents the project, so the
+    backdrop stays mark-free rather than carrying a hand-drawn approximation.
   - One rAF loop, stopped when the tab is hidden. Detail tiers by viewport width.
   - Reduced motion and touch devices get a **single static frame** — the full
     atmosphere with nothing moving — rather than a hidden scene.

@@ -1,12 +1,14 @@
 /**
- * Only the mark is still needed.
+ * The Arch Linux mark — the official logo.
  *
- * This file used to carry eleven inline icons, nine of which were unreferenced
- * after the card grids were removed. Dead icons are dead weight in the bundle
- * and in the reader's head, so they are gone.
+ * This is the official "A", not a hand-drawn approximation. The file previously
+ * carried a simplified, straight-edged triangle; that was a re-creation, and
+ * only the official logo should represent the project.
  *
- * The path is the Arch Linux mark: a peak with a triangular notch cut from the
- * base, which is what the logo actually is.
+ * The path is the standard 24×24 brand-icon rendition (Simple Icons), which
+ * tracks the official asset. The small trademark glyph that accompanies the
+ * official mark is omitted — at nav, footer and favicon sizes it is an
+ * illegible smudge.
  */
 export function ArchLinuxIcon({ size = 24, color = 'currentColor' }) {
   return (
@@ -18,7 +20,7 @@ export function ArchLinuxIcon({ size = 24, color = 'currentColor' }) {
       aria-hidden="true"
       focusable="false"
     >
-      <path d="M12 1 L1 23 h4.2 L12 9.6 l6.8 13.4 H23 Z" />
+      <path d="M11.39.605C10.376 3.092 9.764 4.72 8.635 7.132c.693.734 1.543 1.589 2.923 2.554-1.484-.61-2.496-1.224-3.252-1.86C6.86 10.842 4.596 15.138 0 23.395c3.612-2.085 6.412-3.37 9.021-3.862a6.61 6.61 0 01-.171-1.547l.003-.115c.058-2.315 1.261-4.095 2.687-3.973 1.426.12 2.534 2.096 2.478 4.409a6.52 6.52 0 01-.146 1.243c2.58.505 5.352 1.787 8.914 3.844-.702-1.293-1.33-2.459-1.929-3.57-.943-.73-1.926-1.682-3.933-2.713 1.38.359 2.367.772 3.137 1.234-6.09-11.334-6.582-12.84-8.67-17.74z" />
     </svg>
   )
 }
