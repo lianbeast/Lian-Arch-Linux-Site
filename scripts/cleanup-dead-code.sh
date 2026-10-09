@@ -59,6 +59,7 @@ remove() {
 echo "Orphaned assets:"
 remove "demo.mp4"                             "abandoned generated hero clip, superseded by the live renderer"
 remove "public/fonts/SpaceGrotesk-Bold.woff2" "no @font-face declares weight 700 and nothing uses bold"
+remove "public/fonts/Agave-Bold-zeroslashed-parenbulged.woff2" "the Agave @font-face for weight 700 is gone; terminal output is all regular"
 
 echo
 echo "Done. Removed $removed, kept $kept."

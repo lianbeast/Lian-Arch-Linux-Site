@@ -61,15 +61,33 @@
     />
     <meta name="twitter:image" content="https://lianbeast.github.io/Lian-Arch-Linux-Site/demo.png" />
 
+    <!--
+      Honest shape: this page is *about* Arch Linux, it is not the project's own
+      site. So the page is a WebPage whose `about` is the SoftwareApplication,
+      and that application's url is archlinux.org — not this GitHub Pages URL.
+      No invented ratings, download counts or release versions.
+    -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "WebPage",
-      "name": "Arch Linux",
+      "name": "Arch Linux — you decide what belongs",
       "description": "A lightweight, rolling-release Linux distribution for the self-directed.",
       "url": "https://lianbeast.github.io/Lian-Arch-Linux-Site/",
       "inLanguage": "en",
-      "isAccessibleForFree": true
+      "isAccessibleForFree": true,
+      "about": {
+        "@type": "SoftwareApplication",
+        "name": "Arch Linux",
+        "applicationCategory": "OperatingSystem",
+        "operatingSystem": "Linux",
+        "url": "https://archlinux.org/",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        }
+      }
     }
     </script>
 
@@ -103,12 +121,6 @@
         font-family: 'Agave';
         src: url('%BASE_URL%fonts/Agave-Regular-zeroslashed-parenbulged.woff2') format('woff2');
         font-weight: 400;
-        font-display: swap;
-      }
-      @font-face {
-        font-family: 'Agave';
-        src: url('%BASE_URL%fonts/Agave-Bold-zeroslashed-parenbulged.woff2') format('woff2');
-        font-weight: 700;
         font-display: swap;
       }
 

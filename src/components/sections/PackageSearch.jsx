@@ -89,6 +89,27 @@ async function search(query, signal) {
   throw lastError
 }
 
+/* ---- result cache --------------------------------------------------------
+   The proxy sees every query, and re-typing a name you already searched is
+   common. A small bounded cache turns a repeat query into an instant, offline
+   answer and spares the third party the request.
+
+   It is read during render rather than from inside the fetch effect. A cache
+   hit is a pure lookup, so answering it from an effect would mean calling
+   setState synchronously in an effect body — a cascading render for a value
+   React could have used on the pass it was already making. Insertion order is
+   the eviction order. */
+const CACHE_MAX = 50
+const cache = new Map()
+
+const cachePeek = (key) => (cache.has(key) ? cache.get(key) : null)
+
+function cacheSet(key, value) {
+  cache.delete(key)
+  cache.set(key, value)
+  if (cache.size > CACHE_MAX) cache.delete(cache.keys().next().value)
+}
+
 /** `arch` comes back as an array, and occasionally holds more than one value. */
 const archList = (value) => (Array.isArray(value) ? value : [value]).filter(Boolean)
 
@@ -134,6 +155,10 @@ export default function PackageSearch() {
     // effect, which would cause a cascading render on every keystroke.
     if (q.length < MIN_QUERY) return
 
+    /* A repeat query is already answered by the cache in `view` below. Asking
+       the proxy again would be a pointless round trip to a third party. */
+    if (cachePeek(q)) return
+
     let cancelled = false
     let timedOut = false
     const ctrl = new AbortController()
@@ -147,13 +172,9 @@ export default function PackageSearch() {
         const data = await search(q, ctrl.signal)
         if (cancelled) return
         const all = Array.isArray(data.results) ? data.results : []
-        setState({
-          forQuery: q,
-          status: 'done',
-          results: all.slice(0, MAX_RESULTS),
-          total: all.length,
-          error: '',
-        })
+        const payload = { results: all.slice(0, MAX_RESULTS), total: all.length }
+        cacheSet(q, payload)
+        setState({ forQuery: q, status: 'done', ...payload, error: '' })
       } catch (err) {
         if (cancelled) return
         if (err.name === 'AbortError') {
@@ -184,16 +205,24 @@ export default function PackageSearch() {
     }
   }, [q])
 
-  /* Derived view: an empty box is idle, a query below the minimum is its own
-     state, and a query whose results have not arrived yet reads as loading —
-     including during the debounce window. */
+  /* A settled answer for the current query, read straight from the cache during
+     render — pure, so no effect and no extra render pass. */
+  const cached = q.length >= MIN_QUERY ? cachePeek(q) : null
+
+  /* Priority: the settled result for this exact query, then a cached answer for
+     it, then — while a new query is in flight — the previous result set kept on
+     screen (dimmed, aria-busy) rather than blanked. A live search that empties
+     its list on every keystroke reads as broken. The status line still says it
+     is querying, so the retained rows are never mistaken for the new answer. */
   const view = !q
     ? IDLE
     : q.length < MIN_QUERY
       ? TOO_SHORT
       : state.forQuery === q
         ? state
-        : LOADING
+        : cached
+          ? { forQuery: q, status: 'done', results: cached.results, total: cached.total, error: '' }
+          : { ...LOADING, results: state.results, total: state.total }
 
   /**
    * Rendered into a single persistent live region rather than a fresh element
@@ -239,8 +268,11 @@ export default function PackageSearch() {
           )}
         </p>
 
-        {view.status === 'done' && view.results.length > 0 && (
-          <ul className="pkg-list">
+        {view.results.length > 0 && (
+          <ul
+            className={`pkg-list${view.status === 'loading' ? ' is-stale' : ''}`}
+            aria-busy={view.status === 'loading'}
+          >
             {view.results.map((p) => {
               const arches = archList(p.arch)
               return (

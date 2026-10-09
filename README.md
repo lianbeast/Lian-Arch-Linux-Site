@@ -86,7 +86,7 @@ blank falls back to the built-in default.
 
 ```
 src/
-├── App.jsx                     # Nav, scroll progress, reveal + active-section observers
+├── App.jsx                     # Composition only — the order of the argument
 ├── main.jsx                    # Entry: StrictMode + root error boundary
 ├── index.css                   # The entire design system
 ├── components/
@@ -105,8 +105,17 @@ src/
 │   │   └── Footer.jsx
 │   └── ui/
 │       ├── Backdrop.jsx        # The animated canvas landscape
+│       ├── ScrollProgress.jsx  # Hairline bar, written straight to the DOM
+│       ├── Navbar.jsx          # Sticky bar + mobile menu
+│       ├── BackToTop.jsx
+│       ├── Tweaks.jsx          # Compact-mode toggle
+│       ├── SectionHead.jsx     # Shared section header
 │       ├── ErrorBoundary.jsx
 │       └── Icons.jsx           # The official Arch mark
+├── hooks/
+│   ├── useActiveSection.js     # Which nav item is current
+│   ├── useReveal.js            # Scroll reveal, as progressive enhancement
+│   └── usePrefersReducedMotion.js  # Live matchMedia subscription
 └── utils/
     └── constants.js            # Section order — single source of truth
 ```

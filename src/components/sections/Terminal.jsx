@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import SectionHead from '../ui/SectionHead'
+import usePrefersReducedMotion from '../../hooks/usePrefersReducedMotion'
 
 /**
  * In-page shell. Everything is parsed locally — no network, no state leaves
@@ -139,8 +140,6 @@ const SYU_STATIC = SYU_SCRIPT.map((s) =>
 
 const CHIPS = ['pacman -Syu', 'neofetch', 'pacman -Ss firefox', 'uname -a', 'help']
 const BAR_WIDTH = 16
-const REDUCED = typeof window !== 'undefined' &&
-  window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
 
 /* Announced once when the animated upgrade lands, in place of the ~130 live
    region updates the animation itself would otherwise produce. */
@@ -152,6 +151,9 @@ export default function Terminal() {
   const [history, setHistory] = useState([])
   const [animating, setAnimating] = useState(false)
   const [liveMessage, setLiveMessage] = useState('')
+  /* Live, not read once at module load: flipping the OS preference mid-session
+     should change this terminal too, not only the canvas backdrop. */
+  const reduced = usePrefersReducedMotion()
 
   const bodyRef = useRef(null)
   const inputRef = useRef(null)
@@ -178,8 +180,8 @@ export default function Terminal() {
   useEffect(() => {
     const el = bodyRef.current
     if (!el) return
-    el.scrollTo({ top: el.scrollHeight, behavior: REDUCED ? 'auto' : 'smooth' })
-  }, [lines])
+    el.scrollTo({ top: el.scrollHeight, behavior: reduced ? 'auto' : 'smooth' })
+  }, [lines, reduced])
 
   /**
    * Close out a scripted run.
@@ -196,6 +198,13 @@ export default function Terminal() {
   }
 
   const runScript = (script, summary) => {
+    /* A new run takes ownership of the timer list. Without this, every
+       `pacman -Syu` appended ~60 handles that were only ever cleared on
+       unmount, so both the array and the cost of clearing it grew with each
+       run. Deliberately NOT reset inside finishScript(): the final step and the
+       tail of the last progress bar are still pending at that point, and
+       dropping their handles would leave them running past a later `clear`. */
+    clearTimers()
     animatingRef.current = true
     setAnimating(true)
     setLiveMessage('')
@@ -230,8 +239,10 @@ export default function Terminal() {
 
     /* Safety net: if the script ends on a bar line the check above never fires.
        Calling this twice is harmless — the second call sets an identical string,
-       so React bails out and nothing is announced a second time. */
-    timersRef.current.push(setTimeout(() => finishScript(summary), t + 800))
+       so React bails out and nothing is announced a second time. It fires after
+       every step and every bar tail, so it is also the safe place to release
+       the run's handles. */
+    timersRef.current.push(setTimeout(() => { finishScript(summary); clearTimers() }, t + 800))
   }
 
   const renderSearch = (hits, term) => {
@@ -270,7 +281,7 @@ export default function Terminal() {
       /* Reduced motion appends the whole transcript at once, so it is announced
          as a batch and needs no separate summary. The animated path is the one
          that has to be summarised. */
-      if (REDUCED) appendLines(SYU_STATIC)
+      if (reduced) appendLines(SYU_STATIC)
       else runScript(SYU_SCRIPT, SYU_SUMMARY)
       return
     }

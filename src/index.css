@@ -1055,6 +1055,12 @@ main { position: relative; z-index: var(--z-content); counter-reset: sec; }
 }
 
 .pkg-list { border-top: 1px solid var(--rule); }
+/* Results retained while the next query is in flight: present, but visibly not
+   the answer to what is currently in the box. */
+.pkg-list.is-stale {
+  opacity: 0.45;
+  transition: opacity var(--fast) var(--ease);
+}
 .pkg-item {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
