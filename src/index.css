@@ -57,6 +57,12 @@
   --font-body: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   --font-agave: 'Agave', ui-monospace, SFMono-Regular, Menlo, monospace;
+  /* The hero headline gets its own face. It is the one piece of type on the page
+     that has to be *seen* rather than read, and the rest of the display stack is
+     doing structural work that does not want an angular voice.
+     The stack falls back to Space Grotesk on purpose: if the file is missing the
+     headline degrades to the previous look, not to a system sans. */
+  --font-hero: 'Chakra Petch', 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
 
   /* Scale — heavier display type, borrowed from the Debian site's register.
      The contrast between steps is the point: this is a document, not a blog. */
@@ -666,11 +672,14 @@ main { position: relative; z-index: var(--z-content); counter-reset: sec; }
 
 /* The headline lives inside the sheet, on its own line numbers. */
 .hero-title {
-  font-family: var(--font-display);
+  font-family: var(--font-hero);
   font-size: var(--t-h1);
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1.02;
-  letter-spacing: -0.035em;
+  /* Looser than the -0.035em this carried in Space Grotesk: the hero face is
+     semi-condensed and already narrow, so the tighter value crowds it. This is
+     the knob to turn if the headline looks cramped or loose. */
+  letter-spacing: -0.02em;
   color: var(--ink);
   margin: 0.15em 0 0.3em;
   text-wrap: balance;

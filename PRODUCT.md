@@ -71,8 +71,11 @@ violated somewhere in the build; they are listed here so it does not happen agai
    last resort, not a first instinct.
 3. **One idea, stated loudly.** The PKGBUILD hero carries the thesis
    (`depends=('you')`). Everything else is quieter around it.
-4. **Type carries the voice.** Two families. Display type does the heavy lifting;
-   mono handles every label, meta string and code fragment.
+4. **Type carries the voice.** Three roles, four families. The hero headline has
+   its own angular display face, because it is the one piece of type on the page
+   that has to be *seen* rather than read. Space Grotesk does the rest of the
+   display and body work; mono handles every label, meta string and code fragment.
+   Four is the ceiling — a fifth family would mean a role nobody can name.
 5. **Motion answers to state.** Two tiers, and they are not interchangeable:
    - **Scroll-linked** (`animation-timeline`, zero JS, compositor thread) for
      ambient and structural things. The hairline rules draw themselves in as
@@ -151,12 +154,13 @@ Currently implemented:
   - It recedes to 45% once the reader is a viewport into the document, so body
     copy is never fighting moving geometry.
   - See `docs/backdrop.md`.
-- **Three font families**, self-hosted in `public/fonts/`, zero CDN:
+- **Four font families**, self-hosted in `public/fonts/`, zero CDN:
+  - Chakra Petch (600) — the hero headline only, via `--font-hero`
   - Space Grotesk (400/500/600) — display and body
   - JetBrains Mono (variable) — labels, meta strings, code fragments
   - Agave (regular) — terminal output only
 - `index.html` references fonts via `%BASE_URL%` so the GitHub Pages subpath
-  deploy resolves. Only the two faces that paint above the fold are preloaded.
+  deploy resolves. Only the faces that paint above the fold are preloaded.
 - Package search calls the Arch index through a CORS proxy. The base URL is
   `VITE_PKG_API` (see `.env.example`) so it can be replaced with a proxy you
   control. It is the only external runtime dependency on the site.

@@ -22,9 +22,10 @@ landing page, and most layout decisions follow from that. Concretely:
   of a claim.
 - **Rules, not cards.** Section structure comes from hairlines. There is no card
   component, no glassmorphism, and no glow anywhere on the site.
-- **Three fonts.** Space Grotesk for display and body; JetBrains Mono for labels,
-  meta strings, and code fragments; Agave for terminal output only. Brand blue for
-  links and active states, one green for terminal output, and nothing else.
+- **Four fonts, three roles.** Chakra Petch carries the hero headline alone;
+  Space Grotesk does display and body; JetBrains Mono handles labels, meta strings
+  and code fragments; Agave is terminal output only. Brand blue for links and
+  active states, one green for terminal output, and nothing else.
 - **No GPU work.** The backdrop is a 2D canvas with a hand-written projection
   (`src/components/ui/Backdrop.jsx`) — no WebGL, no three.js, no shader.
 
@@ -128,7 +129,7 @@ src/
 | Build | Vite 8 (Rolldown) |
 | Backdrop | Canvas 2D, hand-written projection — no WebGL, no 3D library |
 | Layout | CSS Grid; component breakpoints via `@container`, not `@media` |
-| Fonts | Space Grotesk + JetBrains Mono + Agave, self-hosted |
+| Fonts | Chakra Petch + Space Grotesk + JetBrains Mono + Agave, self-hosted |
 | Lint | ESLint 10, flat config |
 | Runtime deps | `react`, `react-dom` — that is all |
 
@@ -217,6 +218,29 @@ original hero mockups and a UI-kit snapshot built on the *previous* design syste
 build, and it describes a site that no longer exists. Keep it as design history if
 that is useful to you, or delete it — but do not read it as a description of
 current behaviour.
+
+## Fonts
+
+Four families, all self-hosted in `public/fonts/`, zero CDN:
+
+| Face | Weights | Role |
+|---|---|---|
+| Chakra Petch | 600 | `.hero-title` only — see `--font-hero` |
+| Space Grotesk | 400 / 500 / 600 | display and body |
+| JetBrains Mono | 100–800 (variable) | labels, meta strings, code fragments |
+| Agave | 400 | terminal output only |
+
+Chakra Petch is SIL OFL 1.1, latin subset only — the headline is Latin, so the
+other subsets would be dead weight. To re-fetch or update it:
+
+```bash
+curl -L -o public/fonts/ChakraPetch-SemiBold.woff2 \
+  https://cdn.jsdelivr.net/npm/@fontsource/chakra-petch/files/chakra-petch-latin-600-normal.woff2
+```
+
+`--font-hero` in `src/index.css` lists Space Grotesk after Chakra Petch, so a
+missing file degrades the headline to the previous design rather than to a system
+sans. `index.html` preloads it, because it is the largest thing above the fold.
 
 ## Deployment
 

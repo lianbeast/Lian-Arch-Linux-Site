@@ -15,7 +15,15 @@
 
     <link rel="icon" type="image/svg+xml" href="%BASE_URL%favicon.svg" />
 
-    <!-- Preload only the two faces that paint above the fold. -->
+    <!-- Preload only the faces that paint above the fold: the hero headline and
+         the PKGBUILD sheet it sits in. -->
+    <link
+      rel="preload"
+      href="%BASE_URL%fonts/ChakraPetch-SemiBold.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
     <link
       rel="preload"
       href="%BASE_URL%fonts/SpaceGrotesk-SemiBold.woff2"
@@ -92,7 +100,7 @@
     </script>
 
     <style>
-      /* Self-hosted, no CDN. Three families site actually uses. */
+      /* Self-hosted, no CDN. Four families site actually uses. */
       @font-face {
         font-family: 'Space Grotesk';
         src: url('%BASE_URL%fonts/SpaceGrotesk-Regular.woff2') format('woff2');
@@ -115,6 +123,14 @@
         font-family: 'JetBrains Mono';
         src: url('%BASE_URL%fonts/JetBrainsMono-Variable.woff2') format('woff2');
         font-weight: 100 800;
+        font-display: swap;
+      }
+      /* Hero headline only — see --font-hero in src/index.css. One weight: the
+         headline never renders at any other. */
+      @font-face {
+        font-family: 'Chakra Petch';
+        src: url('%BASE_URL%fonts/ChakraPetch-SemiBold.woff2') format('woff2');
+        font-weight: 600;
         font-display: swap;
       }
       @font-face {
